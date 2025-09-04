@@ -5,10 +5,12 @@ import {
   DeleteButton,
   TextField,
   ReferenceField,
-  ArrayField,
-  Datagrid,
+  ReferenceArrayField,
   FunctionField,
+  SingleFieldList,
 } from "react-admin";
+import { toArray } from "lodash-es";
+import { Alert } from "@mui/material";
 
 const ContractDefinitionShowBar = () => (
   <TopToolbar>
@@ -33,7 +35,7 @@ export const ContractDefinitionShow = () => (
         link="show"
         label="Access Policy"
       >
-        <TextField source="id" />
+        <TextField source="privateProperties.name" />
       </ReferenceField>
       <ReferenceField
         source="contractPolicyId"
@@ -41,19 +43,47 @@ export const ContractDefinitionShow = () => (
         label="Contract Policy"
         link="show"
       >
-        <TextField source="id" />
+        <TextField source="privateProperties.name" />
       </ReferenceField>
       <FunctionField
         label="Selected Assets"
         render={(record: any) => {
-          const assetsSelector = record?.assetsSelector?.[0];
-          if (
-            !assetsSelector?.operandRight ||
-            !Array.isArray(assetsSelector.operandRight)
-          ) {
-            return "No assets selected";
+          const assetsSelector = toArray(record?.assetsSelector);
+          console.log(
+            assetsSelector,
+            !assetsSelector || assetsSelector.length === 0
+          );
+          if (!assetsSelector || assetsSelector.length === 0) {
+            return (
+              <Alert severity="warning" sx={{ mt: 1 }}>
+                This contract definition applies to ALL assets (no assets
+                selected)
+              </Alert>
+            );
           }
-          return `${assetsSelector.operandRight.length} asset(s) selected`;
+
+          // Create a temporary record with the asset IDs for ReferenceArrayField
+          const tempRecord = {
+            id: "temp",
+            selectedAssetIds: assetsSelector.map((a) => a.operandRight),
+          };
+
+          return (
+            <ReferenceArrayField
+              source="selectedAssetIds"
+              reference="assets"
+              record={tempRecord}
+            >
+              <SingleFieldList linkType="show">
+                <FunctionField
+                  render={(asset: any) =>
+                    asset?.properties?.["http://purl.org/dc/terms/title"] ||
+                    asset.id
+                  }
+                />
+              </SingleFieldList>
+            </ReferenceArrayField>
+          );
         }}
       />
     </SimpleShowLayout>

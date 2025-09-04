@@ -18,6 +18,11 @@ export default defineConfig({
             usePolling: true
         },
         proxy: {
+            '/protocol': {
+                target: 'http://edc-provider:19194',
+                changeOrigin: true,
+                secure: false
+            },
             '/api': {
                 target: 'http://backend:8080',
                 changeOrigin: true,

@@ -5,8 +5,10 @@ import {
   ReferenceInput,
   AutocompleteInput,
   required,
+  FormDataConsumer,
 } from "react-admin";
 import { AssetByIdSelector } from "./AssetByIdSelector";
+import { Alert } from "@mui/material";
 
 export const ContractDefinitionCreate = (props: any) => (
   <Create {...props}>
@@ -66,6 +68,22 @@ export const ContractDefinitionCreate = (props: any) => (
           to.
         </p>
       </div>
+      <FormDataConsumer>
+        {({ formData }) => {
+          const assetsSelector = formData?.assetsSelector?.[0];
+          const hasSelectedAssets =
+            assetsSelector?.operandRight &&
+            Array.isArray(assetsSelector.operandRight) &&
+            assetsSelector.operandRight.length > 0;
+
+          return !hasSelectedAssets ? (
+            <Alert severity="warning" sx={{ mb: 2 }}>
+              ⚠️ Warning: No assets selected - this contract definition will
+              apply to ALL assets.
+            </Alert>
+          ) : null;
+        }}
+      </FormDataConsumer>
       <AssetByIdSelector
         source="assetsSelector"
         label="Asset By ID Selector"

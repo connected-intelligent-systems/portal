@@ -1,7 +1,7 @@
 import { List, Datagrid, TextField, FunctionField } from "react-admin";
 
 export const AssetsList = () => (
-  <List empty={false}>
+  <List empty={false} exporter={false}>
     <Datagrid
       style={{ tableLayout: "fixed" }}
       bulkActionButtons={false}

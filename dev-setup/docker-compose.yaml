@@ -136,12 +136,12 @@ services:
     volumes:
       - ./keycloak/realm-export-dataspace.json:/opt/bitnami/keycloak/data/import/dataspace-realm.json
     healthcheck:
-        test: ["CMD-SHELL", "curl --fail http://localhost:8080/realms/dataspace/.well-known/openid-configuration"]
-        interval: 30s
-        timeout: 10s
-        start_interval: 30s
-        start_period: 1s
-        retries: 5
+      test: ["CMD-SHELL", "curl --fail http://localhost:8080/realms/dataspace/.well-known/openid-configuration"]
+      interval: 30s
+      timeout: 10s
+      start_interval: 30s
+      start_period: 1s
+      retries: 5
     depends_on:
       postgres:
         condition: service_healthy
