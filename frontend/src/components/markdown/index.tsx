@@ -16,8 +16,11 @@ MarkdownInput.propTypes = {
   source: PropTypes.string,
 };
 
-export const MarkdownField = ({ source }) => {
-  const value = useFieldValue({ source });
+export const MarkdownField = ({ source, record }) => {
+  console.log("MarkdownField source:", source);
+  const contextValue = useFieldValue({ source });
+  const value = record ? record[source] : contextValue;
+  console.log("MarkdownField value:", value);
   if (!value) {
     return <span>-</span>;
   }
@@ -31,4 +34,5 @@ export const MarkdownField = ({ source }) => {
 
 MarkdownField.propTypes = {
   source: PropTypes.string,
+  record: PropTypes.object,
 };

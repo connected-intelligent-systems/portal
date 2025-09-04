@@ -2,6 +2,7 @@ import {
   List,
   Datagrid,
   TextField,
+  FunctionField,
 } from "react-admin";
 
 export const AssetsList = () => (
@@ -12,12 +13,10 @@ export const AssetsList = () => (
       rowClick="show"
     >
       <TextField source="id" sortable={false} />
-      <TextField source="properties.name" label="Name" sortable={false} />
-      <TextField
-        source="properties.type"
-        label="Type"
+      <FunctionField
+        label="Title"
         sortable={false}
-        defaultValue="-"
+        render={(record: any) => record?.properties?.["http://purl.org/dc/terms/title"] || "Untitled"}
       />
       <TextField
         source="dataAddress.type"

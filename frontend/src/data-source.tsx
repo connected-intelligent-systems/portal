@@ -17,8 +17,9 @@ import {
   terminateTransferProcessDatasource,
   dataRequestDatasource,
 } from "./data_sources";
+import { DataProvider } from "react-admin";
 
-const datasourceMapping = {
+const datasourceMapping: { [key: string]: any } = {
   thingDescriptions: thingRegistryDatasource,
   assets: assetsDatasource,
   customers: customersDatasource,
@@ -38,7 +39,7 @@ const datasourceMapping = {
   terminatetransferprocess: terminateTransferProcessDatasource,
 };
 
-const handleRequest = async (method, resource, params) => {
+const handleRequest = async (method: string, resource: string, params: any) => {
   const datasource = datasourceMapping[resource];
   if (datasource && datasource[method]) {
     return datasource[method](params);
@@ -49,8 +50,12 @@ const handleRequest = async (method, resource, params) => {
 export default {
   getList: (resource, params) => handleRequest("getList", resource, params),
   getOne: (resource, params) => handleRequest("getOne", resource, params),
+  getMany: (resource, params) => handleRequest("getMany", resource, params),
+  getManyReference: (resource, params) =>
+    handleRequest("getManyReference", resource, params),
   update: (resource, params) => handleRequest("update", resource, params),
+  updateMany: (resource, params) => handleRequest("updateMany", resource, params),
   create: (resource, params) => handleRequest("create", resource, params),
   delete: (resource, params) => handleRequest("remove", resource, params),
-  getMany: (resource, params) => handleRequest("getMany", resource, params),
-};
+  deleteMany: (resource, params) => handleRequest("deleteMany", resource, params),
+} as DataProvider;

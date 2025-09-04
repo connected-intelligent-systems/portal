@@ -128,12 +128,12 @@ type PolicyDefinition struct {
 }
 
 type Asset struct {
-	Context           *interface{}      `json:"@context"`
-	Id                string            `json:"@id,omitempty"`
-	Type              string            `json:"@type,omitempty"`
-	DataAddress       map[string]string `json:"dataAddress"`
-	PrivateProperties map[string]string `json:"privateProperties,omitempty"`
-	Properties        map[string]string `json:"properties"`
+	Context           *interface{}           `json:"@context"`
+	Id                string                 `json:"@id,omitempty"`
+	Type              string                 `json:"@type,omitempty"`
+	DataAddress       map[string]string      `json:"dataAddress"`
+	PrivateProperties map[string]string      `json:"privateProperties,omitempty"`
+	Properties        map[string]interface{} `json:"properties"`
 }
 
 type ContractDefinition struct {
