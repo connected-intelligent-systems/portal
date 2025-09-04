@@ -1,15 +1,12 @@
-import {
-  ArrayInput,
-  SimpleFormIterator,
-  TextInput,
-} from "react-admin";
+import { ArrayInput, SimpleFormIterator, TextInput } from "react-admin";
 import { Typography, Box, Link } from "@mui/material";
 
 export const DataQuality = () => {
   return (
     <Box sx={{ width: "100%" }}>
       <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-        Specify quality measurements for this asset using the Data Quality Vocabulary (DQV). For more information, see the{" "}
+        Specify quality measurements for this asset using the Data Quality
+        Vocabulary (DQV). For more information, see the{" "}
         <Link
           href="https://www.w3.org/TR/vocab-dqv/"
           target="_blank"

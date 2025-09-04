@@ -1,9 +1,4 @@
-import {
-  useInput,
-  useGetList,
-  Loading,
-  Error,
-} from "react-admin";
+import { useInput, useGetList, Loading, Error } from "react-admin";
 import { Autocomplete, TextField, Chip, Box } from "@mui/material";
 import { useState, useEffect } from "react";
 
@@ -15,14 +10,24 @@ interface AssetByIdSelectorProps {
   helperText?: string;
 }
 
-export const AssetByIdSelector = ({ source, label = "Assets", fullWidth = true, validate, helperText }: AssetByIdSelectorProps) => {
+export const AssetByIdSelector = ({
+  source,
+  label = "Assets",
+  fullWidth = true,
+  validate,
+  helperText,
+}: AssetByIdSelectorProps) => {
   const { field } = useInput({ source, validate });
   const [selectedAssets, setSelectedAssets] = useState<any[]>([]);
 
   // Fetch all assets
-  const { data: assets, isLoading, error } = useGetList('assets', {
+  const {
+    data: assets,
+    isLoading,
+    error,
+  } = useGetList("assets", {
     pagination: { page: 1, perPage: 1000 },
-    sort: { field: 'id', order: 'ASC' },
+    sort: { field: "id", order: "ASC" },
     filter: {},
   });
 
@@ -30,20 +35,24 @@ export const AssetByIdSelector = ({ source, label = "Assets", fullWidth = true, 
   useEffect(() => {
     if (assets && field.value?.[0]?.operandRight) {
       const selectedIds = field.value[0].operandRight;
-      const selected = assets.filter((asset: any) => selectedIds.includes(asset.id));
+      const selected = assets.filter((asset: any) =>
+        selectedIds.includes(asset.id)
+      );
       setSelectedAssets(selected);
     }
   }, [assets, field.value]);
 
   const handleChange = (_: any, newValue: any[]) => {
     setSelectedAssets(newValue);
-    
+
     if (newValue && newValue.length > 0) {
-      field.onChange([{
-        operandLeft: "https://w3id.org/edc/v0.0.1/ns/id",
-        operator: "in",
-        operandRight: newValue.map(asset => asset.id)
-      }]);
+      field.onChange([
+        {
+          operandLeft: "https://w3id.org/edc/v0.0.1/ns/id",
+          operator: "in",
+          operandRight: newValue.map((asset) => asset.id),
+        },
+      ]);
     } else {
       field.onChange([]);
     }
@@ -53,18 +62,24 @@ export const AssetByIdSelector = ({ source, label = "Assets", fullWidth = true, 
   if (error) return <Error error={error} />;
 
   return (
-    <Box sx={{ mb: 2, width: '100%' }}>
+    <Box sx={{ mb: 2, width: "100%" }}>
       <Autocomplete
         multiple
         fullWidth
         options={assets || []}
-        getOptionLabel={(option: any) => option?.properties?.["http://purl.org/dc/terms/title"] || "Unnamed Asset"}
+        getOptionLabel={(option: any) =>
+          option?.properties?.["http://purl.org/dc/terms/title"] ||
+          "Unnamed Asset"
+        }
         value={selectedAssets}
         onChange={handleChange}
         renderTags={(tagValue, getTagProps) =>
           tagValue.map((option, index) => (
             <Chip
-              label={option?.properties?.["http://purl.org/dc/terms/title"] || "Unnamed Asset"}
+              label={
+                option?.properties?.["http://purl.org/dc/terms/title"] ||
+                "Unnamed Asset"
+              }
               {...getTagProps({ index })}
               key={option.id}
             />

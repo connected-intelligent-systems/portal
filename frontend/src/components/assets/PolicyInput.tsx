@@ -4,11 +4,7 @@ import {
   SimpleFormIterator,
   HiddenInput,
 } from "react-admin";
-import {
-  Typography,
-  Link,
-  Box,
-} from "@mui/material";
+import { Typography, Link, Box } from "@mui/material";
 
 const permissionChoices = [
   { id: "odrl:use", name: "Use" },

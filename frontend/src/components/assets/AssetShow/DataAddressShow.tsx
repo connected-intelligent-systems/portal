@@ -14,39 +14,47 @@ const HttpDataShow = () => {
       <Typography variant="h6" sx={{ mb: 2 }}>
         HTTP Configuration
       </Typography>
-      
+
       <Labeled fullWidth label="Base URL">
         <TextField source="dataAddress.baseUrl" />
       </Labeled>
-      
+
       <Labeled fullWidth label="Accept Header">
         <TextField source="dataAddress.header:Accept" emptyText="-" />
       </Labeled>
-      
+
       <Labeled fullWidth label="Proxy Path">
-        <FunctionField render={(record: any) => 
-          record?.dataAddress?.proxyPath === "true" ? "Yes" : "No"
-        } />
+        <FunctionField
+          render={(record: any) =>
+            record?.dataAddress?.proxyPath === "true" ? "Yes" : "No"
+          }
+        />
       </Labeled>
-      
+
       <Labeled fullWidth label="Proxy Query Params">
-        <FunctionField render={(record: any) => 
-          record?.dataAddress?.proxyQueryParams === "true" ? "Yes" : "No"
-        } />
+        <FunctionField
+          render={(record: any) =>
+            record?.dataAddress?.proxyQueryParams === "true" ? "Yes" : "No"
+          }
+        />
       </Labeled>
-      
+
       <Labeled fullWidth label="Proxy Body">
-        <FunctionField render={(record: any) => 
-          record?.dataAddress?.proxyBody === "true" ? "Yes" : "No"
-        } />
+        <FunctionField
+          render={(record: any) =>
+            record?.dataAddress?.proxyBody === "true" ? "Yes" : "No"
+          }
+        />
       </Labeled>
-      
+
       <Labeled fullWidth label="Proxy Method">
-        <FunctionField render={(record: any) => 
-          record?.dataAddress?.proxyMethod === "true" ? "Yes" : "No"
-        } />
+        <FunctionField
+          render={(record: any) =>
+            record?.dataAddress?.proxyMethod === "true" ? "Yes" : "No"
+          }
+        />
       </Labeled>
-      
+
       <Labeled fullWidth label="Authorization Header">
         <FunctionField
           source="dataAddress.authHeader"
@@ -69,31 +77,31 @@ const AmazonS3Show = () => {
       <Typography variant="h6" sx={{ mb: 2 }}>
         Amazon S3 Configuration
       </Typography>
-      
+
       <Labeled fullWidth label="Region">
         <TextField source="dataAddress.region" />
       </Labeled>
-      
+
       <Labeled fullWidth label="Endpoint Override">
         <TextField source="dataAddress.endpointOverride" emptyText="-" />
       </Labeled>
-      
+
       <Labeled fullWidth label="Bucket Name">
         <TextField source="dataAddress.bucketName" />
       </Labeled>
-      
+
       <Labeled fullWidth label="Object Name">
         <TextField source="dataAddress.objectName" emptyText="-" />
       </Labeled>
-      
+
       <Labeled fullWidth label="Object Prefix">
         <TextField source="dataAddress.objectPrefix" emptyText="-" />
       </Labeled>
-      
+
       <Labeled fullWidth label="Access Key ID">
         <TextField source="dataAddress.accessKeyId" emptyText="-" />
       </Labeled>
-      
+
       <Labeled fullWidth label="Secret Access Key">
         <FunctionField
           source="dataAddress.secretAccessKey"
@@ -112,7 +120,7 @@ const AmazonS3Show = () => {
 
 export const DataAddressShow = () => {
   const record = useRecordContext();
-  
+
   return (
     <Box>
       <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>

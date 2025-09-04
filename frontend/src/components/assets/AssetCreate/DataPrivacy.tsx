@@ -1,8 +1,4 @@
-import {
-  ArrayInput,
-  AutocompleteInput,
-  SimpleFormIterator,
-} from "react-admin";
+import { ArrayInput, AutocompleteInput, SimpleFormIterator } from "react-admin";
 import { Typography, Link, Box } from "@mui/material";
 
 const personalDataChoices = [
@@ -61,7 +57,10 @@ export const DataPrivacy = () => {
         </Link>
         .
       </Typography>
-      <ArrayInput source="properties.dpv:hasPersonalDataHandling" label="Personal Data Handling">
+      <ArrayInput
+        source="properties.dpv:hasPersonalDataHandling"
+        label="Personal Data Handling"
+      >
         <SimpleFormIterator>
           <AutocompleteInput
             source="dpv:hasData"

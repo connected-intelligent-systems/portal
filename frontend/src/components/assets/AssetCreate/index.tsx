@@ -43,12 +43,11 @@ const steps = [
 const stepRequiredFields: Record<number, string[]> = {
   0: ["properties.dct:title"], // Basic Information
   1: [], // Versioning - no required fields
-  2: [], // Provenance - no required fields  
+  2: [], // Provenance - no required fields
   3: [], // Data Privacy - no required fields
   4: [], // Data Quality - no required fields
   5: ["dataAddress.type"], // Data Address - requires data address type
 };
-
 
 const categoryChoices = [
   { id: "File", name: "File" },
@@ -71,16 +70,24 @@ const mediaTypeChoices = [
   { id: "application/orc", name: "ORC" },
 ];
 
-const AssetCreateToolbar = ({ activeStep, setActiveStep, markStepCompleted, setMaxReachedStep, ...props }: any) => {
+const AssetCreateToolbar = ({
+  activeStep,
+  setActiveStep,
+  markStepCompleted,
+  setMaxReachedStep,
+  ...props
+}: any) => {
   const { getValues } = useFormContext();
-  
+
   const checkRequiredFields = (stepIndex: number): boolean => {
     const requiredFields = stepRequiredFields[stepIndex] || [];
     const formData = getValues();
-    
-    return requiredFields.every(field => {
-      const fieldValue = field.split('.').reduce((obj, key) => obj?.[key], formData);
-      return fieldValue && fieldValue.toString().trim() !== '';
+
+    return requiredFields.every((field) => {
+      const fieldValue = field
+        .split(".")
+        .reduce((obj, key) => obj?.[key], formData);
+      return fieldValue && fieldValue.toString().trim() !== "";
     });
   };
 
@@ -109,12 +116,12 @@ const AssetCreateToolbar = ({ activeStep, setActiveStep, markStepCompleted, setM
         )}
       </Box>
       {activeStep < steps.length - 1 && (
-        <Button 
-          onClick={handleNext} 
-          variant="contained" 
+        <Button
+          onClick={handleNext}
+          variant="contained"
           disabled={!canAdvance}
           sx={{
-            ...(canAdvance ? {} : { opacity: 0.6 })
+            ...(canAdvance ? {} : { opacity: 0.6 }),
           }}
         >
           Next
@@ -146,7 +153,7 @@ export const AssetCreate = () => {
   };
 
   const markStepCompleted = (stepIndex: number) => {
-    setCompletedSteps(prev => new Set(prev).add(stepIndex));
+    setCompletedSteps((prev) => new Set(prev).add(stepIndex));
   };
 
   const onSuccess = () => {
@@ -172,43 +179,54 @@ export const AssetCreate = () => {
               const requiredCount = stepRequiredFields[index]?.length || 0;
               const hasRequired = requiredCount > 0;
               const isClickable = index <= maxReachedStep;
-              
+
               return (
                 <Step key={label} completed={completedSteps.has(index)}>
-                  <StepLabel 
-                    sx={{ 
-                      cursor: isClickable ? 'pointer' : 'default',
-                      '& .MuiStepLabel-label': {
-                        color: isClickable ? 'primary.main !important' : 'text.disabled !important',
-                        fontWeight: isClickable ? 'normal' : 'normal'
+                  <StepLabel
+                    sx={{
+                      cursor: isClickable ? "pointer" : "default",
+                      "& .MuiStepLabel-label": {
+                        color: isClickable
+                          ? "primary.main !important"
+                          : "text.disabled !important",
+                        fontWeight: isClickable ? "normal" : "normal",
                       },
-                      '& .MuiStepLabel-iconContainer': {
-                        color: isClickable ? 'primary.main' : 'text.disabled'
+                      "& .MuiStepLabel-iconContainer": {
+                        color: isClickable ? "primary.main" : "text.disabled",
                       },
-                      '& .MuiStepIcon-root': {
-                        color: isClickable ? 'primary.main' : 'text.disabled'
-                      }
+                      "& .MuiStepIcon-root": {
+                        color: isClickable ? "primary.main" : "text.disabled",
+                      },
                     }}
                     onClick={() => handleStepClick(index)}
                   >
-                    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0.5 }}>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        gap: 0.5,
+                      }}
+                    >
                       <span>{label}</span>
                       {hasRequired && (
-                        <Chip 
+                        <Chip
                           label={`${requiredCount} required`}
                           size="small"
-                          color={completedSteps.has(index) ? "success" : "default"}
+                          color={
+                            completedSteps.has(index) ? "success" : "default"
+                          }
                           variant="outlined"
-                          sx={{ fontSize: '0.6rem', height: 16 }}
+                          sx={{ fontSize: "0.6rem", height: 16 }}
                         />
                       )}
                       {!hasRequired && (
-                        <Chip 
+                        <Chip
                           label="optional"
                           size="small"
                           color="default"
                           variant="outlined"
-                          sx={{ fontSize: '0.6rem', height: 16 }}
+                          sx={{ fontSize: "0.6rem", height: 16 }}
                         />
                       )}
                     </Box>
@@ -235,12 +253,16 @@ export const AssetCreate = () => {
               Description
             </Typography>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-              A free-text account of the dataset. Supports Markdown formatting. E.g., "Hourly temperature and humidity readings collected from IoT sensors."
+              A free-text account of the dataset. Supports Markdown formatting.
+              E.g., "Hourly temperature and humidity readings collected from IoT
+              sensors."
             </Typography>
-            <MarkdownInput
-              source="properties.dct:description"
-            />
-            <ArrayInput source="properties.dcat:keyword" label="Keywords" sx={{ mt: 3 }}>
+            <MarkdownInput source="properties.dct:description" />
+            <ArrayInput
+              source="properties.dcat:keyword"
+              label="Keywords"
+              sx={{ mt: 3 }}
+            >
               <SimpleFormIterator>
                 <TextInput
                   source=""
@@ -272,15 +294,17 @@ export const AssetCreate = () => {
               Versioning
             </Typography>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-              Specify versioning and metadata information for this asset, based on Dublin Core Terms and OWL vocabularies. For more information, see{" "}
+              Specify versioning and metadata information for this asset, based
+              on Dublin Core Terms and OWL vocabularies. For more information,
+              see{" "}
               <Link
                 href="https://www.dublincore.org/specifications/dublin-core/dcmi-terms/"
                 target="_blank"
                 rel="noopener noreferrer"
               >
                 Dublin Core Terms
-              </Link>
-              {" "}and{" "}
+              </Link>{" "}
+              and{" "}
               <Link
                 href="https://www.w3.org/TR/owl-ref/"
                 target="_blank"
@@ -314,7 +338,10 @@ export const AssetCreate = () => {
               helperText="The date of the last modification of the dataset."
               fullWidth
             />
-            <ArrayInput source="properties.dct:hasVersion" label="Previous Versions">
+            <ArrayInput
+              source="properties.dct:hasVersion"
+              label="Previous Versions"
+            >
               <SimpleFormIterator>
                 <TextInput
                   source="owl:versionInfo"

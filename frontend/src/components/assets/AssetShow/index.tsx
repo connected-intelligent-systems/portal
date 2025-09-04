@@ -48,7 +48,8 @@ export const AssetShow = () => {
           render={(record: any) => (
             <>
               <Typography variant="h4" gutterBottom>
-                {record?.properties?.["http://purl.org/dc/terms/title"] || "Untitled Asset"}
+                {record?.properties?.["http://purl.org/dc/terms/title"] ||
+                  "Untitled Asset"}
               </Typography>
               <Typography variant="caption" color="text.secondary">
                 ID: {record.id}
@@ -61,7 +62,8 @@ export const AssetShow = () => {
           <Box sx={{ mb: 2 }}>
             <Typography variant="h6">Basic Information</Typography>
             <Typography variant="body2" color="text.secondary">
-              Essential metadata including title, description, keywords, and identifiers
+              Essential metadata including title, description, keywords, and
+              identifiers
             </Typography>
           </Box>
           <BasicInformationShow />

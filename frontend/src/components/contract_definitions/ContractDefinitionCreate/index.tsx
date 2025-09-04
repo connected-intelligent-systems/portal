@@ -45,11 +45,25 @@ export const ContractDefinitionCreate = (props: any) => (
         />
       </ReferenceInput>
       <div style={{ marginTop: 24, marginBottom: 2 }}>
-        <h3 style={{ margin: '0 0 8px 0', fontSize: '1.25rem', fontWeight: 500, color: 'rgba(0, 0, 0, 0.87)' }}>
+        <h3
+          style={{
+            margin: "0 0 8px 0",
+            fontSize: "1.25rem",
+            fontWeight: 500,
+            color: "rgba(0, 0, 0, 0.87)",
+          }}
+        >
           Asset Selector
         </h3>
-        <p style={{ margin: '0 0 16px 0', fontSize: '0.875rem', color: 'rgba(0, 0, 0, 0.6)' }}>
-          Select the specific assets that this contract definition will apply to.
+        <p
+          style={{
+            margin: "0 0 16px 0",
+            fontSize: "0.875rem",
+            color: "rgba(0, 0, 0, 0.6)",
+          }}
+        >
+          Select the specific assets that this contract definition will apply
+          to.
         </p>
       </div>
       <AssetByIdSelector

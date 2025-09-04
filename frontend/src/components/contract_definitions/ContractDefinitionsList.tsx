@@ -1,8 +1,4 @@
-import {
-  List,
-  Datagrid,
-  TextField,
-} from "react-admin";
+import { List, Datagrid, TextField } from "react-admin";
 
 export const ContractDefinitionsList = () => (
   <List empty={false} hasCreate={true} exporter={false}>

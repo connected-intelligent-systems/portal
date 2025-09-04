@@ -1,9 +1,4 @@
-import {
-  List,
-  Datagrid,
-  TextField,
-  FunctionField,
-} from "react-admin";
+import { List, Datagrid, TextField, FunctionField } from "react-admin";
 
 export const AssetsList = () => (
   <List empty={false}>
@@ -16,7 +11,9 @@ export const AssetsList = () => (
       <FunctionField
         label="Title"
         sortable={false}
-        render={(record: any) => record?.properties?.["http://purl.org/dc/terms/title"] || "Untitled"}
+        render={(record: any) =>
+          record?.properties?.["http://purl.org/dc/terms/title"] || "Untitled"
+        }
       />
       <TextField
         source="dataAddress.type"

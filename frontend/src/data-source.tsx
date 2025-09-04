@@ -54,8 +54,10 @@ export default {
   getManyReference: (resource, params) =>
     handleRequest("getManyReference", resource, params),
   update: (resource, params) => handleRequest("update", resource, params),
-  updateMany: (resource, params) => handleRequest("updateMany", resource, params),
+  updateMany: (resource, params) =>
+    handleRequest("updateMany", resource, params),
   create: (resource, params) => handleRequest("create", resource, params),
   delete: (resource, params) => handleRequest("remove", resource, params),
-  deleteMany: (resource, params) => handleRequest("deleteMany", resource, params),
+  deleteMany: (resource, params) =>
+    handleRequest("deleteMany", resource, params),
 } as DataProvider;

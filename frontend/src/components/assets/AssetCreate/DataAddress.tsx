@@ -1,16 +1,6 @@
 import { useState } from "react";
-import {
-  TextInput,
-  BooleanInput,
-  SelectInput,
-  required,
-} from "react-admin";
-import {
-  Typography,
-  Box,
-  InputAdornment,
-  IconButton,
-} from "@mui/material";
+import { TextInput, BooleanInput, SelectInput, required } from "react-admin";
+import { Typography, Box, InputAdornment, IconButton } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import * as PropTypes from "prop-types";
 
@@ -24,7 +14,11 @@ const AuthHeaderInput = () => (
   />
 );
 
-const HttpDataInput = ({ handleShowEndpoints }: { handleShowEndpoints: () => void; }) => {
+const HttpDataInput = ({
+  handleShowEndpoints,
+}: {
+  handleShowEndpoints: () => void;
+}) => {
   return (
     <>
       <TextInput

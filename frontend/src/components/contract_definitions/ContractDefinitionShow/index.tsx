@@ -43,11 +43,14 @@ export const ContractDefinitionShow = () => (
       >
         <TextField source="id" />
       </ReferenceField>
-      <FunctionField 
+      <FunctionField
         label="Selected Assets"
         render={(record: any) => {
           const assetsSelector = record?.assetsSelector?.[0];
-          if (!assetsSelector?.operandRight || !Array.isArray(assetsSelector.operandRight)) {
+          if (
+            !assetsSelector?.operandRight ||
+            !Array.isArray(assetsSelector.operandRight)
+          ) {
             return "No assets selected";
           }
           return `${assetsSelector.operandRight.length} asset(s) selected`;
