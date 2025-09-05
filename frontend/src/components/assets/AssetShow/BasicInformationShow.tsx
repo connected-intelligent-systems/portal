@@ -1,20 +1,20 @@
 import { Labeled, FunctionField } from "react-admin";
-import { Box } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import { MarkdownField } from "../../markdown";
 
 export const BasicInformationShow = () => {
   return (
     <Box>
-      <Labeled fullWidth label="Description">
+      <Labeled fullWidth label="Short Description">
         <FunctionField
           render={(record: any) => {
-            const description =
-              record?.properties?.["http://purl.org/dc/terms/description"];
-            if (!description) {
-              return <span>-</span>;
+            const abstract =
+              record?.properties?.["http://purl.org/dc/terms/abstract"];
+            if (!abstract) {
+              return <Typography variant="body2" color="text.secondary">No short description available</Typography>;
             }
             return (
-              <MarkdownField source="description" record={{ description }} />
+              <Typography variant="body2">{abstract}</Typography>
             );
           }}
         />

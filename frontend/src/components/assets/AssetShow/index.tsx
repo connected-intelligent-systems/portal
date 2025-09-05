@@ -19,6 +19,7 @@ import { ProvenanceShow } from "./ProvenanceShow";
 import { DataPrivacyShow } from "./DataPrivacyShow";
 import { DataQualityShow } from "./DataQualityShow";
 import { DataAddressShow } from "./DataAddressShow";
+import { MarkdownField } from "../../markdown";
 
 const AssetShowBar = () => {
   return (
@@ -51,7 +52,7 @@ export const AssetShow = () => {
           <Box sx={{ mb: 2 }}>
             <Typography variant="h6">Basic Information</Typography>
             <Typography variant="body2" color="text.secondary">
-              Essential metadata including title, description, keywords, and
+              Essential metadata including title, short description, keywords, and
               identifiers
             </Typography>
           </Box>
@@ -59,6 +60,31 @@ export const AssetShow = () => {
         </Box>
 
         <Box sx={{ mt: 3 }}>
+          <Accordion>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+              <Box>
+                <Typography variant="h6">Detailed Description</Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Comprehensive documentation and details about the dataset
+                </Typography>
+              </Box>
+            </AccordionSummary>
+            <AccordionDetails>
+              <FunctionField
+                render={(record: any) => {
+                  const description =
+                    record?.properties?.["http://purl.org/dc/terms/description"];
+                  if (!description) {
+                    return <Typography variant="body2" color="text.secondary">No detailed description available</Typography>;
+                  }
+                  return (
+                    <MarkdownField source="description" record={{ description }} />
+                  );
+                }}
+              />
+            </AccordionDetails>
+          </Accordion>
+
           <Accordion>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
               <Box>

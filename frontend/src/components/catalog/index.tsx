@@ -19,13 +19,9 @@ export const Catalog = () => {
 
   return (
     <>
-      <CatalogConnect />
-      {error && (
-        <Alert severity="error">
-          Unable to fetch catalog {counterPartyAddress}
-        </Alert>
-      )}
-      {counterPartyAddress && (
+      <CatalogConnect error={error} />
+      {error && <Alert severity="error">Unable to fetch catalog</Alert>}
+      {counterPartyAddress && !error && (
         <Show
           resource="catalog"
           id={counterPartyAddress}

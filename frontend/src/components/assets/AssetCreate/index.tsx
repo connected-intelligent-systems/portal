@@ -33,20 +33,22 @@ import { DataAddress } from "./DataAddress";
 
 const steps = [
   "Basic Information",
+  "Data Address",
   "Versioning",
+  "Detailed Description",
   "Provenance",
   "Data Privacy",
   "Data Quality",
-  "Data Address",
 ];
 
 const stepRequiredFields: Record<number, string[]> = {
-  0: ["properties.dct:title"], // Basic Information
-  1: [], // Versioning - no required fields
-  2: [], // Provenance - no required fields
-  3: [], // Data Privacy - no required fields
-  4: [], // Data Quality - no required fields
-  5: ["dataAddress.type"], // Data Address - requires data address type
+  0: ["properties.dct:title", "properties.dct:abstract"], // Basic Information
+  1: ["dataAddress.type"], // Data Address - requires data address type
+  2: [], // Versioning - no required fields
+  3: [], // Detailed Description - no required fields
+  4: [], // Provenance - no required fields
+  5: [], // Data Privacy - no required fields
+  6: [], // Data Quality - no required fields
 };
 
 const categoryChoices = [
@@ -75,6 +77,7 @@ const AssetCreateToolbar = ({
   setActiveStep,
   markStepCompleted,
   setMaxReachedStep,
+  onIntermediateSave,
   ...props
 }: any) => {
   const { getValues } = useFormContext();
@@ -106,6 +109,13 @@ const AssetCreateToolbar = ({
     setActiveStep((prev: number) => prev - 1);
   };
 
+  const handleIntermediateSave = () => {
+    if (onIntermediateSave) {
+      const formData = getValues();
+      onIntermediateSave(formData);
+    }
+  };
+
   return (
     <Toolbar {...props}>
       <Box sx={{ flex: "1 1 auto" }}>
@@ -115,6 +125,16 @@ const AssetCreateToolbar = ({
           </Button>
         )}
       </Box>
+      {/* Show "Save & Continue" after Data Address step (step 1) */}
+      {activeStep === 1 && canAdvance && (
+        <Button
+          onClick={handleIntermediateSave}
+          variant="outlined"
+          sx={{ mr: 1 }}
+        >
+          Save & Continue
+        </Button>
+      )}
       {activeStep < steps.length - 1 && (
         <Button
           onClick={handleNext}
@@ -124,7 +144,7 @@ const AssetCreateToolbar = ({
             ...(canAdvance ? {} : { opacity: 0.6 }),
           }}
         >
-          Next
+          {activeStep === 1 ? "Skip Save & Continue" : "Next"}
         </Button>
       )}
       {activeStep === steps.length - 1 && (
@@ -142,6 +162,7 @@ export const AssetCreate = () => {
   const [activeStep, setActiveStep] = useState(0);
   const [maxReachedStep, setMaxReachedStep] = useState(0);
   const [completedSteps, setCompletedSteps] = useState<Set<number>>(new Set());
+  const [assetId, setAssetId] = useState<string | null>(null);
   const notify = useNotify();
   const redirect = useRedirect();
 
@@ -156,8 +177,36 @@ export const AssetCreate = () => {
     setCompletedSteps((prev) => new Set(prev).add(stepIndex));
   };
 
+  const handleIntermediateSave = async (formData: any) => {
+    try {
+      // Transform the data for basic asset creation (steps 0 and 1 only)
+      const basicAssetData = transformData(formData);
+      
+      // Here you would make the API call to create the asset
+      // For now, we'll simulate it
+      notify("Asset created successfully! You can continue adding optional information.");
+      
+      // Mock asset ID - in real implementation, this would come from the API response
+      const createdAssetId = `asset-${Date.now()}`;
+      setAssetId(createdAssetId);
+      
+      // Mark current step as completed and allow continuing to next steps
+      markStepCompleted(activeStep);
+      const nextStep = activeStep + 1;
+      setActiveStep(nextStep);
+      setMaxReachedStep(steps.length - 1); // Allow access to all remaining steps
+      
+    } catch (error) {
+      notify("Failed to create asset", { type: "error" });
+    }
+  };
+
   const onSuccess = () => {
-    notify("Asset created successfully");
+    if (assetId) {
+      notify("Asset updated successfully with additional information");
+    } else {
+      notify("Asset created successfully");
+    }
     redirect("list", "assets");
   };
 
@@ -170,6 +219,7 @@ export const AssetCreate = () => {
             setActiveStep={setActiveStep}
             markStepCompleted={markStepCompleted}
             setMaxReachedStep={setMaxReachedStep}
+            onIntermediateSave={handleIntermediateSave}
           />
         }
       >
@@ -249,15 +299,20 @@ export const AssetCreate = () => {
               validate={required()}
               fullWidth
             />
-            <Typography variant="h6" sx={{ mt: 3, mb: 1 }}>
-              Description
-            </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-              A free-text account of the dataset. Supports Markdown formatting.
-              E.g., &quot;Hourly temperature and humidity readings collected from IoT
-              sensors.&quot;
-            </Typography>
-            <MarkdownInput source="properties.dct:description" />
+            <TextInput
+              source="properties.dct:abstract"
+              label="Short Description"
+              helperText="A brief summary of the dataset (max 255 characters). This will be shown in catalog listings."
+              validate={[required(), (value) => {
+                if (value && value.length > 255) {
+                  return 'Short description must be 255 characters or less';
+                }
+                return undefined;
+              }]}
+              fullWidth
+              multiline
+              rows={3}
+            />
             <ArrayInput
               source="properties.dcat:keyword"
               label="Keywords"
@@ -289,6 +344,18 @@ export const AssetCreate = () => {
         )}
 
         {activeStep === 1 && (
+          <>
+            <Typography variant="h6" gutterBottom>
+              Data Address
+            </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+              Configure how to access this dataset. This information is required to create the asset.
+            </Typography>
+            <DataAddress />
+          </>
+        )}
+
+        {activeStep === 2 && (
           <>
             <Typography variant="h6" gutterBottom>
               Versioning
@@ -358,7 +425,20 @@ export const AssetCreate = () => {
           </>
         )}
 
-        {activeStep === 2 && (
+        {activeStep === 3 && (
+          <>
+            <Typography variant="h6" gutterBottom>
+              Detailed Description
+            </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+              Provide comprehensive documentation for this dataset using Markdown formatting. 
+              This detailed description is optional but recommended for better dataset discoverability and usage.
+            </Typography>
+            <MarkdownInput source="properties.dct:description" />
+          </>
+        )}
+
+        {activeStep === 4 && (
           <>
             <Typography variant="h6" gutterBottom>
               Provenance
@@ -367,7 +447,7 @@ export const AssetCreate = () => {
           </>
         )}
 
-        {activeStep === 3 && (
+        {activeStep === 5 && (
           <>
             <Typography variant="h6" gutterBottom>
               Data Privacy
@@ -376,21 +456,12 @@ export const AssetCreate = () => {
           </>
         )}
 
-        {activeStep === 4 && (
+        {activeStep === 6 && (
           <>
             <Typography variant="h6" gutterBottom>
               Data Quality
             </Typography>
             <DataQuality />
-          </>
-        )}
-
-        {activeStep === 5 && (
-          <>
-            <Typography variant="h6" gutterBottom>
-              Data Address
-            </Typography>
-            <DataAddress />
           </>
         )}
       </SimpleForm>
