@@ -1,6 +1,5 @@
 import { Labeled, FunctionField } from "react-admin";
 import { Box, Typography } from "@mui/material";
-import { MarkdownField } from "../../markdown";
 
 export const BasicInformationShow = () => {
   return (
@@ -11,11 +10,13 @@ export const BasicInformationShow = () => {
             const abstract =
               record?.properties?.["http://purl.org/dc/terms/abstract"];
             if (!abstract) {
-              return <Typography variant="body2" color="text.secondary">No short description available</Typography>;
+              return (
+                <Typography variant="body2" color="text.secondary">
+                  No short description available
+                </Typography>
+              );
             }
-            return (
-              <Typography variant="body2">{abstract}</Typography>
-            );
+            return <Typography variant="body2">{abstract}</Typography>;
           }}
         />
       </Labeled>
@@ -26,7 +27,15 @@ export const BasicInformationShow = () => {
             const keywords =
               record?.properties?.["http://www.w3.org/ns/dcat#keyword"];
             if (!keywords) {
-              return "No keywords";
+              return (
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  sx={{ fontStyle: "italic" }}
+                >
+                  No keywords available
+                </Typography>
+              );
             }
 
             // Handle case where single keyword is returned as string instead of array
@@ -35,7 +44,15 @@ export const BasicInformationShow = () => {
               : [keywords];
 
             if (keywordsArray.length === 0) {
-              return "No keywords";
+              return (
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  sx={{ fontStyle: "italic" }}
+                >
+                  No keywords available
+                </Typography>
+              );
             }
 
             return keywordsArray.map((keyword: string, index: number) => (

@@ -49,6 +49,19 @@ export const DatasetCard = ({ dataset, index }: DatasetCardProps) => {
             ID: {datasetId}
           </Typography>
 
+          {/* Short Description */}
+          <Typography
+            variant="body2"
+            color="text.secondary"
+            sx={{
+              mb: 2,
+              lineHeight: 1.4,
+              fontStyle: dataset["dct:abstract"] ? "normal" : "italic",
+            }}
+          >
+            {dataset["dct:abstract"] || "No description available"}
+          </Typography>
+
           {/* Participant, Type, Category, Media Type & Keywords */}
           <Box sx={{ display: "flex", gap: 1, mb: 2, flexWrap: "wrap" }}>
             {dataset["dspace:participantId"] && (
@@ -99,14 +112,15 @@ export const DatasetCard = ({ dataset, index }: DatasetCardProps) => {
           </Box>
 
           {/* Keywords */}
-          {dataset["dcat:keyword"] && (
-            <Box sx={{ mb: 2 }}>
-              <Typography variant="body2" fontWeight="medium" sx={{ mb: 1 }}>
-                Keywords
-              </Typography>
-              <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
-                {Array.isArray(dataset["dcat:keyword"])
-                  ? dataset["dcat:keyword"].map((keyword: string, index: number) => (
+          <Box sx={{ mb: 2 }}>
+            <Typography variant="body2" fontWeight="medium" sx={{ mb: 1 }}>
+              Keywords
+            </Typography>
+            <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
+              {dataset["dcat:keyword"] ? (
+                Array.isArray(dataset["dcat:keyword"]) ? (
+                  dataset["dcat:keyword"].map(
+                    (keyword: string, index: number) => (
                       <Chip
                         key={index}
                         size="small"
@@ -114,18 +128,27 @@ export const DatasetCard = ({ dataset, index }: DatasetCardProps) => {
                         color="secondary"
                         variant="outlined"
                       />
-                    ))
-                  : (
-                      <Chip
-                        size="small"
-                        label={dataset["dcat:keyword"]}
-                        color="secondary"
-                        variant="outlined"
-                      />
-                    )}
-              </Box>
+                    )
+                  )
+                ) : (
+                  <Chip
+                    size="small"
+                    label={dataset["dcat:keyword"]}
+                    color="secondary"
+                    variant="outlined"
+                  />
+                )
+              ) : (
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  sx={{ fontStyle: "italic" }}
+                >
+                  No keywords available
+                </Typography>
+              )}
             </Box>
-          )}
+          </Box>
 
           {/* Policy Count */}
           {dataset["odrl:hasPolicy"] && (

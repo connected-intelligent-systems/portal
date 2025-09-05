@@ -77,7 +77,7 @@ const AssetCreateToolbar = ({
   setActiveStep,
   markStepCompleted,
   setMaxReachedStep,
-  onIntermediateSave,
+  onCreateAssetNow,
   ...props
 }: any) => {
   const { getValues } = useFormContext();
@@ -109,10 +109,10 @@ const AssetCreateToolbar = ({
     setActiveStep((prev: number) => prev - 1);
   };
 
-  const handleIntermediateSave = () => {
-    if (onIntermediateSave) {
+  const handleCreateAssetNow = () => {
+    if (onCreateAssetNow) {
       const formData = getValues();
-      onIntermediateSave(formData);
+      onCreateAssetNow(formData);
     }
   };
 
@@ -125,17 +125,21 @@ const AssetCreateToolbar = ({
           </Button>
         )}
       </Box>
-      {/* Show "Save & Continue" after Data Address step (step 1) */}
+
+      {/* Smart toolbar for Data Address step (step 1) */}
       {activeStep === 1 && canAdvance && (
-        <Button
-          onClick={handleIntermediateSave}
-          variant="outlined"
-          sx={{ mr: 1 }}
-        >
-          Save & Continue
-        </Button>
+        <>
+          <Button onClick={handleNext} variant="outlined" sx={{ mr: 1 }}>
+            Next
+          </Button>
+          <Button onClick={handleCreateAssetNow} variant="contained">
+            Create Asset Now
+          </Button>
+        </>
       )}
-      {activeStep < steps.length - 1 && (
+
+      {/* Regular Next button for other steps */}
+      {activeStep < steps.length - 1 && activeStep !== 1 && (
         <Button
           onClick={handleNext}
           variant="contained"
@@ -144,9 +148,11 @@ const AssetCreateToolbar = ({
             ...(canAdvance ? {} : { opacity: 0.6 }),
           }}
         >
-          {activeStep === 1 ? "Skip Save & Continue" : "Next"}
+          Next
         </Button>
       )}
+
+      {/* Final save button */}
       {activeStep === steps.length - 1 && (
         <SaveButton
           type="button"
@@ -162,7 +168,6 @@ export const AssetCreate = () => {
   const [activeStep, setActiveStep] = useState(0);
   const [maxReachedStep, setMaxReachedStep] = useState(0);
   const [completedSteps, setCompletedSteps] = useState<Set<number>>(new Set());
-  const [assetId, setAssetId] = useState<string | null>(null);
   const notify = useNotify();
   const redirect = useRedirect();
 
@@ -177,36 +182,24 @@ export const AssetCreate = () => {
     setCompletedSteps((prev) => new Set(prev).add(stepIndex));
   };
 
-  const handleIntermediateSave = async (formData: any) => {
+  const handleCreateAssetNow = async (formData: any) => {
     try {
-      // Transform the data for basic asset creation (steps 0 and 1 only)
-      const basicAssetData = transformData(formData);
-      
+      // Transform the data for asset creation with basic + data address info
+      transformData(formData);
+
       // Here you would make the API call to create the asset
       // For now, we'll simulate it
-      notify("Asset created successfully! You can continue adding optional information.");
-      
-      // Mock asset ID - in real implementation, this would come from the API response
-      const createdAssetId = `asset-${Date.now()}`;
-      setAssetId(createdAssetId);
-      
-      // Mark current step as completed and allow continuing to next steps
-      markStepCompleted(activeStep);
-      const nextStep = activeStep + 1;
-      setActiveStep(nextStep);
-      setMaxReachedStep(steps.length - 1); // Allow access to all remaining steps
-      
+      notify("Asset created successfully!");
+
+      // Redirect to assets list or asset view
+      redirect("list", "assets");
     } catch (error) {
       notify("Failed to create asset", { type: "error" });
     }
   };
 
   const onSuccess = () => {
-    if (assetId) {
-      notify("Asset updated successfully with additional information");
-    } else {
-      notify("Asset created successfully");
-    }
+    notify("Asset created successfully");
     redirect("list", "assets");
   };
 
@@ -219,7 +212,7 @@ export const AssetCreate = () => {
             setActiveStep={setActiveStep}
             markStepCompleted={markStepCompleted}
             setMaxReachedStep={setMaxReachedStep}
-            onIntermediateSave={handleIntermediateSave}
+            onCreateAssetNow={handleCreateAssetNow}
           />
         }
       >
@@ -303,12 +296,15 @@ export const AssetCreate = () => {
               source="properties.dct:abstract"
               label="Short Description"
               helperText="A brief summary of the dataset (max 255 characters). This will be shown in catalog listings."
-              validate={[required(), (value) => {
-                if (value && value.length > 255) {
-                  return 'Short description must be 255 characters or less';
-                }
-                return undefined;
-              }]}
+              validate={[
+                required(),
+                (value) => {
+                  if (value && value.length > 255) {
+                    return "Short description must be 255 characters or less";
+                  }
+                  return undefined;
+                },
+              ]}
               fullWidth
               multiline
               rows={3}
@@ -349,7 +345,8 @@ export const AssetCreate = () => {
               Data Address
             </Typography>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-              Configure how to access this dataset. This information is required to create the asset.
+              Configure how to access this dataset. This information is required
+              to create the asset.
             </Typography>
             <DataAddress />
           </>
@@ -431,8 +428,9 @@ export const AssetCreate = () => {
               Detailed Description
             </Typography>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-              Provide comprehensive documentation for this dataset using Markdown formatting. 
-              This detailed description is optional but recommended for better dataset discoverability and usage.
+              Provide comprehensive documentation for this dataset using
+              Markdown formatting. This detailed description is optional but
+              recommended for better dataset discoverability and usage.
             </Typography>
             <MarkdownInput source="properties.dct:description" />
           </>

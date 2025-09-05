@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { Link } from "react-admin";
 import {
   Dialog,
@@ -32,7 +32,6 @@ import AssessmentIcon from "@mui/icons-material/Assessment";
 import AccountTreeIcon from "@mui/icons-material/AccountTree";
 import CloudIcon from "@mui/icons-material/Cloud";
 import { PermissionAccordion } from "./PermissionAccordion";
-import { MarkdownField } from "../../markdown";
 
 interface ContractNegotiationDialogProps {
   dataset: any;
@@ -55,7 +54,6 @@ export const ContractNegotiationDialog = ({
   const datasetTitle = dataset?.["dct:title"] || dataset?.name || datasetId;
   const counterPartyAddress = dataset?.["dcat:service"]?.["dcat:endpointUrl"];
   const participantId = dataset?.["dspace:participantId"];
-
 
   const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
     setActiveTab(newValue);
@@ -120,8 +118,8 @@ export const ContractNegotiationDialog = ({
               label={
                 typeof dataset["dcat:theme"] === "object"
                   ? dataset["dcat:theme"]["dct:title"] ||
-                  dataset["dcat:theme"]["@id"] ||
-                  "Unknown Category"
+                    dataset["dcat:theme"]["@id"] ||
+                    "Unknown Category"
                   : dataset["dcat:theme"]
               }
               color="primary"
@@ -143,42 +141,46 @@ export const ContractNegotiationDialog = ({
               Keywords
             </Typography>
             <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
-              {Array.isArray(dataset["dcat:keyword"])
-                ? dataset["dcat:keyword"].map((keyword: string, index: number) => (
-                  <Chip
-                    key={index}
-                    size="small"
-                    label={keyword}
-                    color="secondary"
-                    variant="outlined"
-                  />
-                ))
-                : <Chip
+              {Array.isArray(dataset["dcat:keyword"]) ? (
+                dataset["dcat:keyword"].map(
+                  (keyword: string, index: number) => (
+                    <Chip
+                      key={index}
+                      size="small"
+                      label={keyword}
+                      color="secondary"
+                      variant="outlined"
+                    />
+                  )
+                )
+              ) : (
+                <Chip
                   size="small"
                   label={dataset["dcat:keyword"]}
                   color="secondary"
                   variant="outlined"
                 />
-              }
+              )}
             </Box>
           </Box>
         )}
       </Box>
 
-      {/* Description with Markdown */}
+      {/* Short Description */}
       <Box sx={{ mb: 3 }}>
-        <Box sx={{ p: 2, bgcolor: "grey.50", borderRadius: 1 }}>
-          {dataset["dct:description"] ? (
-            <MarkdownField
-              source="description"
-              record={{ description: dataset["dct:description"] }}
-            />
-          ) : (
-            <Typography variant="body2" color="textSecondary" sx={{ fontStyle: "italic" }}>
-              No description available
-            </Typography>
-          )}
-        </Box>
+        <Typography variant="body2" fontWeight="medium" sx={{ mb: 1 }}>
+          Description
+        </Typography>
+        <Typography
+          variant="body2"
+          color="text.secondary"
+          sx={{
+            lineHeight: 1.5,
+            fontStyle: dataset["dct:abstract"] ? "normal" : "italic",
+          }}
+        >
+          {dataset["dct:abstract"] || "No description available"}
+        </Typography>
       </Box>
 
       {/* Policy Selection moved to overview */}
@@ -204,7 +206,7 @@ export const ContractNegotiationDialog = ({
           value: dataset["dct:creator"]
             ? typeof dataset["dct:creator"] === "object"
               ? dataset["dct:creator"]["http://schema.org/name"] ||
-              dataset["dct:creator"]["@id"]
+                dataset["dct:creator"]["@id"]
               : dataset["dct:creator"]
             : null,
         },
@@ -230,15 +232,15 @@ export const ContractNegotiationDialog = ({
               label: "Previous Version",
               value:
                 dataset["dct:hasVersion"][
-                "http://www.w3.org/2002/07/owl#versionInfo"
+                  "http://www.w3.org/2002/07/owl#versionInfo"
                 ],
             },
             {
               label: "Previous Version Issued",
               value: dataset["dct:hasVersion"]["dct:issued"]
                 ? new Date(
-                  dataset["dct:hasVersion"]["dct:issued"]
-                ).toLocaleDateString()
+                    dataset["dct:hasVersion"]["dct:issued"]
+                  ).toLocaleDateString()
                 : null,
             },
           ])}
@@ -261,7 +263,7 @@ export const ContractNegotiationDialog = ({
             ? typeof dataset["http://www.w3.org/ns/prov#wasDerivedFrom"] ===
               "object"
               ? dataset["http://www.w3.org/ns/prov#wasDerivedFrom"]["@id"] ||
-              "Source entity specified"
+                "Source entity specified"
               : dataset["http://www.w3.org/ns/prov#wasDerivedFrom"]
             : null,
         },
@@ -271,8 +273,8 @@ export const ContractNegotiationDialog = ({
             ? typeof dataset["http://www.w3.org/ns/prov#wasGeneratedBy"] ===
               "object"
               ? dataset["http://www.w3.org/ns/prov#wasGeneratedBy"][
-              "dct:description"
-              ] || "Activity specified"
+                  "dct:description"
+                ] || "Activity specified"
               : dataset["http://www.w3.org/ns/prov#wasGeneratedBy"]
             : null,
         },
@@ -282,7 +284,7 @@ export const ContractNegotiationDialog = ({
             ? typeof dataset["http://www.w3.org/ns/prov#wasAttributedTo"] ===
               "object"
               ? dataset["http://www.w3.org/ns/prov#wasAttributedTo"]["@id"] ||
-              "Agent specified"
+                "Agent specified"
               : dataset["http://www.w3.org/ns/prov#wasAttributedTo"]
             : null,
         },
@@ -419,8 +421,8 @@ export const ContractNegotiationDialog = ({
 
       {/* Distribution Information */}
       {dataset["dcat:distribution"] &&
-        Array.isArray(dataset["dcat:distribution"]) &&
-        dataset["dcat:distribution"].length > 0 ? (
+      Array.isArray(dataset["dcat:distribution"]) &&
+      dataset["dcat:distribution"].length > 0 ? (
         <Box sx={{ mt: 3 }}>
           <Typography variant="h6" sx={{ mb: 2, color: "primary.main" }}>
             Distributions
@@ -506,7 +508,8 @@ export const ContractNegotiationDialog = ({
                       Policy {index + 1}
                     </Typography>
                     <Typography variant="body2" color="textSecondary">
-                      {policy["odrl:permission"] && policy["odrl:permission"].length > 0
+                      {policy["odrl:permission"] &&
+                      policy["odrl:permission"].length > 0
                         ? `${policy["odrl:permission"].length} permission rule(s)`
                         : "No permissions defined"}
                     </Typography>

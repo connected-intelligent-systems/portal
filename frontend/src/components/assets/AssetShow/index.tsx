@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import {
   Show,
   SimpleShowLayout,
@@ -5,14 +6,14 @@ import {
   DeleteButton,
   FunctionField,
 } from "react-admin";
-import {
-  Typography,
-  Box,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
-} from "@mui/material";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import { Typography, Box, Tabs, Tab } from "@mui/material";
+import InfoIcon from "@mui/icons-material/Info";
+import DescriptionIcon from "@mui/icons-material/Description";
+import HistoryIcon from "@mui/icons-material/History";
+import AccountTreeIcon from "@mui/icons-material/AccountTree";
+import SecurityIcon from "@mui/icons-material/Security";
+import AssessmentIcon from "@mui/icons-material/Assessment";
+import CloudIcon from "@mui/icons-material/Cloud";
 import { BasicInformationShow } from "./BasicInformationShow";
 import { VersioningShow } from "./VersioningShow";
 import { ProvenanceShow } from "./ProvenanceShow";
@@ -30,6 +31,12 @@ const AssetShowBar = () => {
 };
 
 export const AssetShow = () => {
+  const [activeTab, setActiveTab] = useState(0);
+
+  const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
+    setActiveTab(newValue);
+  };
+
   return (
     <Show actions={<AssetShowBar />}>
       <SimpleShowLayout>
@@ -49,111 +56,61 @@ export const AssetShow = () => {
         />
 
         <Box sx={{ mt: 3 }}>
-          <Box sx={{ mb: 2 }}>
-            <Typography variant="h6">Basic Information</Typography>
-            <Typography variant="body2" color="text.secondary">
-              Essential metadata including title, short description, keywords, and
-              identifiers
-            </Typography>
+          <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+            <Tabs
+              value={activeTab}
+              onChange={handleTabChange}
+              aria-label="asset information tabs"
+              variant="scrollable"
+              scrollButtons="auto"
+            >
+              <Tab icon={<InfoIcon />} label="Basic Info" />
+              <Tab icon={<DescriptionIcon />} label="Detailed Description" />
+              <Tab icon={<HistoryIcon />} label="Versioning" />
+              <Tab icon={<AccountTreeIcon />} label="Provenance" />
+              <Tab icon={<SecurityIcon />} label="Data Privacy" />
+              <Tab icon={<AssessmentIcon />} label="Data Quality" />
+              <Tab icon={<CloudIcon />} label="Data Address" />
+            </Tabs>
           </Box>
-          <BasicInformationShow />
-        </Box>
 
-        <Box sx={{ mt: 3 }}>
-          <Accordion>
-            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              <Box>
-                <Typography variant="h6">Detailed Description</Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Comprehensive documentation and details about the dataset
-                </Typography>
-              </Box>
-            </AccordionSummary>
-            <AccordionDetails>
+          <Box sx={{ mt: 3 }}>
+            {activeTab === 0 && <BasicInformationShow />}
+
+            {activeTab === 1 && (
               <FunctionField
                 render={(record: any) => {
                   const description =
-                    record?.properties?.["http://purl.org/dc/terms/description"];
+                    record?.properties?.[
+                      "http://purl.org/dc/terms/description"
+                    ];
                   if (!description) {
-                    return <Typography variant="body2" color="text.secondary">No detailed description available</Typography>;
+                    return (
+                      <Typography variant="body2" color="text.secondary">
+                        No detailed description available
+                      </Typography>
+                    );
                   }
                   return (
-                    <MarkdownField source="description" record={{ description }} />
+                    <MarkdownField
+                      source="description"
+                      record={{ description }}
+                    />
                   );
                 }}
               />
-            </AccordionDetails>
-          </Accordion>
+            )}
 
-          <Accordion>
-            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              <Box>
-                <Typography variant="h6">Versioning</Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Version information, creator, dates, and previous versions
-                </Typography>
-              </Box>
-            </AccordionSummary>
-            <AccordionDetails>
-              <VersioningShow />
-            </AccordionDetails>
-          </Accordion>
+            {activeTab === 2 && <VersioningShow />}
 
-          <Accordion>
-            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              <Box>
-                <Typography variant="h6">Provenance</Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Origin and history information about the asset&apos;s creation
-                </Typography>
-              </Box>
-            </AccordionSummary>
-            <AccordionDetails>
-              <ProvenanceShow />
-            </AccordionDetails>
-          </Accordion>
+            {activeTab === 3 && <ProvenanceShow />}
 
-          <Accordion>
-            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              <Box>
-                <Typography variant="h6">Data Privacy</Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Personal data handling, purposes, legal basis, and compliance
-                </Typography>
-              </Box>
-            </AccordionSummary>
-            <AccordionDetails>
-              <DataPrivacyShow />
-            </AccordionDetails>
-          </Accordion>
+            {activeTab === 4 && <DataPrivacyShow />}
 
-          <Accordion>
-            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              <Box>
-                <Typography variant="h6">Data Quality</Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Quality measurements, metrics, and assessments
-                </Typography>
-              </Box>
-            </AccordionSummary>
-            <AccordionDetails>
-              <DataQualityShow />
-            </AccordionDetails>
-          </Accordion>
+            {activeTab === 5 && <DataQualityShow />}
 
-          <Accordion>
-            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              <Box>
-                <Typography variant="h6">Data Address</Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Technical configuration for accessing the asset&apos;s data
-                </Typography>
-              </Box>
-            </AccordionSummary>
-            <AccordionDetails>
-              <DataAddressShow />
-            </AccordionDetails>
-          </Accordion>
+            {activeTab === 6 && <DataAddressShow />}
+          </Box>
         </Box>
       </SimpleShowLayout>
     </Show>
