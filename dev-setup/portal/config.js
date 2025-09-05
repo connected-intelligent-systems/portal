@@ -1,8 +1,5 @@
 var config = {
-    showDevices: false,
-    showThingDescriptions: false,
-    showQuery: false,
-    showCustomers: false,
+    // EDC Core Features - all enabled for development
     showAssets: true,
     showPolicies: true,
     showContractDefinitions: true,
@@ -10,6 +7,14 @@ var config = {
     showFederatedCatalog: true,
     showContractAgreements: true,
     showTransferProcesses: true,
-    showThingsboard: false,
-    showKeycloak: false
+    
+    // Removed features (no longer supported)
+    // showDevices: false,           // ThingsBoard integration removed
+    // showThingDescriptions: false, // ThingsBoard integration removed  
+    // showCustomers: false,         // Keycloak integration removed
+    // showThingsboard: false,       // ThingsBoard integration removed
+    // showKeycloak: false,          // Keycloak integration removed
+    
+    // Development features
+    showQuery: false  // Can be enabled for debugging EDC queries
 }

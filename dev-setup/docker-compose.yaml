@@ -2,7 +2,7 @@ version: "3.9"
 
 services:
 
-  frontend:
+  portal:
     build:
       context: ../frontend
       dockerfile: Dockerfile
@@ -11,38 +11,24 @@ services:
     volumes:
       - ../frontend/src:/app/src
       - ../frontend/public:/app/public
-    depends_on:
-      edc-provider:
-        condition: service_healthy
-        restart: true
-
-  backend:
-    build:
-      context: ../
-      dockerfile: Dockerfile_dev
-    volumes:
-      - ../cmd:/app/cmd
-      - ../pkg:/app/pkg
-      - ../.air.toml:/app/.air.toml
-      - ../go.mod:/app/go.mod
-      - ../go.sum:/app/go.sum
+      - ../frontend/vite.config.ts:/app/vite.config.ts
+      - ../frontend/package.json:/app/package.json
+      - ../frontend/index.html:/app/index.html
+      - ./portal/config.js:/app/public/config.js
     environment:
-      - EDC_URL=http://edc-provider:19193/management
-      - FEDERATED_CATALOG_URL=http://edc-provider:19199/catalog
-      - EDC_API_KEY=supersecret
-      - DEFAULT_USER_ID=company2
-      - DEFAULT_USER_FULL_NAME=Company 2
-      - DEFAULT_USER_EMAIL=admin@company2.local
-      - DEFAULT_USER_TENANT_ID=default
-      - DEFAULT_USER_ROLES=admin
+      # EDC connection for development proxy
+      - VITE_EDC_MANAGEMENT_URL=http://edc-provider:19193/management
+      - VITE_EDC_API_KEY=supersecret
+      - VITE_FEDERATED_CATALOG_URL=http://edc-provider:19199/catalog
     depends_on:
       edc-provider:
         condition: service_healthy
         restart: true
 
   edc-provider:
-    image: registry.int.smartlivingnext.de/registry/public/edc:4.0.0
-    command: sh -c 'sleep 30 && java -jar /app/launchers/sln-connector/build/libs/connector.jar'
+    # image: registry.int.smartlivingnext.de/registry/public/edc:4.0.0
+    image: ghcr.io/connected-intelligent-systems/connector:v0.11.1
+    # command: sh -c 'sleep 30 && java -jar /app/launchers/sln-connector/build/libs/connector.jar'
     ports:
       - 19191:19191 # health check
       # - 19192:19192
@@ -67,7 +53,6 @@ services:
       WEB_HTTP_MANAGEMENT_PATH: /management
       WEB_HTTP_PROTOCOL_PORT: 19194
       WEB_HTTP_PROTOCOL_PATH: /protocol
-      EDC_RECEIVER_HTTP_ENDPOINT: http://http-request-logger:4000/receiver/urn:connector:provider/callback
       EDC_PUBLIC_KEY_ALIAS: public-key
       # EDC_TRANSFER_DATAPLANE_TOKEN_SIGNER_PRIVATEKEY_ALIAS: private-key
       EDC_TRANSFER_PROXY_TOKEN_SIGNER_PRIVATEKEY_ALIAS: private-key

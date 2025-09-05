@@ -3,10 +3,6 @@ declare global {
   interface Window {
     config: {
       federatedCatalogUrl: string;
-      showDevices: boolean;
-      showThingDescriptions: boolean;
-      showQuery: boolean;
-      showCustomers: boolean;
       // edc settings
       showAssets: boolean;
       showPolicies: boolean;
@@ -15,9 +11,6 @@ declare global {
       showFederatedCatalog: boolean;
       showContractAgreements: boolean;
       showTransferProcesses: boolean;
-      // edc settings
-      showThingsboard: boolean;
-      showKeycloak: boolean;
     };
   }
 }
