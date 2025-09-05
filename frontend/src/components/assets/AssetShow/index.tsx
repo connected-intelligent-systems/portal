@@ -1,17 +1,9 @@
 import {
-  Labeled,
   Show,
   SimpleShowLayout,
   TopToolbar,
   DeleteButton,
-  TextField,
-  BooleanField,
   FunctionField,
-  useRecordContext,
-  DateField,
-  ArrayField,
-  SingleFieldList,
-  ChipField,
 } from "react-admin";
 import {
   Typography,
@@ -19,11 +11,8 @@ import {
   Accordion,
   AccordionSummary,
   AccordionDetails,
-  Link,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { MarkdownField } from "../../markdown";
-import { PasswordField } from "../../password_field";
 import { BasicInformationShow } from "./BasicInformationShow";
 import { VersioningShow } from "./VersioningShow";
 import { ProvenanceShow } from "./ProvenanceShow";
@@ -89,7 +78,7 @@ export const AssetShow = () => {
               <Box>
                 <Typography variant="h6">Provenance</Typography>
                 <Typography variant="body2" color="text.secondary">
-                  Origin and history information about the asset's creation
+                  Origin and history information about the asset&apos;s creation
                 </Typography>
               </Box>
             </AccordionSummary>
@@ -131,7 +120,7 @@ export const AssetShow = () => {
               <Box>
                 <Typography variant="h6">Data Address</Typography>
                 <Typography variant="body2" color="text.secondary">
-                  Technical configuration for accessing the asset's data
+                  Technical configuration for accessing the asset&apos;s data
                 </Typography>
               </Box>
             </AccordionSummary>

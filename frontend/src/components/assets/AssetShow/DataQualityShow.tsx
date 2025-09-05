@@ -1,8 +1,5 @@
 import {
   Labeled,
-  TextField,
-  ArrayField,
-  Datagrid,
   FunctionField,
 } from "react-admin";
 import { Typography, Box, Link } from "@mui/material";

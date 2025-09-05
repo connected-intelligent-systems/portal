@@ -1,7 +1,6 @@
 import {
   Labeled,
   TextField,
-  BooleanField,
   FunctionField,
   useRecordContext,
 } from "react-admin";
@@ -124,7 +123,7 @@ export const DataAddressShow = () => {
   return (
     <Box>
       <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-        Configuration for accessing this asset's data.
+        Configuration for accessing this asset&apos;s data.
       </Typography>
 
       <Labeled fullWidth label="Data Address Type">

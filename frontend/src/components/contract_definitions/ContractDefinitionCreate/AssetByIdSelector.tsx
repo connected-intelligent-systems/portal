@@ -1,4 +1,4 @@
-import { useInput, useGetList, Loading, Error } from "react-admin";
+import { useInput, useGetList, Loading, Error as RAError } from "react-admin";
 import { Autocomplete, TextField, Chip, Box } from "@mui/material";
 import { useState, useEffect } from "react";
 
@@ -59,7 +59,7 @@ export const AssetByIdSelector = ({
   };
 
   if (isLoading) return <Loading />;
-  if (error) return <Error error={error} />;
+  if (error) return <RAError error={error} resetErrorBoundary={() => {}} />;
 
   return (
     <Box sx={{ mb: 2, width: "100%" }}>

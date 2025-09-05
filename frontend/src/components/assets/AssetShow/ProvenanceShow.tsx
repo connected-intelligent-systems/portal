@@ -1,4 +1,4 @@
-import { Labeled, TextField, FunctionField } from "react-admin";
+import { Labeled, FunctionField } from "react-admin";
 import { Typography, Box, Link } from "@mui/material";
 
 export const ProvenanceShow = () => {

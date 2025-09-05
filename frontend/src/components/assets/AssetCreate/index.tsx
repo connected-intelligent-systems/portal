@@ -254,8 +254,8 @@ export const AssetCreate = () => {
             </Typography>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
               A free-text account of the dataset. Supports Markdown formatting.
-              E.g., "Hourly temperature and humidity readings collected from IoT
-              sensors."
+              E.g., &quot;Hourly temperature and humidity readings collected from IoT
+              sensors.&quot;
             </Typography>
             <MarkdownInput source="properties.dct:description" />
             <ArrayInput
