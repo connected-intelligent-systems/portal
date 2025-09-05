@@ -6,7 +6,6 @@ import {
   Typography,
 } from "@mui/material";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
-import PropTypes from "prop-types";
 
 interface PermissionAccordionProps {
   record: any;
@@ -79,8 +78,4 @@ export const PermissionAccordion = ({ record }: PermissionAccordionProps) => {
       </AccordionDetails>
     </Accordion>
   );
-};
-
-PermissionAccordion.propTypes = {
-  record: PropTypes.object,
 };

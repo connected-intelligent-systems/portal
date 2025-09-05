@@ -12,6 +12,7 @@ import {
 import HandshakeIcon from "@mui/icons-material/Handshake";
 import PolicyIcon from "@mui/icons-material/Policy";
 import { ContractNegotiationDialog } from "./ContractNegotiationDialog";
+import { ErrorBoundary } from "./ErrorBoundary";
 
 interface DatasetCardProps {
   dataset: any;
@@ -33,10 +34,18 @@ export const DatasetCard = ({ dataset, index }: DatasetCardProps) => {
           display: "flex",
           flexDirection: "column",
         }}
+        role="article"
+        aria-labelledby={`dataset-title-${index}`}
+        aria-describedby={`dataset-description-${index}`}
       >
         <CardContent sx={{ flexGrow: 1, pb: 1 }}>
           {/* Header */}
-          <Typography variant="h6" component="h3" gutterBottom>
+          <Typography
+            variant="h6"
+            component="h3"
+            gutterBottom
+            id={`dataset-title-${index}`}
+          >
             {datasetTitle}
           </Typography>
 
@@ -45,6 +54,7 @@ export const DatasetCard = ({ dataset, index }: DatasetCardProps) => {
             variant="caption"
             color="textSecondary"
             sx={{ display: "block", mb: 2 }}
+            aria-label={`Dataset ID: ${datasetId}`}
           >
             ID: {datasetId}
           </Typography>
@@ -58,6 +68,7 @@ export const DatasetCard = ({ dataset, index }: DatasetCardProps) => {
               lineHeight: 1.4,
               fontStyle: dataset["dct:abstract"] ? "normal" : "italic",
             }}
+            id={`dataset-description-${index}`}
           >
             {dataset["dct:abstract"] || "No description available"}
           </Typography>
@@ -173,6 +184,8 @@ export const DatasetCard = ({ dataset, index }: DatasetCardProps) => {
               dataset["odrl:hasPolicy"].length === 0
             }
             fullWidth
+            aria-label={`View and negotiate dataset: ${datasetTitle}`}
+            aria-describedby={`dataset-description-${index}`}
           >
             View & Negotiate
           </Button>
