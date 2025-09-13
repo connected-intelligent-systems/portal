@@ -4,7 +4,6 @@ import * as contract_agreements from "./resources/contract_agreements";
 import * as contract_definitions from "./resources/contract_definitions";
 import * as contract_negotiations from "./resources/contract_negotiations";
 import * as catalog from "./resources/catalog";
-import * as federated_catalog from "./resources/federated_catalog";
 import * as transfer_processes from "./resources/transfer_processes";
 import * as data_consumer_pull from "./resources/data_consumer_pull";
 import * as data_requests from "./resources/data_requests";
@@ -24,8 +23,6 @@ const dataProvider = {
       return contract_negotiations.getList(params);
     } else if (resource === "catalog") {
       return catalog.getList(params);
-    } else if (resource === "federatedcatalog") {
-      return federated_catalog.getList(params);
     } else if (resource === "transferprocesses") {
       return transfer_processes.getList(params);
     } else if (resource === "dataconsumerpull") {
@@ -50,8 +47,6 @@ const dataProvider = {
       return contract_negotiations.getOne(params);
     } else if (resource === "catalog") {
       return catalog.getOne(params);
-    } else if (resource === "federatedcatalog") {
-      return federated_catalog.getOne(params);
     } else if (resource === "transferprocesses") {
       return transfer_processes.getOne(params);
     } else if (resource === "dataconsumerpull") {
@@ -76,8 +71,6 @@ const dataProvider = {
       return contract_negotiations.getMany(params);
     } else if (resource === "catalog") {
       return catalog.getMany(params);
-    } else if (resource === "federatedcatalog") {
-      return federated_catalog.getMany(params);
     } else if (resource === "transferprocesses") {
       return transfer_processes.getMany(params);
     } else if (resource === "dataconsumerpull") {
@@ -102,8 +95,6 @@ const dataProvider = {
       return contract_negotiations.create(params);
     } else if (resource === "catalog") {
       return catalog.create(params);
-    } else if (resource === "federatedcatalog") {
-      return federated_catalog.create(params);
     } else if (resource === "transferprocesses") {
       return transfer_processes.create(params);
     } else if (resource === "dataconsumerpull") {
@@ -128,8 +119,6 @@ const dataProvider = {
       return contract_negotiations.update(params);
     } else if (resource === "catalog") {
       return catalog.update(params);
-    } else if (resource === "federatedcatalog") {
-      return federated_catalog.update(params);
     } else if (resource === "transferprocesses") {
       return transfer_processes.update(params);
     } else if (resource === "dataconsumerpull") {
@@ -181,14 +170,6 @@ const dataProvider = {
     } else if (resource === "catalog") {
       return Promise.all(
         params.ids.map((id: string) => catalog.update({ ...params, id }))
-      ).then((responses) => ({
-        data: responses.map((response) => response.data.id),
-      }));
-    } else if (resource === "federatedcatalog") {
-      return Promise.all(
-        params.ids.map((id: string) =>
-          federated_catalog.update({ ...params, id })
-        )
       ).then((responses) => ({
         data: responses.map((response) => response.data.id),
       }));
@@ -267,12 +248,6 @@ const dataProvider = {
     } else if (resource === "catalog") {
       return Promise.all(
         params.ids.map((id: string) => catalog.remove({ id }))
-      ).then((responses) => ({
-        data: responses.map((response) => response.data.id),
-      }));
-    } else if (resource === "federatedcatalog") {
-      return Promise.all(
-        params.ids.map((id: string) => federated_catalog.remove({ id }))
       ).then((responses) => ({
         data: responses.map((response) => response.data.id),
       }));

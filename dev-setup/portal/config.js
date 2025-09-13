@@ -4,7 +4,6 @@ var config = {
     showPolicies: true,
     showContractDefinitions: true,
     showCatalog: true,
-    showFederatedCatalog: true,
     showContractAgreements: true,
     showTransferProcesses: true,
     

@@ -33,7 +33,6 @@ import {
   ContractDefinitionEdit,
 } from "./pages/contract_definitions";
 import { Catalog } from "./pages/catalog";
-import { FederatedCatalogList } from "./pages/federated_catalog";
 import contractnegotiations from "./pages/contract_negotiations";
 import contractagreements from "./pages/contract_agreements";
 import transferprocesses from "./pages/transfer_processes";
@@ -65,9 +64,6 @@ const CustomMenu = () => {
           primaryText="Catalog"
           leftIcon={<AutoStoriesIcon />}
         />
-      )}
-      {window.config.showFederatedCatalog && (
-        <Menu.ResourceItem name="federatedcatalog" />
       )}
       {window.config.showContractAgreements && (
         <Menu.ResourceItem name="contractagreements" />
@@ -185,13 +181,5 @@ export const App = () => (
       options={{ label: "Data Download" }}
       show={RawDataDownloadShow}
     ></Resource>
-    {window.config.showFederatedCatalog && (
-      <Resource
-        name="federatedcatalog"
-        icon={WebStoriesIcon}
-        options={{ label: "Federated Catalog" }}
-        list={FederatedCatalogList}
-      />
-    )}
   </Admin>
 );

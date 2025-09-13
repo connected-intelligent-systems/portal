@@ -46,30 +46,30 @@ export async function getOne(params: GetOneParams) {
 // Other CRUD operations are not needed for catalog functionality
 export async function getList() {
   throw new Error(
-    "Catalog getList is not implemented. Use federated_catalog resource instead."
+    "Catalog getList is not implemented."
   );
 }
 
 export async function getMany() {
   throw new Error(
-    "Catalog getMany is not implemented. Use federated_catalog resource instead."
+    "Catalog getMany is not implemented."
   );
 }
 
 export async function create() {
   throw new Error(
-    "Catalog create is not implemented. Use federated_catalog resource instead."
+    "Catalog create is not implemented."
   );
 }
 
 export async function update() {
   throw new Error(
-    "Catalog update is not implemented. Use federated_catalog resource instead."
+    "Catalog update is not implemented."
   );
 }
 
 export async function remove() {
   throw new Error(
-    "Catalog delete is not implemented. Use federated_catalog resource instead."
+    "Catalog delete is not implemented."
   );
 }
