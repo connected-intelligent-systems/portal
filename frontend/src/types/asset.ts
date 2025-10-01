@@ -11,13 +11,6 @@ export interface AssetQualityMeasurement {
   unit?: string;
 }
 
-export interface AssetVersion {
-  id: string;
-  version: string;
-  description?: string;
-  releaseDate?: string;
-}
-
 export interface AssetCreator {
   name: string;
   id?: string;
@@ -48,10 +41,10 @@ export interface Asset {
   dataAddress?: AssetDataAddress;
 
   // Versioning
+  version?: string;
   creator?: AssetCreator;
   created?: string;
   modified?: string;
-  hasVersion?: AssetVersion[];
 
   // Provenance
   provenance?: AssetProvenance;

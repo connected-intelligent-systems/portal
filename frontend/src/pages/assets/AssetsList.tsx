@@ -15,7 +15,6 @@ export const AssetsList = () => {
     <ErrorBoundary>
       <List empty={false} exporter={false}>
         <Datagrid
-          style={{ tableLayout: "fixed" }}
           bulkActionButtons={false}
           aria-label="Assets data table"
           rowClick="show"
@@ -38,39 +37,21 @@ export const AssetsList = () => {
           <FunctionField
             label={translate("resources.assets.fields.category")}
             sortable={false}
-            render={(record: Asset) =>
-              record?.theme?.title ? (
-                <Chip
-                  label={record.theme.title}
-                  color="primary"
-                  variant="outlined"
-                  size="small"
-                />
-              ) : (
-                <Typography variant="body2" color="text.secondary">
-                  -
-                </Typography>
-              )
-            }
+            render={(record: Asset) => (
+              <Typography variant="body2">
+                {record?.theme?.title || "-"}
+              </Typography>
+            )}
           />
 
           <FunctionField
             label={translate("resources.assets.fields.mediaType")}
             sortable={false}
-            render={(record: Asset) =>
-              record?.mediaType ? (
-                <Chip
-                  label={record.mediaType}
-                  color="info"
-                  variant="outlined"
-                  size="small"
-                />
-              ) : (
-                <Typography variant="body2" color="text.secondary">
-                  -
-                </Typography>
-              )
-            }
+            render={(record: Asset) => (
+              <Typography variant="body2">
+                {record?.mediaType || "-"}
+              </Typography>
+            )}
           />
 
           <FunctionField

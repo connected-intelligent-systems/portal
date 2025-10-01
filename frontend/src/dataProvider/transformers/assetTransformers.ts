@@ -3,7 +3,6 @@ import {
   Asset,
   AssetDataAddress,
   AssetFormData,
-  AssetVersion,
   AssetProvenance,
   AssetQualityMeasurement,
 } from "../../types/asset";
@@ -26,6 +25,7 @@ function extractCreator(data: CoreAsset) {
   const creator = data.properties?.["dct:creator"] as any;
   if (!creator) return undefined;
 
+  // Handle both simple string and structured object formats
   const name = z.string().safeParse(creator["schema:name"]);
   const id = z.string().safeParse(creator["@id"]);
 
@@ -38,30 +38,21 @@ function extractCreator(data: CoreAsset) {
   return undefined;
 }
 
-function extractVersions(data: CoreAsset): AssetVersion[] | undefined {
-  const hasVersion = data.properties?.["dct:hasVersion"];
-  if (!hasVersion) return undefined;
+function extractDate(data: CoreAsset, field: string): string | undefined {
+  const dateValue = data.properties?.[field];
+  if (!dateValue) return undefined;
 
-  const versionSchema = z.object({
-    "@id": z.string().optional(),
-    id: z.string().optional(),
-    version: z.string().optional(),
-    "dct:title": z.string().optional(),
-    "dct:description": z.string().optional(),
-    "dct:created": z.string().optional(),
-  });
+  // Handle structured date format { "@value": "2025-01-01", "@type": "xsd:date" }
+  if (typeof dateValue === "object" && dateValue["@value"]) {
+    return dateValue["@value"];
+  }
 
-  const versionsArray = Array.isArray(hasVersion) ? hasVersion : [hasVersion];
-  const parsedVersions = z.array(versionSchema).safeParse(versionsArray);
+  // Handle simple string format
+  if (typeof dateValue === "string") {
+    return dateValue;
+  }
 
-  if (!parsedVersions.success) return undefined;
-
-  return parsedVersions.data.map((v) => ({
-    id: v["@id"] ?? v.id ?? "unknown-id",
-    version: v.version ?? v["dct:title"] ?? "unknown-version",
-    description: v["dct:description"],
-    releaseDate: v["dct:created"],
-  }));
+  return undefined;
 }
 
 function extractProvenance(data: CoreAsset): AssetProvenance | undefined {
@@ -141,9 +132,9 @@ export async function parseAssetFromJsonLd(jsonLdAsset: any): Promise<Asset> {
         : undefined,
       dataAddress: coreAsset.dataAddress as AssetDataAddress | undefined,
       creator: extractCreator(coreAsset),
-      created: extractString(coreAsset, "dct:created"),
-      modified: extractString(coreAsset, "dct:modified"),
-      hasVersion: extractVersions(coreAsset),
+      created: extractDate(coreAsset, "dct:created"),
+      modified: extractDate(coreAsset, "dct:modified"),
+      version: extractString(coreAsset, "dcat:version"),
       provenance: extractProvenance(coreAsset),
       qualityMeasurements: extractQualityMeasurements(coreAsset),
     };
@@ -167,29 +158,39 @@ export async function serializeAssetToJsonLd(
     "dct:description": asset.description,
     "dcat:mediaType": asset.mediaType,
     "dcat:keyword": asset.keywords,
-    "dct:created": asset.created,
-    "dct:modified": asset.modified,
+    "dcat:version": asset.version,
   };
 
+  // Handle dates with proper xsd:date type
+  if (asset.created) {
+    properties["dct:created"] = {
+      "@value": asset.created,
+      "@type": "xsd:date",
+    };
+  }
+
+  if (asset.modified) {
+    properties["dct:modified"] = {
+      "@value": asset.modified,
+      "@type": "xsd:date",
+    };
+  }
+
   if (asset.theme?.title) {
-    properties["dcat:theme"] = { "dct:title": asset.theme.title };
+    properties["dcat:theme"] = {
+      "@type": "skos:Concept",
+      "dct:title": asset.theme.title,
+    };
   }
 
   if (asset.creator) {
     properties["dct:creator"] = {
+      "@type": "schema:Organization",
       "schema:name": asset.creator.name,
       "@id": asset.creator.id,
     };
   }
 
-  if (asset.hasVersion) {
-    properties["dct:hasVersion"] = asset.hasVersion.map((v) => ({
-      "@id": v.id,
-      "dct:title": v.version,
-      "dct:description": v.description,
-      "dct:created": v.releaseDate,
-    }));
-  }
 
   if (asset.provenance?.derivedFromId) {
     properties["prov:wasDerivedFrom"] = {
@@ -242,6 +243,8 @@ export async function serializeAssetToJsonLd(
       dpv: "https://w3id.org/dpv#",
       schema: "http://schema.org/",
       owl: "http://www.w3.org/2002/07/owl#",
+      skos: "http://www.w3.org/2004/02/skos/core#",
+      xsd: "http://www.w3.org/2001/XMLSchema#",
     },
     "@type": "dcat:Dataset",
     "@id": asset.id,

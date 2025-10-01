@@ -23,6 +23,9 @@ interface AssetEditToolbarProps {
   setActiveStep: (step: number) => void;
   /* eslint-disable-next-line no-unused-vars */
   markStepCompleted: (step: number) => void;
+  notify: any;
+  redirect: any;
+  translate: any;
 }
 
 const stepRequiredFields: Record<number, string[]> = {
@@ -35,13 +38,15 @@ const AssetEditToolbar = ({
   activeStep,
   setActiveStep,
   markStepCompleted,
+  notify,
+  redirect,
+  translate,
   ...props
 }: AssetEditToolbarProps & any) => {
   const {
     getValues,
     formState: { errors },
   } = useFormContext();
-  const translate = useTranslate();
 
   const checkRequiredFields = (stepIndex: number): boolean => {
     let requiredFields = stepRequiredFields[stepIndex] || [];
@@ -87,18 +92,7 @@ const AssetEditToolbar = ({
     return allFieldsFilled && noErrors;
   };
 
-  const checkAllPreviousSteps = (): boolean => {
-    // For step 2, validate all previous steps (0 and 1)
-    for (let i = 0; i < activeStep; i++) {
-      if (!checkRequiredFields(i)) {
-        return false;
-      }
-    }
-    return true;
-  };
-
   const canAdvance = checkRequiredFields(activeStep);
-  const canSave = activeStep === 2 && checkAllPreviousSteps();
 
   const handleNext = () => {
     if (canAdvance) {
@@ -139,9 +133,13 @@ const AssetEditToolbar = ({
       {/* Step 2: Optional Features - Save */}
       {activeStep === 2 && (
         <SaveButton
-          type="button"
-          label={translate("resources.assets.edit.buttons.save")}
-          disabled={!canSave}
+          alwaysEnable
+          mutationOptions={{
+            onSuccess: () => {
+              notify(translate("resources.assets.messages.assetUpdated"));
+              redirect("list", "assets");
+            }
+          }}
         />
       )}
     </Toolbar>
@@ -165,20 +163,18 @@ export const AssetEdit = () => {
     setCompletedSteps((prev) => new Set(prev).add(stepIndex));
   };
 
-  const onSuccess = () => {
-    notify(translate("resources.assets.messages.assetUpdated"));
-    redirect("list", "assets");
-  };
-
   return (
     <ErrorBoundary>
-      <Edit mutationOptions={{ onSuccess }}>
+      <Edit>
         <SimpleForm
           toolbar={
             <AssetEditToolbar
               activeStep={activeStep}
               setActiveStep={setActiveStep}
               markStepCompleted={markStepCompleted}
+              notify={notify}
+              redirect={redirect}
+              translate={translate}
             />
           }
         >

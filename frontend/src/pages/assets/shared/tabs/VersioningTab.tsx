@@ -1,7 +1,5 @@
 import {
   TextInput,
-  ArrayInput,
-  SimpleFormIterator,
   DateInput,
   useTranslate,
 } from "react-admin";
@@ -66,33 +64,6 @@ export const VersioningTab = () => {
         )}
         fullWidth
       />
-      <ArrayInput
-        source="hasVersion"
-        label={translate(
-          "resources.assets.create.versioning.fields.previousVersions"
-        )}
-      >
-        <SimpleFormIterator>
-          <TextInput
-            source="version"
-            label={translate(
-              "resources.assets.create.versioning.fields.previousVersion"
-            )}
-            helperText={translate(
-              "resources.assets.create.versioning.fields.previousVersionHelper"
-            )}
-          />
-          <DateInput
-            source="releaseDate"
-            label={translate(
-              "resources.assets.create.versioning.fields.issued"
-            )}
-            helperText={translate(
-              "resources.assets.create.versioning.fields.issuedHelper"
-            )}
-          />
-        </SimpleFormIterator>
-      </ArrayInput>
     </>
   );
 };

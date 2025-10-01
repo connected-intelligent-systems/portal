@@ -9,7 +9,7 @@ import {
   useTranslate,
 } from "react-admin";
 import { useFormContext } from "react-hook-form";
-import { Stepper, Step, StepLabel, Button, Box, Chip } from "@mui/material";
+import { Stepper, Step, StepLabel, Button, Box } from "@mui/material";
 import {
   BasicInformationStep,
   DataAddressStep,
@@ -23,6 +23,9 @@ interface AssetCreateToolbarProps {
   setActiveStep: (step: number) => void;
   /* eslint-disable-next-line no-unused-vars */
   markStepCompleted: (step: number) => void;
+  notify: any;
+  redirect: any;
+  translate: any;
 }
 
 const stepRequiredFields: Record<number, string[]> = {
@@ -35,13 +38,15 @@ const AssetCreateToolbar = ({
   activeStep,
   setActiveStep,
   markStepCompleted,
+  notify,
+  redirect,
+  translate,
   ...props
 }: AssetCreateToolbarProps & any) => {
   const {
     getValues,
     formState: { errors },
   } = useFormContext();
-  const translate = useTranslate();
 
   const checkRequiredFields = (stepIndex: number): boolean => {
     let requiredFields = stepRequiredFields[stepIndex] || [];
@@ -87,18 +92,7 @@ const AssetCreateToolbar = ({
     return allFieldsFilled && noErrors;
   };
 
-  const checkAllPreviousSteps = (): boolean => {
-    // For step 2, validate all previous steps (0 and 1)
-    for (let i = 0; i < activeStep; i++) {
-      if (!checkRequiredFields(i)) {
-        return false;
-      }
-    }
-    return true;
-  };
-
   const canAdvance = checkRequiredFields(activeStep);
-  const canSave = activeStep === 2 && checkAllPreviousSteps();
 
   const handleNext = () => {
     if (canAdvance) {
@@ -139,9 +133,13 @@ const AssetCreateToolbar = ({
       {/* Step 2: Optional Features - Save */}
       {activeStep === 2 && (
         <SaveButton
-          type="button"
-          label={translate("resources.assets.create.buttons.save")}
-          disabled={!canSave}
+          alwaysEnable
+          mutationOptions={{
+            onSuccess: () => {
+              notify(translate("resources.assets.messages.assetCreated"));
+              redirect("list", "assets");
+            }
+          }}
         />
       )}
     </Toolbar>
@@ -165,37 +163,18 @@ export const AssetCreate = () => {
     setCompletedSteps((prev) => new Set(prev).add(stepIndex));
   };
 
-  const handleCreateAssetNow = async (formData: any) => {
-    try {
-      // Make the API call to create the asset
-      await assets.create({ data: formData });
-
-      notify(translate("resources.assets.messages.assetCreated"));
-
-      // Redirect to assets list or asset view
-      redirect("list", "assets");
-    } catch (error) {
-      console.error("Asset creation failed:", error);
-      notify(translate("resources.assets.messages.assetCreationFailed"), {
-        type: "error",
-      });
-    }
-  };
-
-  const onSuccess = () => {
-    notify(translate("resources.assets.messages.assetCreated"));
-    redirect("list", "assets");
-  };
-
   return (
     <ErrorBoundary>
-      <Create mutationOptions={{ onSuccess }}>
+      <Create>
         <SimpleForm
           toolbar={
             <AssetCreateToolbar
               activeStep={activeStep}
               setActiveStep={setActiveStep}
               markStepCompleted={markStepCompleted}
+              notify={notify}
+              redirect={redirect}
+              translate={translate}
             />
           }
         >
