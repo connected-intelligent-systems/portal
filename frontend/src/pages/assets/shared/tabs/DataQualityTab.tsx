@@ -6,7 +6,7 @@ import {
 } from "react-admin";
 import { Typography, Box, Link } from "@mui/material";
 
-export const DataQualityStep = () => {
+export const DataQualityTab = () => {
   const translate = useTranslate();
 
   return (

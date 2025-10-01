@@ -10,17 +10,12 @@ import {
 } from "react-admin";
 import { useFormContext } from "react-hook-form";
 import { Stepper, Step, StepLabel, Button, Box, Chip } from "@mui/material";
-import * as assets from "../../../dataProvider/resources/assets";
 import {
   BasicInformationStep,
   DataAddressStep,
-  VersioningStep,
-  DetailedDescriptionStep,
-  ProvenanceStep,
-  DataPrivacyStep,
-  DataQualityStep,
+  OptionalFeaturesStep,
 } from "../shared/steps";
-import { TranslatedErrorBoundary } from "../ErrorBoundary";
+import { ErrorBoundary } from "../../catalogs/DatasetCard/ErrorBoundary";
 
 interface AssetCreateToolbarProps {
   activeStep: number;
@@ -28,75 +23,86 @@ interface AssetCreateToolbarProps {
   setActiveStep: (step: number) => void;
   /* eslint-disable-next-line no-unused-vars */
   markStepCompleted: (step: number) => void;
-  /* eslint-disable-next-line no-unused-vars */
-  setMaxReachedStep: (setter: (prev: number) => number) => void;
-  /* eslint-disable-next-line no-unused-vars */
-  onCreateAssetNow: (formData: any) => void;
 }
-
-const steps = [
-  "Basic Information",
-  "Data Address",
-  "Versioning",
-  "Detailed Description",
-  "Provenance",
-  "Data Privacy",
-  "Data Quality",
-];
 
 const stepRequiredFields: Record<number, string[]> = {
   0: ["title", "abstract"], // Basic Information
-  1: ["dataAddress.type"], // Data Address - requires data address type
-  2: [], // Versioning - no required fields
-  3: [], // Detailed Description - no required fields
-  4: [], // Provenance - no required fields
-  5: [], // Data Privacy - no required fields
-  6: [], // Data Quality - no required fields
+  1: ["dataAddress.type"], // Data Address - type is always required, other fields depend on type
+  2: [], // Optional Features - no required fields
 };
 
 const AssetCreateToolbar = ({
   activeStep,
   setActiveStep,
   markStepCompleted,
-  setMaxReachedStep,
-  onCreateAssetNow,
   ...props
 }: AssetCreateToolbarProps & any) => {
-  const { getValues } = useFormContext();
+  const { getValues, formState: { errors } } = useFormContext();
   const translate = useTranslate();
 
   const checkRequiredFields = (stepIndex: number): boolean => {
-    const requiredFields = stepRequiredFields[stepIndex] || [];
+    let requiredFields = stepRequiredFields[stepIndex] || [];
     const formData = getValues();
 
-    return requiredFields.every((field) => {
+    // For step 1 (Data Address), add conditional required fields based on type
+    if (stepIndex === 1) {
+      const dataAddressType = formData?.dataAddress?.type;
+      if (dataAddressType === 'http' || dataAddressType === 'HttpData') {
+        requiredFields = [...requiredFields, "dataAddress.baseUrl"];
+      } else if (dataAddressType === 's3' || dataAddressType === 'AmazonS3') {
+        requiredFields = [...requiredFields, "dataAddress.region", "dataAddress.bucketName"];
+      }
+    }
+
+    // Check if all required fields have values
+    const allFieldsFilled = requiredFields.every((field) => {
       const fieldValue = field
         .split(".")
         .reduce((obj, key) => obj?.[key], formData);
       return fieldValue && fieldValue.toString().trim() !== "";
     });
+
+    // Check if there are no validation errors for required fields
+    const noErrors = requiredFields.every((field) => {
+      const fieldPath = field.split(".");
+      let fieldError: any = errors;
+      for (const key of fieldPath) {
+        if (fieldError && typeof fieldError === 'object') {
+          fieldError = fieldError[key];
+        } else {
+          fieldError = undefined;
+          break;
+        }
+      }
+      return !fieldError;
+    });
+
+    return allFieldsFilled && noErrors;
+  };
+
+  const checkAllPreviousSteps = (): boolean => {
+    // For step 2, validate all previous steps (0 and 1)
+    for (let i = 0; i < activeStep; i++) {
+      if (!checkRequiredFields(i)) {
+        return false;
+      }
+    }
+    return true;
   };
 
   const canAdvance = checkRequiredFields(activeStep);
+  const canSave = activeStep === 2 && checkAllPreviousSteps();
 
   const handleNext = () => {
     if (canAdvance) {
       markStepCompleted(activeStep);
       const nextStep = activeStep + 1;
       setActiveStep(nextStep);
-      setMaxReachedStep((prev: number) => Math.max(prev, nextStep));
     }
   };
 
   const handleBack = () => {
     setActiveStep((prev: number) => prev - 1);
-  };
-
-  const handleCreateAssetNow = () => {
-    if (onCreateAssetNow) {
-      const formData = getValues();
-      onCreateAssetNow(formData);
-    }
   };
 
   return (
@@ -109,37 +115,34 @@ const AssetCreateToolbar = ({
         )}
       </Box>
 
-      {/* Smart toolbar for Data Address step (step 1) */}
-      {activeStep === 1 && canAdvance && (
-        <>
-          <Button onClick={handleNext} variant="outlined" sx={{ mr: 1 }}>
-            {translate("resources.assets.create.buttons.next")}
-          </Button>
-          <Button onClick={handleCreateAssetNow} variant="contained">
-            {translate("resources.assets.create.buttons.createAssetNow")}
-          </Button>
-        </>
-      )}
-
-      {/* Regular Next button for other steps */}
-      {activeStep < steps.length - 1 && activeStep !== 1 && (
+      {/* Step 0: Basic Information - Only Next */}
+      {activeStep === 0 && (
         <Button
           onClick={handleNext}
           variant="contained"
           disabled={!canAdvance}
-          sx={{
-            ...(canAdvance ? {} : { opacity: 0.6 }),
-          }}
         >
           {translate("resources.assets.create.buttons.next")}
         </Button>
       )}
 
-      {/* Final save button */}
-      {activeStep === steps.length - 1 && (
+      {/* Step 1: Data Address - Next */}
+      {activeStep === 1 && (
+        <Button
+          onClick={handleNext}
+          variant="contained"
+          disabled={!canAdvance}
+        >
+          {translate("resources.assets.create.buttons.next")}
+        </Button>
+      )}
+
+      {/* Step 2: Optional Features - Save */}
+      {activeStep === 2 && (
         <SaveButton
           type="button"
           label={translate("resources.assets.create.buttons.save")}
+          disabled={!canSave}
         />
       )}
     </Toolbar>
@@ -148,7 +151,6 @@ const AssetCreateToolbar = ({
 
 export const AssetCreate = () => {
   const [activeStep, setActiveStep] = useState(0);
-  const [maxReachedStep, setMaxReachedStep] = useState(0);
   const [completedSteps, setCompletedSteps] = useState<Set<number>>(new Set());
   const notify = useNotify();
   const redirect = useRedirect();
@@ -157,19 +159,8 @@ export const AssetCreate = () => {
   const steps = [
     translate("resources.assets.create.steps.basicInformation"),
     translate("resources.assets.create.steps.dataAddress"),
-    translate("resources.assets.create.steps.versioning"),
-    translate("resources.assets.create.steps.detailedDescription"),
-    translate("resources.assets.create.steps.provenance"),
-    translate("resources.assets.create.steps.dataPrivacy"),
-    translate("resources.assets.create.steps.dataQuality"),
+    translate("resources.assets.create.steps.optionalFeatures"),
   ];
-
-  const handleStepClick = (stepIndex: number) => {
-    // Allow navigation to any step up to the furthest reached step
-    if (stepIndex <= maxReachedStep) {
-      setActiveStep(stepIndex);
-    }
-  };
 
   const markStepCompleted = (stepIndex: number) => {
     setCompletedSteps((prev) => new Set(prev).add(stepIndex));
@@ -198,7 +189,7 @@ export const AssetCreate = () => {
   };
 
   return (
-    <TranslatedErrorBoundary>
+    <ErrorBoundary>
       <Create mutationOptions={{ onSuccess }}>
         <SimpleForm
           toolbar={
@@ -206,87 +197,23 @@ export const AssetCreate = () => {
               activeStep={activeStep}
               setActiveStep={setActiveStep}
               markStepCompleted={markStepCompleted}
-              setMaxReachedStep={setMaxReachedStep}
-              // onCreateAssetNow={handleCreateAssetNow}
             />
           }
         >
           <Box sx={{ width: "100%", mb: 2 }}>
             <Stepper activeStep={activeStep} alternativeLabel>
-              {steps.map((label, index) => {
-                const requiredCount = stepRequiredFields[index]?.length || 0;
-                const hasRequired = requiredCount > 0;
-                const isClickable = index <= maxReachedStep;
-
-                return (
-                  <Step key={label} completed={completedSteps.has(index)}>
-                    <StepLabel
-                      sx={{
-                        cursor: isClickable ? "pointer" : "default",
-                        "& .MuiStepLabel-label": {
-                          color: isClickable
-                            ? "primary.main !important"
-                            : "text.disabled !important",
-                          fontWeight: isClickable ? "normal" : "normal",
-                        },
-                        "& .MuiStepLabel-iconContainer": {
-                          color: isClickable ? "primary.main" : "text.disabled",
-                        },
-                        "& .MuiStepIcon-root": {
-                          color: isClickable ? "primary.main" : "text.disabled",
-                        },
-                      }}
-                      onClick={() => handleStepClick(index)}
-                    >
-                      <Box
-                        sx={{
-                          display: "flex",
-                          flexDirection: "column",
-                          alignItems: "center",
-                          gap: 0.5,
-                        }}
-                      >
-                        <span>{label}</span>
-                        {hasRequired && (
-                          <Chip
-                            label={`${requiredCount} ${translate(
-                              "resources.assets.create.chips.required"
-                            )}`}
-                            size="small"
-                            color={
-                              completedSteps.has(index) ? "success" : "default"
-                            }
-                            variant="outlined"
-                            sx={{ fontSize: "0.6rem", height: 16 }}
-                          />
-                        )}
-                        {!hasRequired && (
-                          <Chip
-                            label={translate(
-                              "resources.assets.create.chips.optional"
-                            )}
-                            size="small"
-                            color="default"
-                            variant="outlined"
-                            sx={{ fontSize: "0.6rem", height: 16 }}
-                          />
-                        )}
-                      </Box>
-                    </StepLabel>
-                  </Step>
-                );
-              })}
+              {steps.map((label, index) => (
+                <Step key={label} completed={completedSteps.has(index)}>
+                  <StepLabel>{label}</StepLabel>
+                </Step>
+              ))}
             </Stepper>
           </Box>
           {activeStep === 0 && <BasicInformationStep />}
           {activeStep === 1 && <DataAddressStep />}
-          {activeStep === 2 && <VersioningStep />}
-          {activeStep === 3 && <DetailedDescriptionStep />}
-          {activeStep === 4 && <ProvenanceStep />}
-          {activeStep === 5 && <DataPrivacyStep />}
-          {activeStep === 6 && <DataQualityStep />}
+          {activeStep === 2 && <OptionalFeaturesStep />}
         </SimpleForm>
       </Create>
-    </TranslatedErrorBoundary>
+    </ErrorBoundary>
   );
 };

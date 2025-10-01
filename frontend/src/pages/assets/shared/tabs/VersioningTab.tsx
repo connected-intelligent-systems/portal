@@ -7,7 +7,7 @@ import {
 } from "react-admin";
 import { Typography, Link } from "@mui/material";
 
-export const VersioningStep = () => {
+export const VersioningTab = () => {
   const translate = useTranslate();
 
   return (

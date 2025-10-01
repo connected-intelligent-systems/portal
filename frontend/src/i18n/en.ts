@@ -149,6 +149,14 @@ const englishMessages: Partial<TranslationMessages> = {
       steps: {
         basicInformation: "Basic Information",
         dataAddress: "Data Address",
+        optionalFeatures: "Optional Features",
+        versioning: "Versioning",
+        detailedDescription: "Detailed Description",
+        provenance: "Provenance",
+        dataPrivacy: "Data Privacy",
+        dataQuality: "Data Quality",
+      },
+      tabs: {
         versioning: "Versioning",
         detailedDescription: "Detailed Description",
         provenance: "Provenance",
@@ -158,7 +166,8 @@ const englishMessages: Partial<TranslationMessages> = {
       buttons: {
         back: "Back",
         next: "Next",
-        createAssetNow: "Create Asset Now",
+        addOptionalFeatures: "Add Optional Features",
+        createAsset: "Create Asset",
         save: "Save",
       },
       chips: {
@@ -364,21 +373,12 @@ const englishMessages: Partial<TranslationMessages> = {
       steps: {
         basicInformation: "Basic Information",
         dataAddress: "Data Address",
-        versioning: "Versioning",
-        detailedDescription: "Detailed Description",
-        provenance: "Provenance",
-        dataPrivacy: "Data Privacy",
-        dataQuality: "Data Quality",
+        optionalFeatures: "Optional Features",
       },
       buttons: {
         back: "Back",
         next: "Next",
-        updateAssetNow: "Update Asset Now",
         save: "Save",
-      },
-      chips: {
-        required: "required",
-        optional: "optional",
       },
     },
   },

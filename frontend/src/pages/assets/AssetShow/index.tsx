@@ -17,7 +17,7 @@ import SecurityIcon from "@mui/icons-material/Security";
 import AssessmentIcon from "@mui/icons-material/Assessment";
 import CloudIcon from "@mui/icons-material/Cloud";
 import { MarkdownField } from "../../../components/markdown";
-import { TranslatedErrorBoundary } from "../ErrorBoundary";
+import { ErrorBoundary } from "../../catalogs/DatasetCard/ErrorBoundary";
 
 // Lazy load tab components for better performance
 const BasicInformationShow = React.lazy(() =>
@@ -228,7 +228,7 @@ export const AssetShow = () => {
           </Box>
 
           <Box sx={{ mt: 3 }}>
-            <TranslatedErrorBoundary>
+            <ErrorBoundary>
               <Suspense>
                 {activeTab === 0 && (
                   <div id="asset-description">
@@ -285,7 +285,7 @@ export const AssetShow = () => {
                   </div>
                 )}
               </Suspense>
-            </TranslatedErrorBoundary>
+            </ErrorBoundary>
           </Box>
         </Box>
       </SimpleShowLayout>

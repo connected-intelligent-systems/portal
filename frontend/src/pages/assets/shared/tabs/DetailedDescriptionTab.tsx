@@ -2,7 +2,7 @@ import { Typography } from "@mui/material";
 import { useTranslate } from "react-admin";
 import { MarkdownInput } from "../../../../components/markdown";
 
-export const DetailedDescriptionStep = () => {
+export const DetailedDescriptionTab = () => {
   const translate = useTranslate();
 
   return (

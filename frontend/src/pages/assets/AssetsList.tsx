@@ -6,13 +6,13 @@ import {
   useTranslate,
 } from "react-admin";
 import { Box, Typography, Chip } from "@mui/material";
-import { TranslatedErrorBoundary } from "./ErrorBoundary";
+import { ErrorBoundary } from "../catalogs/DatasetCard/ErrorBoundary";
 import { Asset } from "../../types/asset";
 
 export const AssetsList = () => {
   const translate = useTranslate();
   return (
-    <TranslatedErrorBoundary>
+    <ErrorBoundary>
       <List empty={false} exporter={false}>
         <Datagrid
           style={{ tableLayout: "fixed" }}
@@ -118,6 +118,6 @@ export const AssetsList = () => {
           />
         </Datagrid>
       </List>
-    </TranslatedErrorBoundary>
+    </ErrorBoundary>
   );
 };

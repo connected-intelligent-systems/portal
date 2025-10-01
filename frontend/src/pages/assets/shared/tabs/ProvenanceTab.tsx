@@ -1,7 +1,7 @@
 import { TextInput, Labeled, useTranslate } from "react-admin";
 import { Typography, Link, Box } from "@mui/material";
 
-export const ProvenanceStep = () => {
+export const ProvenanceTab = () => {
   const translate = useTranslate();
 
   return (

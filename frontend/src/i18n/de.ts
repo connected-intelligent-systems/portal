@@ -118,6 +118,14 @@ const germanMessages: Partial<TranslationMessages> = {
         steps: {
           basicInformation: "Grundinformationen",
           dataAddress: "Datenadresse",
+          optionalFeatures: "Optionale Funktionen",
+          versioning: "Versionierung",
+          detailedDescription: "Detaillierte Beschreibung",
+          provenance: "Herkunft",
+          dataPrivacy: "Datenschutz",
+          dataQuality: "Datenqualität",
+        },
+        tabs: {
           versioning: "Versionierung",
           detailedDescription: "Detaillierte Beschreibung",
           provenance: "Herkunft",
@@ -127,7 +135,8 @@ const germanMessages: Partial<TranslationMessages> = {
         buttons: {
           back: "Zurück",
           next: "Weiter",
-          createAssetNow: "Asset jetzt erstellen",
+          addOptionalFeatures: "Optionale Funktionen hinzufügen",
+          createAsset: "Asset erstellen",
           save: "Speichern",
         },
         chips: {
@@ -339,21 +348,12 @@ const germanMessages: Partial<TranslationMessages> = {
         steps: {
           basicInformation: "Grundinformationen",
           dataAddress: "Datenadresse",
-          versioning: "Versionierung",
-          detailedDescription: "Detaillierte Beschreibung",
-          provenance: "Herkunft",
-          dataPrivacy: "Datenschutz",
-          dataQuality: "Datenqualität",
+          optionalFeatures: "Optionale Funktionen",
         },
         buttons: {
           back: "Zurück",
           next: "Weiter",
-          updateAssetNow: "Asset jetzt aktualisieren",
           save: "Speichern",
-        },
-        chips: {
-          required: "erforderlich",
-          optional: "optional",
         },
       },
     },

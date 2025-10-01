@@ -6,7 +6,7 @@ import {
 } from "react-admin";
 import { Typography, Link, Box } from "@mui/material";
 
-export const DataPrivacyStep = () => {
+export const DataPrivacyTab = () => {
   const translate = useTranslate();
 
   const personalDataChoices = [
