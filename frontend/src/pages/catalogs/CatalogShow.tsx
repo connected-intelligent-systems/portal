@@ -12,13 +12,13 @@ import {
   SelectInput,
   FilterForm,
   TextInput,
-  useListContext
-} from 'react-admin';
-import { Box, Grid } from '@mui/material';
-import { useState, useEffect } from 'react';
-import { getCategories } from '../../dataProvider/resources/datasets';
-import { DatasetCard } from './DatasetCard';
-import { Dataset } from '../../types/catalog';
+  useListContext,
+} from "react-admin";
+import { Box, Grid } from "@mui/material";
+import { useState, useEffect } from "react";
+import { getCategories } from "../../dataProvider/resources/datasets";
+import { DatasetCard } from "./DatasetCard";
+import { Dataset } from "../../types/catalog";
 
 const CatalogShowActions = () => (
   <TopToolbar>
@@ -30,22 +30,32 @@ const DatasetsWithFilters = () => {
   const catalogRecord = useRecordContext();
   const catalogUrl = catalogRecord?.url;
   const { data } = useListContext();
-  const [categories, setCategories] = useState<{ id: string; name: string }[]>([]);
+  const [categories, setCategories] = useState<{ id: string; name: string }[]>(
+    []
+  );
 
   useEffect(() => {
     if (catalogUrl) {
-      getCategories(catalogUrl).then((cats) => {
-        setCategories(cats.map(cat => ({ id: cat, name: cat })));
-      }).catch((error) => {
-        console.error("Error loading categories:", error);
-        setCategories([]);
-      });
+      getCategories(catalogUrl)
+        .then((cats) => {
+          setCategories(cats.map((cat) => ({ id: cat, name: cat })));
+        })
+        .catch((error) => {
+          console.error("Error loading categories:", error);
+          setCategories([]);
+        });
     }
   }, [catalogUrl]);
 
   const filters = [
     <TextInput key="q" source="q" label="Search" alwaysOn resettable />,
-    <SelectInput key="category" source="category" label="Category" choices={categories} alwaysOn />,
+    <SelectInput
+      key="category"
+      source="category"
+      label="Category"
+      choices={categories}
+      alwaysOn
+    />,
   ];
 
   return (

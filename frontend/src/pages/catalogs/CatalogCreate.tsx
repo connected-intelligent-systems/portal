@@ -1,59 +1,67 @@
-import { Create, SimpleForm, TextInput, required, useNotify, FormDataConsumer } from 'react-admin';
-import { Box, Button, CircularProgress, Typography } from '@mui/material';
-import { useState } from 'react';
-import { LocalCatalogService } from '../../services/localCatalogService';
+import {
+  Create,
+  SimpleForm,
+  TextInput,
+  required,
+  useNotify,
+  FormDataConsumer,
+} from "react-admin";
+import { Box, Button, CircularProgress, Typography } from "@mui/material";
+import { useState } from "react";
+import { LocalCatalogService } from "../../services/localCatalogService";
 
 const TestConnectionButton = ({ formData }: { formData: any }) => {
   const [testing, setTesting] = useState(false);
-  const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
   const [error, setError] = useState<string | null>(null);
   const notify = useNotify();
 
   const handleTest = async () => {
     if (!formData.url) {
-      notify('Please enter a URL first', { type: 'warning' });
+      notify("Please enter a URL first", { type: "warning" });
       return;
     }
 
     setTesting(true);
-    setStatus('idle');
+    setStatus("idle");
     setError(null);
 
     try {
       const result = await LocalCatalogService.testConnection(formData.url);
       if (result.success) {
-        setStatus('success');
-        notify('Connection successful!', { type: 'success' });
+        setStatus("success");
+        notify("Connection successful!", { type: "success" });
       } else {
-        setStatus('error');
-        setError(result.error || 'Connection failed');
-        notify(result.error || 'Connection failed', { type: 'error' });
+        setStatus("error");
+        setError(result.error || "Connection failed");
+        notify(result.error || "Connection failed", { type: "error" });
       }
     } catch (err) {
-      setStatus('error');
-      const errorMsg = err instanceof Error ? err.message : 'Connection test failed';
+      setStatus("error");
+      const errorMsg =
+        err instanceof Error ? err.message : "Connection test failed";
       setError(errorMsg);
-      notify(errorMsg, { type: 'error' });
+      notify(errorMsg, { type: "error" });
     } finally {
       setTesting(false);
     }
   };
 
   return (
-    <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', my: 2 }}>
+    <Box sx={{ display: "flex", gap: 2, alignItems: "center", my: 2 }}>
       <Button
         variant="outlined"
         onClick={handleTest}
         disabled={testing || !formData.url}
       >
-        {testing ? <CircularProgress size={20} /> : 'Test Connection'}
+        {testing ? <CircularProgress size={20} /> : "Test Connection"}
       </Button>
-      {status === 'success' && (
+      {status === "success" && (
         <Typography color="success.main" variant="body2">
           ✓ Connection successful
         </Typography>
       )}
-      {status === 'error' && (
+      {status === "error" && (
         <Typography color="error.main" variant="body2">
           ✗ {error}
         </Typography>

@@ -1,5 +1,5 @@
-import { LocalCatalogService } from '../../services/localCatalogService';
-import { LocalCatalog } from '../../types/catalog';
+import { LocalCatalogService } from "../../services/localCatalogService";
+import { LocalCatalog } from "../../types/catalog";
 
 export async function getList() {
   const catalogs = LocalCatalogService.getCatalogs();
@@ -25,13 +25,13 @@ export async function create(params: { data: Partial<LocalCatalog> }) {
   const { url, name, description } = params.data;
 
   if (!url || !name) {
-    throw new Error('URL and name are required');
+    throw new Error("URL and name are required");
   }
 
   // Test connection first
   const testResult = await LocalCatalogService.testConnection(url);
   if (!testResult.success) {
-    throw new Error(testResult.error || 'Connection test failed');
+    throw new Error(testResult.error || "Connection test failed");
   }
 
   const catalog = LocalCatalogService.saveCatalog({
@@ -43,14 +43,17 @@ export async function create(params: { data: Partial<LocalCatalog> }) {
   return { data: catalog };
 }
 
-export async function update(params: { id: string; data: Partial<LocalCatalog> }) {
+export async function update(params: {
+  id: string;
+  data: Partial<LocalCatalog>;
+}) {
   const { id, data } = params;
 
   // If URL is being updated, test the new connection
   if (data.url && data.url !== LocalCatalogService.getCatalogById(id)?.url) {
     const testResult = await LocalCatalogService.testConnection(data.url);
     if (!testResult.success) {
-      throw new Error(testResult.error || 'Connection test failed');
+      throw new Error(testResult.error || "Connection test failed");
     }
   }
 
@@ -77,5 +80,5 @@ export async function remove(params: { id: string }) {
 }
 
 export async function getMany() {
-  throw new Error('localCatalog getMany is not implemented.');
+  throw new Error("localCatalog getMany is not implemented.");
 }

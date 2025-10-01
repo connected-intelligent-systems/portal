@@ -18,9 +18,13 @@ export const ContractDefinitionsList = () => {
     const hasWarning = !assetsSelector || assetsSelector.length === 0;
 
     return (
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+      <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
         {hasWarning && (
-          <Tooltip title={translate("resources.contract_definitions.list.warningTitle")}>
+          <Tooltip
+            title={translate(
+              "resources.contract_definitions.list.warningTitle"
+            )}
+          >
             <WarningIcon color="warning" fontSize="small" />
           </Tooltip>
         )}

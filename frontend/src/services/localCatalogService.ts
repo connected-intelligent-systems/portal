@@ -1,7 +1,7 @@
-import { LocalCatalog } from '../types/catalog';
-import * as catalogDataProvider from '../dataProvider/resources/catalog';
+import { LocalCatalog } from "../types/catalog";
+import * as catalogDataProvider from "../dataProvider/resources/catalog";
 
-const STORAGE_KEY = 'local_catalogs';
+const STORAGE_KEY = "local_catalogs";
 
 export class LocalCatalogService {
   static getCatalogs(): LocalCatalog[] {
@@ -13,13 +13,15 @@ export class LocalCatalogService {
     }
   }
 
-  static saveCatalog(catalog: Omit<LocalCatalog, 'id' | 'dateAdded' | 'isActive'>): LocalCatalog {
+  static saveCatalog(
+    catalog: Omit<LocalCatalog, "id" | "dateAdded" | "isActive">
+  ): LocalCatalog {
     const catalogs = this.getCatalogs();
     const newCatalog: LocalCatalog = {
       ...catalog,
       id: this.generateId(),
       dateAdded: new Date().toISOString(),
-      isActive: false
+      isActive: false,
     };
 
     catalogs.push(newCatalog);
@@ -27,9 +29,12 @@ export class LocalCatalogService {
     return newCatalog;
   }
 
-  static updateCatalog(id: string, updates: Partial<LocalCatalog>): LocalCatalog | null {
+  static updateCatalog(
+    id: string,
+    updates: Partial<LocalCatalog>
+  ): LocalCatalog | null {
     const catalogs = this.getCatalogs();
-    const index = catalogs.findIndex(c => c.id === id);
+    const index = catalogs.findIndex((c) => c.id === id);
 
     if (index === -1) return null;
 
@@ -40,7 +45,7 @@ export class LocalCatalogService {
 
   static deleteCatalog(id: string): boolean {
     const catalogs = this.getCatalogs();
-    const filteredCatalogs = catalogs.filter(c => c.id !== id);
+    const filteredCatalogs = catalogs.filter((c) => c.id !== id);
 
     if (filteredCatalogs.length === catalogs.length) return false;
 
@@ -50,17 +55,17 @@ export class LocalCatalogService {
 
   static getCatalogById(id: string): LocalCatalog | null {
     const catalogs = this.getCatalogs();
-    return catalogs.find(c => c.id === id) || null;
+    return catalogs.find((c) => c.id === id) || null;
   }
 
   static setActiveCatalog(id: string): LocalCatalog | null {
     const catalogs = this.getCatalogs();
-    const catalog = catalogs.find(c => c.id === id);
+    const catalog = catalogs.find((c) => c.id === id);
 
     if (!catalog) return null;
 
     // Deactivate all other catalogs
-    catalogs.forEach(c => c.isActive = false);
+    catalogs.forEach((c) => (c.isActive = false));
 
     // Activate the selected catalog
     catalog.isActive = true;
@@ -72,18 +77,18 @@ export class LocalCatalogService {
 
   static getActiveCatalog(): LocalCatalog | null {
     const catalogs = this.getCatalogs();
-    return catalogs.find(c => c.isActive) || null;
+    return catalogs.find((c) => c.isActive) || null;
   }
 
   static deactivateAll(): void {
     const catalogs = this.getCatalogs();
-    catalogs.forEach(c => c.isActive = false);
+    catalogs.forEach((c) => (c.isActive = false));
     localStorage.setItem(STORAGE_KEY, JSON.stringify(catalogs));
   }
 
   static updateLastConnected(catalogUrl: string): void {
     const catalogs = this.getCatalogs();
-    const catalog = catalogs.find(c => c.url === catalogUrl);
+    const catalog = catalogs.find((c) => c.url === catalogUrl);
 
     if (catalog) {
       catalog.lastConnected = new Date().toISOString();
@@ -91,7 +96,9 @@ export class LocalCatalogService {
     }
   }
 
-  static async testConnection(url: string): Promise<{ success: boolean; error?: string }> {
+  static async testConnection(
+    url: string
+  ): Promise<{ success: boolean; error?: string }> {
     try {
       // Use the catalog dataProvider's getOne method to test the connection
       await catalogDataProvider.getOne({ id: url });
@@ -99,12 +106,14 @@ export class LocalCatalogService {
     } catch (error) {
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Connection failed'
+        error: error instanceof Error ? error.message : "Connection failed",
       };
     }
   }
 
   private static generateId(): string {
-    return `catalog_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
+    return `catalog_${Date.now()}_${Math.random()
+      .toString(36)
+      .substring(2, 11)}`;
   }
 }

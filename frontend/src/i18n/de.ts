@@ -461,7 +461,7 @@ const germanMessages: Partial<TranslationMessages> = {
       show: {
         permissions: "Berechtigungen",
         obligations: "Verpflichtungen",
-        prohibitions: "Verbote", 
+        prohibitions: "Verbote",
         action: "Aktion",
         constraint: "Einschränkung",
         constraints: "Einschränkungen",

@@ -37,7 +37,10 @@ const AssetCreateToolbar = ({
   markStepCompleted,
   ...props
 }: AssetCreateToolbarProps & any) => {
-  const { getValues, formState: { errors } } = useFormContext();
+  const {
+    getValues,
+    formState: { errors },
+  } = useFormContext();
   const translate = useTranslate();
 
   const checkRequiredFields = (stepIndex: number): boolean => {
@@ -47,10 +50,14 @@ const AssetCreateToolbar = ({
     // For step 1 (Data Address), add conditional required fields based on type
     if (stepIndex === 1) {
       const dataAddressType = formData?.dataAddress?.type;
-      if (dataAddressType === 'http' || dataAddressType === 'HttpData') {
+      if (dataAddressType === "http" || dataAddressType === "HttpData") {
         requiredFields = [...requiredFields, "dataAddress.baseUrl"];
-      } else if (dataAddressType === 's3' || dataAddressType === 'AmazonS3') {
-        requiredFields = [...requiredFields, "dataAddress.region", "dataAddress.bucketName"];
+      } else if (dataAddressType === "s3" || dataAddressType === "AmazonS3") {
+        requiredFields = [
+          ...requiredFields,
+          "dataAddress.region",
+          "dataAddress.bucketName",
+        ];
       }
     }
 
@@ -67,7 +74,7 @@ const AssetCreateToolbar = ({
       const fieldPath = field.split(".");
       let fieldError: any = errors;
       for (const key of fieldPath) {
-        if (fieldError && typeof fieldError === 'object') {
+        if (fieldError && typeof fieldError === "object") {
           fieldError = fieldError[key];
         } else {
           fieldError = undefined;
@@ -117,22 +124,14 @@ const AssetCreateToolbar = ({
 
       {/* Step 0: Basic Information - Only Next */}
       {activeStep === 0 && (
-        <Button
-          onClick={handleNext}
-          variant="contained"
-          disabled={!canAdvance}
-        >
+        <Button onClick={handleNext} variant="contained" disabled={!canAdvance}>
           {translate("resources.assets.create.buttons.next")}
         </Button>
       )}
 
       {/* Step 1: Data Address - Next */}
       {activeStep === 1 && (
-        <Button
-          onClick={handleNext}
-          variant="contained"
-          disabled={!canAdvance}
-        >
+        <Button onClick={handleNext} variant="contained" disabled={!canAdvance}>
           {translate("resources.assets.create.buttons.next")}
         </Button>
       )}

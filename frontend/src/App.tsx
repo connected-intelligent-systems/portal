@@ -31,7 +31,12 @@ import {
   ContractDefinitionsList,
   ContractDefinitionEdit,
 } from "./pages/contract_definitions";
-import { CatalogList, CatalogShow, CatalogCreate, CatalogEdit } from "./pages/catalogs";
+import {
+  CatalogList,
+  CatalogShow,
+  CatalogCreate,
+  CatalogEdit,
+} from "./pages/catalogs";
 import contractnegotiations from "./pages/contract_negotiations";
 import contractagreements from "./pages/contract_agreements";
 import transferprocesses from "./pages/transfer_processes";

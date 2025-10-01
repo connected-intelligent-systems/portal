@@ -84,6 +84,6 @@ export interface LocalCatalog {
 
 export interface CatalogConnection {
   id: string;
-  status: 'connected' | 'disconnected' | 'error';
+  status: "connected" | "disconnected" | "error";
   error?: string;
 }

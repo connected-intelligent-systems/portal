@@ -21,7 +21,11 @@ interface DatasetCardProps {
   counterPartyAddress?: string;
 }
 
-export const DatasetCard = ({ dataset, index, counterPartyAddress }: DatasetCardProps) => {
+export const DatasetCard = ({
+  dataset,
+  index,
+  counterPartyAddress,
+}: DatasetCardProps) => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const translate = useTranslate();
 

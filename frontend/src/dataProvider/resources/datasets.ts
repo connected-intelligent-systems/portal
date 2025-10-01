@@ -37,7 +37,10 @@ export async function getManyReference(params: GetManyReferenceParams) {
     }
 
     // Transform JSON-LD catalog to clean Catalog object with normalized datasets
-    const cleanCatalog = await parseCatalogFromJsonLd(catalogData, catalogUrl as string);
+    const cleanCatalog = await parseCatalogFromJsonLd(
+      catalogData,
+      catalogUrl as string
+    );
 
     // Update last connected timestamp
     LocalCatalogService.updateLastConnected(catalogUrl as string);
@@ -47,10 +50,11 @@ export async function getManyReference(params: GetManyReferenceParams) {
     // Apply client-side filtering
     if (q) {
       const query = q.toLowerCase();
-      datasets = datasets.filter((dataset: any) =>
-        dataset.title?.toLowerCase().includes(query) ||
-        dataset.description?.toLowerCase().includes(query) ||
-        dataset.id?.toLowerCase().includes(query)
+      datasets = datasets.filter(
+        (dataset: any) =>
+          dataset.title?.toLowerCase().includes(query) ||
+          dataset.description?.toLowerCase().includes(query) ||
+          dataset.id?.toLowerCase().includes(query)
       );
     }
 
@@ -69,8 +73,8 @@ export async function getManyReference(params: GetManyReferenceParams) {
     }
 
     if (category) {
-      datasets = datasets.filter((dataset: any) =>
-        dataset.theme?.title === category
+      datasets = datasets.filter(
+        (dataset: any) => dataset.theme?.title === category
       );
     }
 
@@ -140,31 +144,21 @@ export async function getList() {
 }
 
 export async function getOne() {
-  throw new Error(
-    "Datasets getOne is not implemented."
-  );
+  throw new Error("Datasets getOne is not implemented.");
 }
 
 export async function getMany() {
-  throw new Error(
-    "Datasets getMany is not implemented."
-  );
+  throw new Error("Datasets getMany is not implemented.");
 }
 
 export async function create() {
-  throw new Error(
-    "Datasets create is not implemented."
-  );
+  throw new Error("Datasets create is not implemented.");
 }
 
 export async function update() {
-  throw new Error(
-    "Datasets update is not implemented."
-  );
+  throw new Error("Datasets update is not implemented.");
 }
 
 export async function remove() {
-  throw new Error(
-    "Datasets delete is not implemented."
-  );
+  throw new Error("Datasets delete is not implemented.");
 }

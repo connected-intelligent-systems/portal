@@ -35,55 +35,73 @@ export const PoliciesList = () => {
 
     if (total === 0) {
       return (
-        <Chip 
+        <Chip
           label="0"
           size="small"
           icon={<SecurityIcon fontSize="small" />}
           variant="outlined"
-          sx={{ 
-            minWidth: 'auto', 
-            height: 20, 
-            '& .MuiChip-label': { px: 0.5 },
-            color: 'text.disabled',
-            borderColor: 'text.disabled',
-            '& .MuiChip-icon': { color: 'text.disabled' }
+          sx={{
+            minWidth: "auto",
+            height: 20,
+            "& .MuiChip-label": { px: 0.5 },
+            color: "text.disabled",
+            borderColor: "text.disabled",
+            "& .MuiChip-icon": { color: "text.disabled" },
           }}
         />
       );
     }
 
     return (
-      <Box sx={{ display: 'flex', gap: 0.5, alignItems: 'center' }}>
+      <Box sx={{ display: "flex", gap: 0.5, alignItems: "center" }}>
         {permissions > 0 && (
-          <Tooltip title={`${permissions} permission${permissions > 1 ? 's' : ''}`}>
-            <Chip 
-              label={permissions} 
-              color="primary" 
+          <Tooltip
+            title={`${permissions} permission${permissions > 1 ? "s" : ""}`}
+          >
+            <Chip
+              label={permissions}
+              color="primary"
               size="small"
               icon={<SecurityIcon fontSize="small" />}
-              sx={{ minWidth: 'auto', height: 20, '& .MuiChip-label': { px: 0.5 } }}
+              sx={{
+                minWidth: "auto",
+                height: 20,
+                "& .MuiChip-label": { px: 0.5 },
+              }}
             />
           </Tooltip>
         )}
         {obligations > 0 && (
-          <Tooltip title={`${obligations} obligation${obligations > 1 ? 's' : ''}`}>
-            <Chip 
-              label={obligations} 
-              color="secondary" 
+          <Tooltip
+            title={`${obligations} obligation${obligations > 1 ? "s" : ""}`}
+          >
+            <Chip
+              label={obligations}
+              color="secondary"
               size="small"
               icon={<AssignmentIcon fontSize="small" />}
-              sx={{ minWidth: 'auto', height: 20, '& .MuiChip-label': { px: 0.5 } }}
+              sx={{
+                minWidth: "auto",
+                height: 20,
+                "& .MuiChip-label": { px: 0.5 },
+              }}
             />
           </Tooltip>
         )}
         {prohibitions > 0 && (
-          <Tooltip title={`${prohibitions} prohibition${prohibitions > 1 ? 's' : ''}`}>
-            <Chip 
-              label={prohibitions} 
-              color="error" 
+          <Tooltip
+            title={`${prohibitions} prohibition${prohibitions > 1 ? "s" : ""}`}
+          >
+            <Chip
+              label={prohibitions}
+              color="error"
               size="small"
               icon={<BlockIcon fontSize="small" />}
-              sx={{ minWidth: 'auto', height: 20, '& .MuiChip-label': { px: 0.5 } }}
+              sx={{
+                minWidth: "auto",
+                height: 20,
+                "& .MuiChip-label": { px: 0.5 },
+              }}
             />
           </Tooltip>
         )}

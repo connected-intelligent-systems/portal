@@ -45,31 +45,21 @@ export async function getOne(params: GetOneParams) {
 // Note: Based on the current usage pattern, only getOne is implemented
 // Other CRUD operations are not needed for catalog functionality
 export async function getList() {
-  throw new Error(
-    "Catalog getList is not implemented."
-  );
+  throw new Error("Catalog getList is not implemented.");
 }
 
 export async function getMany() {
-  throw new Error(
-    "Catalog getMany is not implemented."
-  );
+  throw new Error("Catalog getMany is not implemented.");
 }
 
 export async function create() {
-  throw new Error(
-    "Catalog create is not implemented."
-  );
+  throw new Error("Catalog create is not implemented.");
 }
 
 export async function update() {
-  throw new Error(
-    "Catalog update is not implemented."
-  );
+  throw new Error("Catalog update is not implemented.");
 }
 
 export async function remove() {
-  throw new Error(
-    "Catalog delete is not implemented."
-  );
+  throw new Error("Catalog delete is not implemented.");
 }

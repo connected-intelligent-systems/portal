@@ -509,7 +509,7 @@ const englishMessages: Partial<TranslationMessages> = {
     },
     show: {
       permissions: "Permissions",
-      obligations: "Obligations", 
+      obligations: "Obligations",
       prohibitions: "Prohibitions",
       action: "Action",
       constraint: "Constraint",

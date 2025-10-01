@@ -5,26 +5,18 @@ import {
   DateField,
   FunctionField,
   useTranslate,
-} from 'react-admin';
-import { Box, Typography } from '@mui/material';
-import { LocalCatalog } from '../../types/catalog';
+} from "react-admin";
+import { Box, Typography } from "@mui/material";
+import { LocalCatalog } from "../../types/catalog";
 
 export const CatalogList = () => {
   const translate = useTranslate();
 
   return (
-    <List
-      empty={false}
-      exporter={false}
-      pagination={false}
-      perPage={1000}
-    >
-      <Datagrid
-        bulkActionButtons={false}
-        rowClick="show"
-      >
+    <List empty={false} exporter={false} pagination={false} perPage={1000}>
+      <Datagrid bulkActionButtons={false} rowClick="show">
         <FunctionField
-          label={translate('resources.catalog.manager.catalogName', 'Name')}
+          label={translate("resources.catalog.manager.catalogName", "Name")}
           sortable={false}
           render={(record: LocalCatalog) => (
             <Box>
@@ -39,17 +31,19 @@ export const CatalogList = () => {
         />
 
         <FunctionField
-          label={translate('resources.catalog.manager.description', 'Description')}
+          label={translate(
+            "resources.catalog.manager.description",
+            "Description"
+          )}
           sortable={false}
           render={(record: LocalCatalog) => (
             <Box>
               {record.description ? (
-                <Typography variant="body2">
-                  {record.description}
-                </Typography>
+                <Typography variant="body2">{record.description}</Typography>
               ) : record.lastConnected ? (
                 <Typography variant="caption" color="text.secondary">
-                  Last connected: {new Date(record.lastConnected).toLocaleString()}
+                  Last connected:{" "}
+                  {new Date(record.lastConnected).toLocaleString()}
                 </Typography>
               ) : (
                 <Typography variant="caption" color="text.secondary">
@@ -62,7 +56,7 @@ export const CatalogList = () => {
 
         <DateField
           source="dateAdded"
-          label={translate('resources.catalog.manager.added', 'Date Added')}
+          label={translate("resources.catalog.manager.added", "Date Added")}
           showTime
           sortable={false}
         />

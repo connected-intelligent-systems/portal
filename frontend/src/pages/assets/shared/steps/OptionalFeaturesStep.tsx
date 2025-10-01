@@ -1,13 +1,13 @@
-import { useState } from 'react';
-import { Box, Tabs, Tab } from '@mui/material';
-import { useTranslate } from 'react-admin';
+import { useState } from "react";
+import { Box, Tabs, Tab } from "@mui/material";
+import { useTranslate } from "react-admin";
 import {
   VersioningTab,
   DetailedDescriptionTab,
   ProvenanceTab,
   DataPrivacyTab,
   DataQualityTab,
-} from '../tabs';
+} from "../tabs";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -37,8 +37,8 @@ export const OptionalFeaturesStep = () => {
   };
 
   return (
-    <Box sx={{ width: '100%' }}>
-      <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+    <Box sx={{ width: "100%" }}>
+      <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
         <Tabs
           value={activeTab}
           onChange={handleTabChange}
@@ -46,11 +46,15 @@ export const OptionalFeaturesStep = () => {
           variant="scrollable"
           scrollButtons="auto"
         >
-          <Tab label={translate('resources.assets.create.tabs.versioning')} />
-          <Tab label={translate('resources.assets.create.tabs.detailedDescription')} />
-          <Tab label={translate('resources.assets.create.tabs.provenance')} />
-          <Tab label={translate('resources.assets.create.tabs.dataPrivacy')} />
-          <Tab label={translate('resources.assets.create.tabs.dataQuality')} />
+          <Tab label={translate("resources.assets.create.tabs.versioning")} />
+          <Tab
+            label={translate(
+              "resources.assets.create.tabs.detailedDescription"
+            )}
+          />
+          <Tab label={translate("resources.assets.create.tabs.provenance")} />
+          <Tab label={translate("resources.assets.create.tabs.dataPrivacy")} />
+          <Tab label={translate("resources.assets.create.tabs.dataQuality")} />
         </Tabs>
       </Box>
 
