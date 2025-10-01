@@ -12,7 +12,6 @@ import PolicyIcon from "@mui/icons-material/Policy";
 import GavelIcon from "@mui/icons-material/Gavel";
 import AutoStoriesIcon from "@mui/icons-material/AutoStories";
 import AutoModeIcon from "@mui/icons-material/AutoMode";
-import WebStoriesIcon from "@mui/icons-material/WebStories";
 import InventoryIcon from "@mui/icons-material/Inventory";
 import HandshakeIcon from "@mui/icons-material/Handshake";
 import AssignmentTurnedInIcon from "@mui/icons-material/AssignmentTurnedIn";
@@ -32,7 +31,7 @@ import {
   ContractDefinitionsList,
   ContractDefinitionEdit,
 } from "./pages/contract_definitions";
-import { Catalog } from "./pages/catalog";
+import { CatalogList, CatalogShow, CatalogCreate, CatalogEdit } from "./pages/catalogs";
 import contractnegotiations from "./pages/contract_negotiations";
 import contractagreements from "./pages/contract_agreements";
 import transferprocesses from "./pages/transfer_processes";
@@ -58,13 +57,7 @@ const CustomMenu = () => {
       {window.config.showContractDefinitions && (
         <Menu.ResourceItem name="contractdefinitions" />
       )}
-      {window.config.showCatalog && (
-        <Menu.Item
-          to="/catalog"
-          primaryText="Catalog"
-          leftIcon={<AutoStoriesIcon />}
-        />
-      )}
+      {window.config.showCatalog && <Menu.ResourceItem name="catalogs" />}
       {window.config.showContractAgreements && (
         <Menu.ResourceItem name="contractagreements" />
       )}
@@ -94,9 +87,6 @@ export const App = () => (
     disableTelemetry={true}
   >
     <CustomRoutes>
-      {window.config.showCatalog && (
-        <Route path="/catalog" element={<Catalog />} />
-      )}
       <Route
         path="/contractnegotiations/:id/terminate"
         element={<contractnegotiations.terminate />}
@@ -181,5 +171,17 @@ export const App = () => (
       options={{ label: "Data Download" }}
       show={RawDataDownloadShow}
     ></Resource>
+    {window.config.showCatalog && (
+      <Resource
+        name="catalogs"
+        options={{ label: "Catalogs" }}
+        icon={AutoStoriesIcon}
+        list={CatalogList}
+        show={CatalogShow}
+        create={CatalogCreate}
+        edit={CatalogEdit}
+      />
+    )}
+    <Resource name="datasets" />
   </Admin>
 );

@@ -70,3 +70,20 @@ export interface DatasetFormData extends Partial<Dataset> {
 export interface CatalogFormData extends Partial<Catalog> {
   [key: string]: any;
 }
+
+// Local catalog management interfaces
+export interface LocalCatalog {
+  id: string;
+  url: string;
+  name: string;
+  description?: string;
+  dateAdded: string;
+  lastConnected?: string;
+  isActive: boolean;
+}
+
+export interface CatalogConnection {
+  id: string;
+  status: 'connected' | 'disconnected' | 'error';
+  error?: string;
+}
