@@ -1,37 +1,36 @@
-import { FunctionField, Labeled, useTranslate } from "react-admin";
-import { Typography, Box, Link } from "@mui/material";
+import { Labeled, FunctionField, useTranslate } from "react-admin";
+import { Typography, Box } from "@mui/material";
 
-export const DataPrivacyTab = () => {
+export const DataQuality = () => {
   const translate = useTranslate();
 
   return (
     <Box>
       <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-        Privacy and legal information for personal data handling.
+        {translate("resources.assets.tabs.dataQualityTab.shortDescription")}
       </Typography>
 
       <Labeled
         fullWidth
         label={translate(
-          "resources.assets.tabs.dataPrivacyTab.personalDataHandling"
+          "resources.assets.tabs.dataQualityTab.qualityMeasurements"
         )}
       >
         <FunctionField
           render={(record: any) => {
-            const handlingData =
-              record?.properties?.["dpv:hasPersonalDataHandling"];
+            const measurements = record?.qualityMeasurements;
             if (
-              !handlingData ||
-              !Array.isArray(handlingData) ||
-              handlingData.length === 0
+              !measurements ||
+              !Array.isArray(measurements) ||
+              measurements.length === 0
             ) {
               return translate(
-                "resources.assets.tabs.dataPrivacyTab.noPersonalDataHandling"
+                "resources.assets.tabs.dataQualityTab.noQualityMeasurements"
               );
             }
             return (
               <div>
-                {handlingData.map((item: any, index: number) => (
+                {measurements.map((item: any, index: number) => (
                   <div
                     key={index}
                     style={{
@@ -44,34 +43,26 @@ export const DataPrivacyTab = () => {
                     <div>
                       <strong>
                         {translate(
-                          "resources.assets.tabs.dataPrivacyTab.personalDataType"
+                          "resources.assets.tabs.dataQualityTab.measurement"
                         )}
                       </strong>{" "}
-                      {item["dpv:hasData"] || "-"}
+                      {item.measurementOf?.title || "-"}
                     </div>
                     <div>
                       <strong>
                         {translate(
-                          "resources.assets.tabs.dataPrivacyTab.purpose"
+                          "resources.assets.tabs.dataQualityTab.value"
                         )}
                       </strong>{" "}
-                      {item["dpv:hasPurpose"] || "-"}
+                      {item.value || "-"}
                     </div>
                     <div>
                       <strong>
                         {translate(
-                          "resources.assets.tabs.dataPrivacyTab.legalBasis"
+                          "resources.assets.tabs.dataQualityTab.measurementDescription"
                         )}
                       </strong>{" "}
-                      {item["dpv:hasLegalBasis"] || "-"}
-                    </div>
-                    <div>
-                      <strong>
-                        {translate(
-                          "resources.assets.tabs.dataPrivacyTab.applicableLaw"
-                        )}
-                      </strong>{" "}
-                      {item["dpv:hasLaw"] || "-"}
+                      {item.description || "-"}
                     </div>
                   </div>
                 ))}

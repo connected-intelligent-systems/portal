@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   TextInput,
   BooleanInput,
@@ -6,11 +6,11 @@ import {
   required,
   useTranslate,
 } from "react-admin";
+import { useWatch } from "react-hook-form";
 import { Typography, Box, InputAdornment, IconButton } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import * as PropTypes from "prop-types";
 
-// AuthHeaderInput component - placeholder, you may need to implement or import this
 const AuthHeaderInput = ({ translate }: { translate: any }) => (
   <TextInput
     source="dataAddress.authHeader"
@@ -188,21 +188,30 @@ const AmazonS3Input = ({ translate }: { translate: any }) => {
 };
 
 export const DataAddressStep = () => {
-  const [dataType, setDataType] = useState("http");
   const translate = useTranslate();
+
+  // Watch the form value for dataAddress.type
+  const formDataType = useWatch({ name: "dataAddress.type" });
+  const [dataType, setDataType] = useState(formDataType || "HttpData");
+
+  // Update local state when form value changes
+  useEffect(() => {
+    if (formDataType) {
+      setDataType(formDataType);
+    }
+  }, [formDataType]);
 
   const handleShowEndpoints = () => {
     // Placeholder function - implement endpoint discovery logic here
-    console.log("Show endpoints clicked");
   };
 
   const dataTypeChoices = [
     {
-      id: "http",
+      id: "HttpData",
       name: translate("resources.assets.create.dataAddress.dataTypes.http"),
     },
     {
-      id: "s3",
+      id: "AmazonS3",
       name: translate("resources.assets.create.dataAddress.dataTypes.s3"),
     },
   ];
@@ -217,7 +226,7 @@ export const DataAddressStep = () => {
         source="dataAddress.type"
         label={translate("resources.assets.create.dataAddress.dataAddressType")}
         choices={dataTypeChoices}
-        defaultValue="http"
+        defaultValue="HttpData"
         fullWidth
         validate={required()}
         onChange={(event) => {
@@ -225,7 +234,7 @@ export const DataAddressStep = () => {
         }}
       />
 
-      {dataType === "http" && (
+      {(dataType === "HttpData" || dataType === "http") && (
         <Box>
           <Typography variant="h6" sx={{ mb: 2 }}>
             {translate("resources.assets.create.dataAddress.httpConfiguration")}
@@ -237,7 +246,7 @@ export const DataAddressStep = () => {
         </Box>
       )}
 
-      {dataType === "s3" && (
+      {(dataType === "AmazonS3" || dataType === "s3") && (
         <Box>
           <Typography variant="h6" sx={{ mb: 2 }}>
             {translate("resources.assets.create.dataAddress.s3Configuration")}

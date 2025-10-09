@@ -28,6 +28,13 @@ export async function create(params: { data: Partial<LocalCatalog> }) {
     throw new Error("URL and name are required");
   }
 
+  // Check if catalog with this URL already exists
+  const catalogId = btoa(url);
+  const existingCatalog = LocalCatalogService.getCatalogById(catalogId);
+  if (existingCatalog) {
+    throw new Error(`A catalog with URL "${url}" already exists`);
+  }
+
   // Test connection first
   const testResult = await LocalCatalogService.testConnection(url);
   if (!testResult.success) {

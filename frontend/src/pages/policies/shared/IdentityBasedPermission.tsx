@@ -1,4 +1,3 @@
-import React from "react";
 import {
   useTranslate,
   useInput,
@@ -7,7 +6,6 @@ import {
   TextInput,
   SelectInput,
   required,
-  useRecordContext,
 } from "react-admin";
 import { Typography } from "@mui/material";
 

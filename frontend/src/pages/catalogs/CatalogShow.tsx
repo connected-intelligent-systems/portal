@@ -6,13 +6,13 @@ import {
   EditButton,
   TopToolbar,
   ReferenceManyField,
-  useTranslate,
   Pagination,
   useRecordContext,
   SelectInput,
   FilterForm,
   TextInput,
   useListContext,
+  useTranslate,
 } from "react-admin";
 import { Box, Grid } from "@mui/material";
 import { useState, useEffect } from "react";
@@ -30,6 +30,7 @@ const DatasetsWithFilters = () => {
   const catalogRecord = useRecordContext();
   const catalogUrl = catalogRecord?.url;
   const { data } = useListContext();
+  const translate = useTranslate();
   const [categories, setCategories] = useState<{ id: string; name: string }[]>(
     []
   );
@@ -41,18 +42,23 @@ const DatasetsWithFilters = () => {
           setCategories(cats.map((cat) => ({ id: cat, name: cat })));
         })
         .catch((error) => {
-          console.error("Error loading categories:", error);
           setCategories([]);
         });
     }
   }, [catalogUrl]);
 
   const filters = [
-    <TextInput key="q" source="q" label="Search" alwaysOn resettable />,
+    <TextInput
+      key="title"
+      source="title"
+      label={translate("resources.catalog.filters.search")}
+      alwaysOn
+      resettable
+    />,
     <SelectInput
       key="category"
       source="category"
-      label="Category"
+      label={translate("resources.catalog.filters.category")}
       choices={categories}
       alwaysOn
     />,
@@ -76,12 +82,13 @@ const DatasetsWithFilters = () => {
 };
 
 const DatasetsSection = () => {
+  const translate = useTranslate();
   return (
     <ReferenceManyField
       reference="datasets"
       target="url"
       source="url"
-      label="Datasets"
+      label={translate("resources.catalog.fields.datasets")}
       perPage={10}
       pagination={<Pagination />}
     >
@@ -92,16 +99,32 @@ const DatasetsSection = () => {
 
 export const CatalogShow = () => {
   const translate = useTranslate();
-
   return (
     <Show actions={<CatalogShowActions />}>
       <SimpleShowLayout>
-        <TextField source="name" label="Name" />
-        <TextField source="url" label="URL" />
-        <TextField source="description" label="Description" />
-        <DateField source="dateAdded" label="Date Added" showTime />
-        <DateField source="lastConnected" label="Last Connected" showTime />
-
+        <TextField
+          source="name"
+          label={translate("resources.catalog.fields.name")}
+        />
+        <TextField
+          source="url"
+          label={translate("resources.catalog.fields.url")}
+        />
+        <TextField
+          source="description"
+          label={translate("resources.catalog.fields.description")}
+          emptyText="-"
+        />
+        <DateField
+          source="dateAdded"
+          label={translate("resources.catalog.fields.dateAdded")}
+          showTime
+        />
+        <DateField
+          source="lastConnected"
+          label={translate("resources.catalog.fields.lastConnected")}
+          showTime
+        />
         <DatasetsSection />
       </SimpleShowLayout>
     </Show>

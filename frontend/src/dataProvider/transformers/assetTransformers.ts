@@ -141,7 +141,6 @@ export async function parseAssetFromJsonLd(jsonLdAsset: any): Promise<Asset> {
 
     return removeUndefinedValues(asset) as Asset;
   } catch (error) {
-    console.error("Error in parseAssetFromJsonLd (Zod):", error);
     const errorMessage = error instanceof Error ? error.message : String(error);
     throw new Error(`Failed to transform JSON-LD asset: ${errorMessage}`);
   }
@@ -191,7 +190,6 @@ export async function serializeAssetToJsonLd(
     };
   }
 
-
   if (asset.provenance?.derivedFromId) {
     properties["prov:wasDerivedFrom"] = {
       "@id": asset.provenance.derivedFromId,
@@ -220,9 +218,41 @@ export async function serializeAssetToJsonLd(
 
   let finalDataAddress = asset.dataAddress;
   if (asset.dataAddress) {
-    const processedAddress: AssetDataAddress = { type: asset.dataAddress.type };
+    const dataAddressType = asset.dataAddress.type;
+    const processedAddress: AssetDataAddress = { type: dataAddressType };
+
+    // Define allowed fields for each type
+    const httpDataFields = [
+      "type",
+      "baseUrl",
+      "header:Accept",
+      "proxyPath",
+      "proxyQueryParams",
+      "proxyBody",
+      "proxyMethod",
+      "authHeader",
+    ];
+    const amazonS3Fields = [
+      "type",
+      "region",
+      "endpointOverride",
+      "bucketName",
+      "objectName",
+      "objectPrefix",
+      "accessKeyId",
+      "secretAccessKey",
+    ];
+
+    // Determine which fields to keep based on type
+    const allowedFields =
+      dataAddressType === "HttpData" || dataAddressType === "http"
+        ? httpDataFields
+        : dataAddressType === "AmazonS3" || dataAddressType === "s3"
+        ? amazonS3Fields
+        : Object.keys(asset.dataAddress); // fallback: keep all fields
+
     for (const [key, value] of Object.entries(asset.dataAddress)) {
-      if (key !== "type") {
+      if (key !== "type" && allowedFields.includes(key)) {
         processedAddress[key] =
           typeof value === "boolean" ? String(value) : value;
       }

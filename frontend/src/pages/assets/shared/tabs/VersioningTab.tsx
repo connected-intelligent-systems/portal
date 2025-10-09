@@ -1,9 +1,5 @@
-import {
-  TextInput,
-  DateInput,
-  useTranslate,
-} from "react-admin";
-import { Typography, Link } from "@mui/material";
+import { TextInput, DateInput, useTranslate } from "react-admin";
+import { Typography } from "@mui/material";
 
 export const VersioningTab = () => {
   const translate = useTranslate();
@@ -15,22 +11,6 @@ export const VersioningTab = () => {
       </Typography>
       <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
         {translate("resources.assets.create.versioning.description")}
-        <Link
-          href="https://www.dublincore.org/specifications/dublin-core/dcmi-terms/"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Dublin Core Terms
-        </Link>{" "}
-        and{" "}
-        <Link
-          href="https://www.w3.org/TR/owl-ref/"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          OWL Web Ontology Language
-        </Link>
-        .
       </Typography>
       <TextInput
         source="version"

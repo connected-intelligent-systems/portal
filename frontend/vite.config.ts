@@ -1,12 +1,10 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-import svgr from 'vite-plugin-svgr' 
 
 // https://vitejs.dev/config/
 export default defineConfig({
     plugins: [
-        react(),
-        svgr(),
+        react()
     ],
     define: {
         'process.env': process.env,
@@ -20,7 +18,7 @@ export default defineConfig({
         proxy: {
             // EDC Management API - direct proxy to EDC management endpoint
             '/api/management': {
-                target: 'http://edc-provider:19193',
+                target: process.env.VITE_EDC_MANAGEMENT_API_URL || 'http://edc-provider:19193',
                 changeOrigin: true,
                 secure: false,
                 rewrite: (path) => path.replace(/^\/api\/management/, '/management'),
@@ -33,7 +31,7 @@ export default defineConfig({
             },
             // EDC Protocol API (if needed for direct DSP communication)
             '/api/protocol': {
-                target: 'http://edc-provider:19194',
+                target: process.env.VITE_EDC_PROTOCOL_API_URL || 'http://edc-provider:19291',
                 changeOrigin: true,
                 secure: false,
                 rewrite: (path) => path.replace(/^\/api\/protocol/, '/protocol'),

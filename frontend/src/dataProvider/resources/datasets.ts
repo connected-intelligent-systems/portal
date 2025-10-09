@@ -1,6 +1,37 @@
 import { GetManyReferenceParams } from "react-admin";
-import { parseCatalogFromJsonLd } from "../transformers/catalogTransformers";
+import {
+  parseCatalogFromJsonLd,
+  parseDatasetFromJsonLd,
+} from "../transformers/catalogTransformers";
 import { LocalCatalogService } from "../../services/localCatalogService";
+import { buildQuerySpec } from "../helpers";
+
+/**
+ * Maps a filter key and value to a standardized filter object for querying datasets.
+ *
+ * @param key - The filter key (e.g., "title", "category").
+ * @param value - The value to filter by.
+ * @returns An object containing the mapped field, operator, and value for the filter.
+ */
+const filterMapping = (key: string, value: any) => {
+  switch (key) {
+    case "title":
+      return {
+        field: "http://purl.org/dc/terms/title",
+        operator: "LIKE",
+        value: `%${value}%`,
+      };
+    case "category":
+      return {
+        field:
+          "'http://www.w3.org/ns/dcat#theme'.'http://purl.org/dc/terms/title'",
+        operator: "=",
+        value: `[{"@value":"${value}"}]`,
+      };
+    default:
+      return { field: key, operator: "=", value };
+  }
+};
 
 /**
  * Fetch datasets by catalog URL (counterparty address)
@@ -8,11 +39,7 @@ import { LocalCatalogService } from "../../services/localCatalogService";
  */
 export async function getManyReference(params: GetManyReferenceParams) {
   try {
-    // params.id is the catalog URL (from the source record)
-    // params.target is the field name being referenced (should be catalog URL)
     const catalogUrl = params.id;
-    const { page = 1, perPage = 10 } = params.pagination || {};
-    const { q, title, description, category } = params.filter || {};
 
     const response = await fetch(`/api/management/v3/catalog/request`, {
       headers: {
@@ -25,6 +52,7 @@ export async function getManyReference(params: GetManyReferenceParams) {
         },
         counterPartyAddress: catalogUrl,
         protocol: "dataspace-protocol-http",
+        querySpec: buildQuerySpec(params, filterMapping),
       }),
     });
 
@@ -36,61 +64,23 @@ export async function getManyReference(params: GetManyReferenceParams) {
       );
     }
 
-    // Transform JSON-LD catalog to clean Catalog object with normalized datasets
     const cleanCatalog = await parseCatalogFromJsonLd(
       catalogData,
       catalogUrl as string
     );
 
-    // Update last connected timestamp
     LocalCatalogService.updateLastConnected(catalogUrl as string);
 
-    let datasets = cleanCatalog.datasets || [];
+    const datasets = (cleanCatalog.datasets || []).map((dataset: any) => ({
+      ...dataset,
+      participantId: cleanCatalog.participantId,
+    }));
 
-    // Apply client-side filtering
-    if (q) {
-      const query = q.toLowerCase();
-      datasets = datasets.filter(
-        (dataset: any) =>
-          dataset.title?.toLowerCase().includes(query) ||
-          dataset.description?.toLowerCase().includes(query) ||
-          dataset.id?.toLowerCase().includes(query)
-      );
-    }
-
-    if (title) {
-      const titleQuery = title.toLowerCase();
-      datasets = datasets.filter((dataset: any) =>
-        dataset.title?.toLowerCase().includes(titleQuery)
-      );
-    }
-
-    if (description) {
-      const descQuery = description.toLowerCase();
-      datasets = datasets.filter((dataset: any) =>
-        dataset.description?.toLowerCase().includes(descQuery)
-      );
-    }
-
-    if (category) {
-      datasets = datasets.filter(
-        (dataset: any) => dataset.theme?.title === category
-      );
-    }
-
-    // Calculate pagination
-    const total = datasets.length;
-    const start = (page - 1) * perPage;
-    const end = start + perPage;
-    const paginatedDatasets = datasets.slice(start, end);
-
-    // Return the datasets array from the catalog
     return {
-      data: paginatedDatasets,
-      total: total,
+      data: datasets,
+      total: datasets.length,
     };
   } catch (error) {
-    console.error("Error fetching datasets:", error);
     const errorMessage = error instanceof Error ? error.message : String(error);
     throw new Error(`Failed to fetch datasets: ${errorMessage}`);
   }
@@ -130,7 +120,6 @@ export async function getCategories(catalogUrl: string): Promise<string[]> {
 
     return Array.from(categories).sort();
   } catch (error) {
-    console.error("Error fetching categories:", error);
     return [];
   }
 }
@@ -143,12 +132,123 @@ export async function getList() {
   };
 }
 
-export async function getOne() {
-  throw new Error("Datasets getOne is not implemented.");
+// getOne accepts composite ID: catalogId--datasetId
+// where catalogId is base64(catalogUrl)
+export async function getOne(params: any) {
+  try {
+    const [catalogId, datasetId] = params.id.split("--");
+
+    if (!catalogId || !datasetId) {
+      throw new Error(
+        "Invalid dataset ID format. Expected format: catalogId--datasetId"
+      );
+    }
+
+    const catalogUrl = atob(catalogId);
+
+    // Fetch dataset from catalog
+    const response = await fetch(`/api/management/v3/catalog/dataset/request`, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      method: "POST",
+      body: JSON.stringify({
+        "@context": {
+          "@vocab": "https://w3id.org/edc/v0.0.1/ns/",
+        },
+        "@type": "DatasetRequest",
+        "@id": datasetId,
+        counterPartyAddress: catalogUrl,
+        protocol: "dataspace-protocol-http",
+      }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(
+        errorData.message || `HTTP error! status: ${response.status}`
+      );
+    }
+
+    const datasetData = await response.json();
+    const cleanDataset = await parseDatasetFromJsonLd(datasetData);
+
+    // Add catalog metadata
+    cleanDataset.catalogUrl = catalogUrl;
+    cleanDataset.originalId = cleanDataset.id;
+    cleanDataset.id = params.id; // Keep composite ID
+
+    return {
+      data: cleanDataset,
+    };
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    throw new Error(`Failed to fetch dataset: ${errorMessage}`);
+  }
 }
 
-export async function getMany() {
-  throw new Error("Datasets getMany is not implemented.");
+export async function getMany(params: any) {
+  try {
+    // Fetch multiple datasets by composite IDs: catalogId--datasetId
+    const datasets = await Promise.all(
+      params.ids.map(async (compositeId: string) => {
+        const [catalogId, datasetId] = compositeId.split("--");
+
+        if (!catalogId || !datasetId) {
+          throw new Error(
+            `Invalid dataset ID format: ${compositeId}. Expected format: catalogId--datasetId`
+          );
+        }
+
+        // Decode catalog URL
+        const catalogUrl = atob(catalogId);
+
+        // Fetch dataset from catalog
+        const response = await fetch(
+          `/api/management/v3/catalog/dataset/request`,
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+            method: "POST",
+            body: JSON.stringify({
+              "@context": {
+                "@vocab": "https://w3id.org/edc/v0.0.1/ns/",
+              },
+              "@type": "DatasetRequest",
+              "@id": datasetId,
+              counterPartyAddress: catalogUrl,
+              protocol: "dataspace-protocol-http",
+            }),
+          }
+        );
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(
+            errorData.message || `HTTP error! status: ${response.status}`
+          );
+        }
+
+        const datasetData = await response.json();
+        const cleanDataset = await parseDatasetFromJsonLd(datasetData);
+
+        // Add catalog metadata
+        cleanDataset.catalogUrl = catalogUrl;
+        cleanDataset.originalId = cleanDataset.id;
+        cleanDataset.id = compositeId; // Keep composite ID
+
+        return cleanDataset;
+      })
+    );
+
+    return {
+      data: datasets,
+    };
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    throw new Error(`Failed to fetch datasets: ${errorMessage}`);
+  }
 }
 
 export async function create() {

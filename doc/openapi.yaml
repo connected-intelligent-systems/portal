@@ -1,5 +1,6 @@
 openapi: 3.0.1
 info:
+  title: API
   version: v4
 tags:
 - description: "The public API of the Data Plane is a data proxy enabling a data consumer\
@@ -3512,7 +3513,7 @@ components:
           '@vocab': https://w3id.org/edc/v0.0.1/ns/
         '@type': Criterion
         operandLeft: fieldName
-        operator: =
+        operator: '='
         operandRight: some value
       properties:
         '@type':

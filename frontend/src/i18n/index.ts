@@ -1,36 +1,37 @@
 import polyglotI18nProvider from "ra-i18n-polyglot";
 import englishMessages from "ra-language-english";
-import germanMessages from "ra-language-german";
+import { formalGermanMessages } from "@haleos/ra-language-german";
 import englishMessagesCustom from "./en";
 import germanMessagesCustom from "./de";
+import merge from "lodash/merge";
 
 const messages: { [key: string]: any } = {
-  en: { ...englishMessages, ...englishMessagesCustom },
-  de: { ...germanMessages, ...germanMessagesCustom }, // fallback to English for base messages
+  en: merge({}, englishMessages, englishMessagesCustom),
+  de: merge({}, formalGermanMessages, germanMessagesCustom),
 };
 
-// Function to detect browser language
+console.log(messages)
+
+
 const detectBrowserLanguage = (): string => {
   if (typeof navigator === "undefined") {
     return "en"; // Default for server-side rendering
   }
 
-  // Check localStorage first for user preference
   const storedLang = localStorage.getItem("locale");
   if (storedLang && (storedLang === "en" || storedLang === "de")) {
     return storedLang;
   }
 
-  // Detect browser language
   const browserLang = navigator.language || (navigator as any).userLanguage;
   if (browserLang) {
-    const lang = browserLang.split("-")[0]; // Get primary language (e.g., 'en' from 'en-US')
+    const lang = browserLang.split("-")[0];
     if (lang === "de") {
       return "de";
     }
   }
 
-  return "en"; // Default fallback
+  return "en";
 };
 
 const defaultLocale = detectBrowserLanguage();

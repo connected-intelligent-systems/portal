@@ -4,7 +4,7 @@ import {
   TextInput,
   useTranslate,
 } from "react-admin";
-import { Typography, Box, Link } from "@mui/material";
+import { Typography, Box } from "@mui/material";
 
 export const DataQualityTab = () => {
   const translate = useTranslate();
@@ -13,14 +13,6 @@ export const DataQualityTab = () => {
     <Box sx={{ width: "100%" }}>
       <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
         {translate("resources.assets.create.dataQuality.description")}
-        <Link
-          href="https://www.w3.org/TR/vocab-dqv/"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Data Quality Vocabulary (DQV)
-        </Link>
-        .
       </Typography>
       <ArrayInput
         source="qualityMeasurements"

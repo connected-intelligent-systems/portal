@@ -24,9 +24,7 @@ export const PermissionAccordion = ({ record }: PermissionAccordionProps) => {
     },
   };
 
-  if (!record?.permissions || record.permissions.length === 0) {
-    return null;
-  }
+  const hasPermissions = record?.permissions && record.permissions.length > 0;
 
   return (
     <Accordion square elevation={0} disableGutters>
@@ -39,54 +37,62 @@ export const PermissionAccordion = ({ record }: PermissionAccordionProps) => {
         </Typography>
       </AccordionSummary>
       <AccordionDetails sx={{ p: 0 }}>
-        <EnsureArrayField
-          source="permissions"
-          label={translate("resources.catalog.permissions.permissions")}
-          emptyText={translate("resources.catalog.permissions.noPermissions")}
-          record={record}
-        >
-          <Datagrid
-            bulkActionButtons={false}
-            rowClick={false}
-            hover={false}
-            size="small"
+        {hasPermissions ? (
+          <EnsureArrayField
+            source="permissions"
+            label={translate("resources.catalog.permissions.permissions")}
+            emptyText={translate("resources.catalog.permissions.noPermissions")}
+            record={record}
           >
-            <TextField
-              source="action"
-              label={translate("resources.catalog.permissions.action")}
-              sortable={false}
-            />
-            <EnsureArrayField
-              source="constraints"
-              label={translate("resources.catalog.permissions.constraints")}
+            <Datagrid
+              bulkActionButtons={false}
+              rowClick={false}
+              hover={false}
+              size="small"
             >
-              <Datagrid
-                hover={false}
-                bulkActionButtons={false}
-                style={{ tableLayout: "fixed" }}
-                size="small"
+              <TextField
+                source="action"
+                label={translate("resources.catalog.permissions.action")}
+                sortable={false}
+              />
+              <EnsureArrayField
+                source="constraints"
+                label={translate("resources.catalog.permissions.constraints")}
               >
-                <TextField
-                  source="leftOperand"
-                  label={translate("resources.catalog.permissions.leftOperand")}
-                  sortable={false}
-                />
-                <TextField
-                  source="operator"
-                  label={translate("resources.catalog.permissions.operator")}
-                  sortable={false}
-                />
-                <TextField
-                  source="rightOperand"
-                  label={translate(
-                    "resources.catalog.permissions.rightOperand"
-                  )}
-                  sortable={false}
-                />
-              </Datagrid>
-            </EnsureArrayField>
-          </Datagrid>
-        </EnsureArrayField>
+                <Datagrid
+                  hover={false}
+                  bulkActionButtons={false}
+                  style={{ tableLayout: "fixed" }}
+                  size="small"
+                >
+                  <TextField
+                    source="leftOperand"
+                    label={translate(
+                      "resources.catalog.permissions.leftOperand"
+                    )}
+                    sortable={false}
+                  />
+                  <TextField
+                    source="operator"
+                    label={translate("resources.catalog.permissions.operator")}
+                    sortable={false}
+                  />
+                  <TextField
+                    source="rightOperand"
+                    label={translate(
+                      "resources.catalog.permissions.rightOperand"
+                    )}
+                    sortable={false}
+                  />
+                </Datagrid>
+              </EnsureArrayField>
+            </Datagrid>
+          </EnsureArrayField>
+        ) : (
+          <Typography variant="body2" color="text.secondary" sx={{ p: 2 }}>
+            {translate("resources.catalog.permissions.noPermissions")}
+          </Typography>
+        )}
       </AccordionDetails>
     </Accordion>
   );

@@ -7,7 +7,7 @@ import {
   GetManyParams,
 } from "react-admin";
 import { httpClient } from "../httpClient";
-import { compactJsonLd, compactJsonLdArray } from "../helpers";
+import { compactJsonLd, compactJsonLdArray, buildQuerySpec } from "../helpers";
 import {
   parseAssetFromJsonLd,
   serializeAssetToJsonLd,
@@ -29,24 +29,15 @@ const frame = {
 };
 
 export async function getList(params: GetListParams) {
-  const { page, perPage } = params.pagination || { page: 1, perPage: 10 };
+  const { page = 1, perPage = 10 } = params.pagination || {};
+  const querySpec = buildQuerySpec(params);
   const response = await httpClient(`/api/management/v3/assets/request`, {
     method: "POST",
-    body: JSON.stringify({
-      "@context": {
-        "@vocab": "https://w3id.org/edc/v0.0.1/ns/",
-      },
-      "@type": "QuerySpec",
-      offset: (page - 1) * perPage,
-      limit: perPage,
-      filterExpression: [],
-    }),
+    body: JSON.stringify(querySpec),
   });
 
   const assets = response.json;
   const framedAssets = await compactJsonLdArray(assets, frame);
-
-  // Transform JSON-LD assets to clean Asset objects
   const cleanAssets = await Promise.all(
     framedAssets.map((asset: any) => parseAssetFromJsonLd(asset))
   );
@@ -64,8 +55,6 @@ export async function getOne(params: GetOneParams) {
   const response = await httpClient(`/api/management/v3/assets/${params.id}`);
   const asset = response.json;
   const framedAsset = await compactJsonLd(asset, frame);
-
-  // Transform JSON-LD asset to clean Asset object
   const cleanAsset = await parseAssetFromJsonLd(framedAsset);
 
   return {
@@ -85,15 +74,12 @@ export async function remove(params: DeleteParams) {
 }
 
 export async function create(params: CreateParams) {
-  // Transform clean Asset data to JSON-LD format
   const jsonLdAsset = await serializeAssetToJsonLd(params.data);
-
   const response = await httpClient(`/api/management/v3/assets`, {
     method: "POST",
     body: JSON.stringify(jsonLdAsset),
   });
 
-  // Transform response back to clean Asset object
   const cleanAsset = await parseAssetFromJsonLd(response.json);
 
   return {
@@ -102,7 +88,6 @@ export async function create(params: CreateParams) {
 }
 
 export async function update(params: UpdateParams) {
-  // Transform clean Asset data to JSON-LD format
   const jsonLdAsset = await serializeAssetToJsonLd(params.data);
 
   await httpClient(`/api/management/v3/assets`, {
@@ -110,7 +95,6 @@ export async function update(params: UpdateParams) {
     body: JSON.stringify(jsonLdAsset),
   });
 
-  // Return the clean Asset data with the ID
   return {
     data: {
       ...params.data,
@@ -126,8 +110,6 @@ export async function getMany(params: GetManyParams) {
     )
   );
   const framedAssets = await compactJsonLdArray(assets, frame);
-
-  // Transform JSON-LD assets to clean Asset objects
   const cleanAssets = await Promise.all(
     framedAssets.map((asset: any) => parseAssetFromJsonLd(asset))
   );

@@ -5,11 +5,24 @@ import { removeUndefinedValues } from "../helpers";
 const CoreTerminateTransferProcessSchema = z.object({
   "@id": z.string(),
   "@type": z.string(),
-  transferId: z.string(),
+  transferId: z.string().optional(),
   reason: z.string().optional(),
-  state: z.string(),
-  createdAt: z.number().transform((val) => new Date(val).toISOString()),
+  state: z.string().optional(),
+  createdAt: z
+    .number()
+    .optional()
+    .transform((val) => (val ? new Date(val).toISOString() : undefined)),
 });
+
+export function transformToJsonLd(data: { reason?: string }): any {
+  return {
+    "@context": {
+      "@vocab": "https://w3id.org/edc/v0.0.1/ns/",
+    },
+    "@type": "https://w3id.org/edc/v0.0.1/ns/TerminateTransfer",
+    reason: data.reason || "",
+  };
+}
 
 export async function parseTerminateTransferProcessFromJsonLd(
   jsonLd: any
@@ -19,14 +32,13 @@ export async function parseTerminateTransferProcessFromJsonLd(
     const termination: TerminateTransferProcess = {
       id: parsed["@id"],
       type: parsed["@type"],
-      transferId: parsed.transferId,
+      transferId: parsed.transferId || parsed["@id"],
       reason: parsed.reason || "",
-      state: parsed.state,
-      createdAt: parsed.createdAt,
+      state: parsed.state || "UNKNOWN",
+      createdAt: parsed.createdAt || new Date().toISOString(),
     };
     return removeUndefinedValues(termination as any);
   } catch (error) {
-    console.error("Error in parseTerminateTransferProcessFromJsonLd:", error);
     const errorMessage = error instanceof Error ? error.message : String(error);
     throw new Error(`Failed to transform JSON-LD: ${errorMessage}`);
   }

@@ -119,7 +119,8 @@ export const PoliciesList = () => {
         <FunctionField
           label={translate("resources.policies.fields.name")}
           render={renderNameWithId}
-          sortable={false}
+          sortable={true}
+          sortBy="privateProperties.'https://w3id.org/edc/v0.0.1/ns/name'"
         />
 
         <FunctionField

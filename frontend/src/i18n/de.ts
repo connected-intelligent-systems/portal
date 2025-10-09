@@ -2,6 +2,35 @@ import { TranslationMessages } from "ra-core";
 
 const germanMessages: Partial<TranslationMessages> = {
   resources: {
+    contractdefinitions: {
+      name: "Vertragsdefinition |||| Vertragsdefinitionen",
+    },
+    catalogs: {
+      name: "Katalog |||| Kataloge",
+    },
+    contractagreements: {
+      name: "Vertragsvereinbarung |||| Vertragsvereinbarungen",
+      fields: {
+        id: "ID",
+        assetId: "Asset-ID",
+        consumerId: "Konsumenten-ID",
+        providerId: "Anbieter-ID",
+        contractSigningDate: "Vertragsunterzeichnung",
+        policyType: "Richtlinientyp",
+        policyTarget: "Richtlinienziel",
+        dataset: "Datensatz",
+        asset: "Asset",
+      },
+      sections: {
+        policy: "Richtlinie",
+      },
+      actions: {
+        transferDataset: "Datensatz übertragen",
+      },
+      messages: {
+        loading: "Lädt...",
+      },
+    },
     assets: {
       name: "Asset |||| Assets",
       fields: {
@@ -36,9 +65,7 @@ const germanMessages: Partial<TranslationMessages> = {
         },
         versioningTab: {
           description:
-            "Versions- und Metadateninformationen basierend auf Dublin Core Terms und OWL-Vokabularen. Weitere Informationen finden Sie unter",
-          dublinCoreLink: "Dublin Core Terms",
-          owlLink: "OWL Web Ontology Language",
+            "Verfolgen Sie die Versionshistorie und Metadaten für dieses Asset.",
           version: "Version",
           creator: "Ersteller",
           created: "Erstellt",
@@ -50,8 +77,9 @@ const germanMessages: Partial<TranslationMessages> = {
         },
         provenanceTab: {
           description:
-            "Informationen über den Ursprung und die Geschichte dieses Assets. Weitere Informationen finden Sie in der",
-          provLink: "PROV-O Ontology",
+            "Informationen über den Ursprung und die Geschichte dieses Assets.",
+          shortDescription:
+            "Informationen über den Ursprung und die Geschichte dieses Assets.",
           wasDerivedFrom: "Abgeleitet von",
           noSourceEntity: "Keine Quell-Entität angegeben",
           wasGeneratedBy: "Erzeugt durch",
@@ -61,8 +89,9 @@ const germanMessages: Partial<TranslationMessages> = {
         },
         dataPrivacyTab: {
           description:
-            "Informationen über die Verarbeitung personenbezogener Daten basierend auf dem DPV-Vokabular. Weitere Informationen finden Sie im",
-          dpvLink: "Data Privacy Vocabulary (DPV)",
+            "Informationen über die Verarbeitung personenbezogener Daten.",
+          shortDescription:
+            "Datenschutz und rechtliche Informationen zur Verarbeitung personenbezogener Daten.",
           personalDataHandling: "Verarbeitung personenbezogener Daten",
           noPersonalDataHandling:
             "Keine Verarbeitung personenbezogener Daten angegeben",
@@ -72,9 +101,9 @@ const germanMessages: Partial<TranslationMessages> = {
           applicableLaw: "Anwendbares Recht:",
         },
         dataQualityTab: {
-          description:
-            "Qualitätsmessungen für dieses Asset unter Verwendung des Data Quality Vocabulary (DQV). Weitere Informationen finden Sie im",
-          dqvLink: "Data Quality Vocabulary (DQV)",
+          description: "Qualitätsmessungen und Bewertungen für dieses Asset.",
+          shortDescription:
+            "Qualitätsmessungen und Bewertungen für dieses Asset.",
           qualityMeasurements: "Qualitätsmessungen",
           noQualityMeasurements: "Keine Qualitätsmessungen angegeben",
           measurement: "Messung:",
@@ -233,7 +262,7 @@ const germanMessages: Partial<TranslationMessages> = {
         versioning: {
           title: "Versionierung",
           description:
-            "Geben Sie Versions- und Metadateninformationen für dieses Asset an, basierend auf Dublin Core Terms und OWL-Vokabularen.",
+            "Verfolgen Sie die Versionshistorie und Metadaten für dieses Asset.",
           fields: {
             version: "Version",
             versionHelper: "Die Version des Datensatzes.",
@@ -258,7 +287,8 @@ const germanMessages: Partial<TranslationMessages> = {
             "Stellen Sie umfassende Dokumentation für diesen Datensatz bereit, indem Sie Markdown-Formatierung verwenden. Diese detaillierte Beschreibung ist optional, wird aber für eine bessere Auffindbarkeit und Nutzung des Datensatzes empfohlen.",
         },
         provenance: {
-          description: "Beschreiben Sie den Ursprung des Datensatzes.",
+          description:
+            "Dokumentieren Sie, woher dieser Datensatz stammt und wie er erstellt wurde.",
           fields: {
             wasDerivedFrom: "Wurde abgeleitet von",
             sourceEntityUri: "Quell-Entitäts-URI",
@@ -276,7 +306,7 @@ const germanMessages: Partial<TranslationMessages> = {
         },
         dataPrivacy: {
           description:
-            "Geben Sie an, wie der Datenschutz in diesem Asset behandelt wird, basierend auf dem DPV-Vokabular.",
+            "Definieren Sie, wie personenbezogene Daten in diesem Asset gesammelt, verarbeitet und geschützt werden.",
           fields: {
             personalDataHandling: "Behandlung personenbezogener Daten",
             personalData: "Personenbezogene Daten",
@@ -332,7 +362,7 @@ const germanMessages: Partial<TranslationMessages> = {
         },
         dataQuality: {
           description:
-            "Geben Sie Qualitätsmessungen für dieses Asset an, indem Sie das Data Quality Vocabulary (DQV) verwenden.",
+            "Fügen Sie Qualitätsmessungen und Bewertungen für dieses Asset hinzu.",
           fields: {
             qualityMeasurements: "Qualitätsmessungen",
             measurement: "Messung",
@@ -376,6 +406,14 @@ const germanMessages: Partial<TranslationMessages> = {
       dataset: {
         unnamedDataset: "Unbenannter Datensatz",
         id: "ID",
+        idLabel: "ID: {{id}}",
+        aria: {
+          datasetId: "Datensatz-ID: {{id}}",
+          viewAndNegotiate: "Datensatz anzeigen und verhandeln: {{title}}",
+          closeDialog: "Dialog schließen",
+          startNegotiation: "Vertragsverhandlung starten",
+          confirmNegotiation: "Verhandlung bestätigen und starten",
+        },
         noDescriptionAvailable: "Keine Beschreibung verfügbar",
         keywords: "Schlüsselwörter",
         noKeywordsAvailable: "Keine Schlüsselwörter verfügbar",
@@ -386,6 +424,15 @@ const germanMessages: Partial<TranslationMessages> = {
         datasetDetailsAndNegotiation: "Datensatzdetails & Verhandlung",
         close: "Schließen",
         startNegotiation: "Verhandlung starten",
+        selectPolicy: "Richtlinie auswählen",
+        confirmNegotiation: "Verhandlung bestätigen",
+        creatingNegotiation: "Verhandlung wird erstellt...",
+        noPolicies: "Keine Richtlinien verfügbar",
+        noPoliciesDescription:
+          "Dieser Datensatz hat keine Richtlinien für die Verhandlung verfügbar.",
+        selectPolicyForNegotiation:
+          "Wählen Sie eine Richtlinie für die Vertragsverhandlung aus",
+        policy: "Richtlinie",
         tabs: {
           overview: "Übersicht",
           versioning: "Versionierung",
@@ -408,6 +455,66 @@ const germanMessages: Partial<TranslationMessages> = {
         operator: "Operator",
         rightOperand: "Rechter Operand",
         duty: "Pflicht",
+      },
+      manager: {
+        title: "Katalogverwaltung",
+        addCatalog: "Katalog hinzufügen",
+        noCatalogs: "Keine Kataloge konfiguriert",
+        noCatalogsMessage:
+          "Fügen Sie einen Katalog hinzu, um Datensätze zu durchsuchen",
+        addFirstCatalog: "Fügen Sie Ihren ersten Katalog hinzu",
+        status: "Status",
+        catalogName: "Name",
+        description: "Beschreibung",
+        active: "Aktiv",
+        added: "Hinzugefügt am",
+        lastConnected: "Zuletzt verbunden",
+        activate: "Aktivieren",
+        deactivate: "Deaktivieren",
+        openUrl: "URL öffnen",
+        delete: "Löschen",
+        lastConnectedAt: "Zuletzt verbunden: {{value}}",
+      },
+      add: {
+        title: "Neuen Katalog hinzufügen",
+        url: "Katalog-URL",
+        name: "Katalogname",
+        description: "Beschreibung (optional)",
+        testConnection: "Verbindung testen",
+        save: "Katalog hinzufügen",
+      },
+      fields: {
+        name: "Name",
+        url: "URL",
+        description: "Beschreibung",
+        dateAdded: "Hinzugefügt am",
+        lastConnected: "Zuletzt verbunden",
+        datasets: "Datensätze",
+      },
+      filters: {
+        search: "Suche",
+        category: "Kategorie",
+      },
+      forms: {
+        urlHelper:
+          "Geben Sie die EDC-Katalog-Endpunkt-URL ein (z. B. https://example.com/api/dsp)",
+        editUrlHelper: "Die EDC-Katalog-Endpunkt-URL",
+        nameHelper: "Ein benutzerfreundlicher Name für diesen Katalog",
+        descriptionHelper: "Optionale Beschreibung",
+      },
+      connectionTest: {
+        button: "Verbindung testen",
+        requiresUrl: "Bitte geben Sie zuerst eine URL ein",
+        successNotification: "Verbindung erfolgreich!",
+        failureNotification: "Verbindung fehlgeschlagen",
+        errorNotification: "Verbindungstest fehlgeschlagen",
+        successStatus: "\u2713 Verbindung erfolgreich",
+        errorStatusPrefix: "\u2717 {{error}}",
+      },
+      errorBoundary: {
+        title: "Etwas ist schiefgelaufen",
+        unexpected: "Es ist ein unerwarteter Fehler aufgetreten",
+        retry: "Erneut versuchen",
       },
     },
     policies: {
@@ -494,6 +601,32 @@ const germanMessages: Partial<TranslationMessages> = {
         noProhibitions: "Keine Verbote definiert",
       },
     },
+    contractnegotiations: {
+      name: "Vertragsverhandlung |||| Vertragsverhandlungen",
+      fields: {
+        id: "ID",
+        createdAt: "Erstellt am",
+        type: "Typ",
+        counterPartyAddress: "Gegenpartei-Adresse",
+        counterPartyId: "Gegenpartei-ID",
+        protocol: "Protokoll",
+        state: "Status",
+        contractAgreementId: "Vertragsvereinbarung",
+        errorDetail: "Fehlerdetails",
+        policy: "Richtlinie",
+        reason: "Grund",
+      },
+      actions: {
+        terminate: "Beenden",
+      },
+      messages: {
+        negotiationStarted: "Vertragsverhandlung erfolgreich gestartet",
+        negotiationFailed: "Fehler beim Starten der Vertragsverhandlung",
+        loading: "Wird geladen...",
+        cannotTerminateFinalized:
+          "Abgeschlossene Vertragsverhandlungen können nicht beendet werden.",
+      },
+    },
     contract_definitions: {
       name: "Vertragsdefinition |||| Vertragsdefinitionen",
       fields: {
@@ -541,6 +674,63 @@ const germanMessages: Partial<TranslationMessages> = {
       show: {
         appliesToAllAssets:
           "Diese Vertragsdefinition gilt für ALLE Assets (keine Assets ausgewählt)",
+      },
+    },
+    transferprocesses: {
+      name: "Übertragungsprozess |||| Übertragungsprozesse",
+      fields: {
+        id: "ID",
+        reason: "Grund",
+        asset: "Asset",
+        dataset: "Datensatz",
+        assetId: "Asset-ID",
+        transferDirection: "Richtung",
+        transferType: "Übertragungstyp",
+        state: "Status",
+        stateTimestamp: "Status-Zeitstempel",
+        correlationId: "Korrelations-ID",
+        contractId: "Vertragsvereinbarung",
+        errorDetail: "Fehlerdetails",
+        dataRequest: "Datenanfrage",
+        counterPartyAddress: "Gegenpartei-Adresse",
+        contractAgreementId: "Vertragsvereinbarungs-ID",
+        protocol: "Protokoll",
+        dataDestinationType: "Datenziel-Typ",
+        baseUrl: "Basis-URL",
+        region: "Region",
+        endpointOverride: "Endpoint-Override",
+        bucketName: "Bucket-Name",
+        objectName: "Objekt-Name",
+        accessKeyId: "Access Key ID",
+        secretAccessKey: "Secret Access Key",
+      },
+      actions: {
+        terminate: "Beenden",
+        download: "Daten herunterladen",
+        downloading: "Lädt herunter...",
+      },
+      messages: {
+        cannotTerminateCompleted:
+          "Abgeschlossene Übertragungsprozesse können nicht beendet werden.",
+        downloadSuccessful: "Download erfolgreich",
+        downloadFailed: "Download fehlgeschlagen",
+      },
+      create: {
+        fields: {
+          counterPartyAddressHelper: "Die Adresse der Gegenpartei",
+          contractIdHelper: "Die Vertragsvereinbarungs-ID",
+          assetIdHelper: "Die Asset-ID",
+          protocolHelper: "Das zu verwendende Dataspace-Protokoll",
+          transferTypeHelper: "Der Typ der Übertragung",
+          dataDestinationTypeHelper: "Der Typ des Datenziels",
+          baseUrlHelper: "Die Basis-URL, zu der die Daten übertragen werden",
+          regionHelper: "Die Region des Amazon S3-Buckets",
+          endpointOverrideHelper: "Der Endpoint-Override des Amazon S3-Buckets",
+          bucketNameHelper: "Der Name des Amazon S3-Buckets",
+          objectNameHelper: "Der Name des Objekts im Amazon S3-Bucket",
+          accessKeyIdHelper: "Die Access Key ID des Amazon S3-Buckets",
+          secretAccessKeyHelper: "Der Secret Access Key des Amazon S3-Buckets",
+        },
       },
     },
   },

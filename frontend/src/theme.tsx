@@ -1,4 +1,6 @@
 import { alpha, createTheme, PaletteOptions, Theme } from "@mui/material";
+import { merge } from "lodash";
+import type { ThemeLogoConfig, ThemeModeOverrides } from "./config";
 
 const componentsOverrides = (theme: Theme) => {
   const shadows = [
@@ -159,28 +161,68 @@ const lightPalette: PaletteOptions = {
   mode: "light" as "light",
 };
 
-const createRadiantTheme = (palette: any) => {
-  const themeOptions = {
-    palette,
-    shape: { borderRadius: 0 },
-    sidebar: { width: 250 },
-    spacing: 10,
-    typography: {
-      h1: {
-        fontWeight: 500,
-        fontSize: "6rem",
-      },
-      h2: { fontWeight: 600 },
-      h3: { fontWeight: 700 },
-      h4: { fontWeight: 800 },
-      h5: { fontWeight: 900 },
-      button: { textTransform: undefined, fontWeight: 700 },
-    },
-  };
-  const theme = createTheme(themeOptions);
-  theme.components = componentsOverrides(theme);
-  return theme;
+const baseTypography = {
+  h1: {
+    fontWeight: 500,
+    fontSize: "6rem",
+  },
+  h2: { fontWeight: 600 },
+  h3: { fontWeight: 700 },
+  h4: { fontWeight: 800 },
+  h5: { fontWeight: 900 },
+  button: { textTransform: undefined, fontWeight: 700 },
 };
 
-export const theme = createRadiantTheme(lightPalette);
-export const darkTheme = createRadiantTheme(darkPalette);
+export type ThemeMode = "light" | "dark";
+
+const getThemeOverrides = (mode: ThemeMode): ThemeModeOverrides => {
+  if (typeof window === "undefined") {
+    return {};
+  }
+
+  return window.config.theme?.[mode] ?? {};
+};
+
+const createRadiantTheme = (mode: ThemeMode) => {
+  const overrides = getThemeOverrides(mode);
+
+  const palette = merge(
+    {},
+    mode === "light" ? lightPalette : darkPalette,
+    overrides.palette ?? {}
+  ) as PaletteOptions;
+
+  palette.mode = mode;
+
+  const typography = merge({}, baseTypography, overrides.typography ?? {});
+
+  const shape = merge({}, { borderRadius: 0 }, overrides.shape ?? {});
+
+  const sidebarWidth = overrides.sidebarWidth ?? 250;
+  const spacing = overrides.spacing ?? 10;
+
+  const themeOptions = {
+    palette,
+    shape,
+    sidebar: { width: sidebarWidth },
+    spacing,
+    typography,
+  };
+
+  const theme = createTheme(themeOptions);
+  theme.components = componentsOverrides(theme);
+  return { theme, logo: overrides.logo };
+};
+
+const lightThemeResult = createRadiantTheme("light");
+const darkThemeResult = createRadiantTheme("dark");
+
+export const theme = lightThemeResult.theme;
+export const darkTheme = darkThemeResult.theme;
+
+const logoByMode: Record<ThemeMode, ThemeLogoConfig | undefined> = {
+  light: lightThemeResult.logo,
+  dark: darkThemeResult.logo,
+};
+
+export const getThemeLogo = (mode: ThemeMode) => logoByMode[mode];

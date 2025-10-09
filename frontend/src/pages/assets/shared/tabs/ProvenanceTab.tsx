@@ -1,5 +1,5 @@
 import { TextInput, Labeled, useTranslate } from "react-admin";
-import { Typography, Link, Box } from "@mui/material";
+import { Typography, Box } from "@mui/material";
 
 export const ProvenanceTab = () => {
   const translate = useTranslate();
@@ -8,14 +8,6 @@ export const ProvenanceTab = () => {
     <Box sx={{ width: "100%" }}>
       <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
         {translate("resources.assets.create.provenance.description")}
-        <Link
-          href="https://www.w3.org/TR/prov-o/"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          PROV-O Ontology
-        </Link>
-        .
       </Typography>
       <Labeled
         label={translate(

@@ -1,4 +1,4 @@
-import React, { useState, Suspense } from "react";
+import { useState } from "react";
 import {
   Show,
   SimpleShowLayout,
@@ -7,34 +7,20 @@ import {
   FunctionField,
   useTranslate,
   EditButton,
-  Labeled,
 } from "react-admin";
-import { Typography, Box, Tabs, Tab, Grid, Chip } from "@mui/material";
-import InfoIcon from "@mui/icons-material/Info";
+import { Typography, Box, Tabs, Tab, Chip } from "@mui/material";
 import DescriptionIcon from "@mui/icons-material/Description";
 import AccountTreeIcon from "@mui/icons-material/AccountTree";
 import SecurityIcon from "@mui/icons-material/Security";
 import AssessmentIcon from "@mui/icons-material/Assessment";
 import CloudIcon from "@mui/icons-material/Cloud";
 import { MarkdownField } from "../../../components/markdown";
-import { ErrorBoundary } from "../../catalogs/DatasetCard/ErrorBoundary";
-
-// Lazy load tab components for better performance
-const BasicInformationShow = React.lazy(() =>
-  import("./tabs").then((module) => ({ default: module.BasicInformationTab }))
-);
-const ProvenanceShow = React.lazy(() =>
-  import("./tabs").then((module) => ({ default: module.ProvenanceTab }))
-);
-const DataPrivacyShow = React.lazy(() =>
-  import("./tabs").then((module) => ({ default: module.DataPrivacyTab }))
-);
-const DataQualityShow = React.lazy(() =>
-  import("./tabs").then((module) => ({ default: module.DataQualityTab }))
-);
-const DataAddressShow = React.lazy(() =>
-  import("./tabs").then((module) => ({ default: module.DataAddressTab }))
-);
+import {
+  Provenance,
+  DataPrivacy,
+  DataQuality,
+  DataAddress,
+} from "../../../components/assets";
 
 const AssetShowBar = () => {
   return (
@@ -78,24 +64,42 @@ export const AssetShow = () => {
                   }}
                 >
                   {/* Category */}
-                  <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>
-                    {translate("resources.assets.tabs.basicInformation.category")}
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{ fontWeight: 500 }}
+                  >
+                    {translate(
+                      "resources.assets.tabs.basicInformation.category"
+                    )}
                   </Typography>
                   <Typography variant="body2">
                     {record?.theme?.title || "-"}
                   </Typography>
 
                   {/* Media Type */}
-                  <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>
-                    {translate("resources.assets.tabs.basicInformation.mediaType")}
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{ fontWeight: 500 }}
+                  >
+                    {translate(
+                      "resources.assets.tabs.basicInformation.mediaType"
+                    )}
                   </Typography>
                   <Typography variant="body2">
                     {record?.mediaType || "-"}
                   </Typography>
 
                   {/* Keywords */}
-                  <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>
-                    {translate("resources.assets.tabs.basicInformation.keywords")}
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{ fontWeight: 500 }}
+                  >
+                    {translate(
+                      "resources.assets.tabs.basicInformation.keywords"
+                    )}
                   </Typography>
                   <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
                     {record?.keywords ? (
@@ -112,14 +116,24 @@ export const AssetShow = () => {
                         />
                       ))
                     ) : (
-                      <Typography variant="body2" color="text.secondary" sx={{ fontStyle: "italic" }}>
-                        {translate("resources.assets.tabs.basicInformation.noKeywords")}
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        sx={{ fontStyle: "italic" }}
+                      >
+                        {translate(
+                          "resources.assets.tabs.basicInformation.noKeywords"
+                        )}
                       </Typography>
                     )}
                   </Box>
 
                   {/* Version */}
-                  <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{ fontWeight: 500 }}
+                  >
                     {translate("resources.assets.tabs.versioningTab.version")}
                   </Typography>
                   <Typography variant="body2">
@@ -127,7 +141,11 @@ export const AssetShow = () => {
                   </Typography>
 
                   {/* Creator */}
-                  <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{ fontWeight: 500 }}
+                  >
                     {translate("resources.assets.tabs.versioningTab.creator")}
                   </Typography>
                   <Typography variant="body2">
@@ -135,19 +153,31 @@ export const AssetShow = () => {
                   </Typography>
 
                   {/* Created */}
-                  <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{ fontWeight: 500 }}
+                  >
                     {translate("resources.assets.tabs.versioningTab.created")}
                   </Typography>
                   <Typography variant="body2">
-                    {record?.created ? new Date(record.created).toLocaleDateString() : "-"}
+                    {record?.created
+                      ? new Date(record.created).toLocaleDateString()
+                      : "-"}
                   </Typography>
 
                   {/* Modified */}
-                  <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{ fontWeight: 500 }}
+                  >
                     {translate("resources.assets.tabs.versioningTab.modified")}
                   </Typography>
                   <Typography variant="body2">
-                    {record?.modified ? new Date(record.modified).toLocaleDateString() : "-"}
+                    {record?.modified
+                      ? new Date(record.modified).toLocaleDateString()
+                      : "-"}
                   </Typography>
                 </Box>
 
@@ -213,58 +243,52 @@ export const AssetShow = () => {
           </Box>
 
           <Box sx={{ mt: 3 }}>
-            <ErrorBoundary>
-              <Suspense>
-                {activeTab === 0 && (
-                  <div id="asset-description">
-                    <FunctionField
-                      render={(record: any) => {
-                        const description = record?.description;
-                        if (!description) {
-                          return (
-                            <Typography variant="body2" color="text.secondary">
-                              {translate(
-                                "resources.assets.messages.noDescription"
-                              )}
-                            </Typography>
-                          );
-                        }
-                        return (
-                          <MarkdownField
-                            source="description"
-                            record={{ description }}
-                          />
-                        );
-                      }}
-                    />
-                  </div>
-                )}
+            {activeTab === 0 && (
+              <div id="asset-description">
+                <FunctionField
+                  render={(record: any) => {
+                    const description = record?.description;
+                    if (!description) {
+                      return (
+                        <Typography variant="body2" color="text.secondary">
+                          {translate("resources.assets.messages.noDescription")}
+                        </Typography>
+                      );
+                    }
+                    return (
+                      <MarkdownField
+                        source="description"
+                        record={{ description }}
+                      />
+                    );
+                  }}
+                />
+              </div>
+            )}
 
-                {activeTab === 1 && (
-                  <div id="asset-provenance">
-                    <ProvenanceShow />
-                  </div>
-                )}
+            {activeTab === 1 && (
+              <div id="asset-provenance">
+                <Provenance />
+              </div>
+            )}
 
-                {activeTab === 2 && (
-                  <div id="asset-privacy">
-                    <DataPrivacyShow />
-                  </div>
-                )}
+            {activeTab === 2 && (
+              <div id="asset-privacy">
+                <DataPrivacy />
+              </div>
+            )}
 
-                {activeTab === 3 && (
-                  <div id="asset-quality">
-                    <DataQualityShow />
-                  </div>
-                )}
+            {activeTab === 3 && (
+              <div id="asset-quality">
+                <DataQuality />
+              </div>
+            )}
 
-                {activeTab === 4 && (
-                  <div id="asset-address">
-                    <DataAddressShow />
-                  </div>
-                )}
-              </Suspense>
-            </ErrorBoundary>
+            {activeTab === 4 && (
+              <div id="asset-address">
+                <DataAddress />
+              </div>
+            )}
           </Box>
         </Box>
       </SimpleShowLayout>

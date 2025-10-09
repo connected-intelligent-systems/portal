@@ -1,33 +1,35 @@
-import {
-  Datagrid,
-  DateField,
-  List,
-  ReferenceField,
-  TextField,
-} from "react-admin";
+import { Datagrid, DateField, List, TextField } from "react-admin";
 
 export const TransferProcessesList = () => (
   <List empty={false} exporter={false}>
     <Datagrid bulkActionButtons={false} rowClick="show">
-      <TextField source="id" sortable={false} />
-      <ReferenceField
-        label="Asset"
-        source="assetId"
-        reference="assets"
-        sortable={false}
-        link="show"
-      >
-        <TextField source="title" />
-      </ReferenceField>
       <TextField
-        source="transferDirection"
-        label="Direction"
+        label="resources.transferprocesses.fields.id"
+        source="id"
         sortable={false}
       />
-      <TextField source="state" sortable={false} />
-      <TextField source="transferType" sortable={false} label="Transfer Type" />
+      <TextField
+        label="resources.transferprocesses.fields.assetId"
+        source="assetId"
+        sortable={false}
+      />
+      <TextField
+        label="resources.transferprocesses.fields.transferDirection"
+        source="transferDirection"
+        sortable={false}
+      />
+      <TextField
+        label="resources.transferprocesses.fields.state"
+        source="state"
+        sortable={false}
+      />
+      <TextField
+        label="resources.transferprocesses.fields.transferType"
+        source="transferType"
+        sortable={false}
+      />
       <DateField
-        label="State Timestamp"
+        label="resources.transferprocesses.fields.stateTimestamp"
         source="stateTimestamp"
         sortable={true}
         showTime

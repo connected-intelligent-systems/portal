@@ -3,13 +3,12 @@ import * as policies from "./resources/policies";
 import * as contract_agreements from "./resources/contract_agreements";
 import * as contract_definitions from "./resources/contract_definitions";
 import * as contract_negotiations from "./resources/contract_negotiations";
-import * as catalog from "./resources/catalog";
-import * as catalogManagement from "./resources/catalogManagement";
+import * as catalogs from "./resources/catalogs";
 import * as datasets from "./resources/datasets";
 import * as transfer_processes from "./resources/transfer_processes";
-import * as data_consumer_pull from "./resources/data_consumer_pull";
-import * as data_requests from "./resources/data_requests";
+import * as data_address from "./resources/data_address";
 import * as terminate_transfer_process from "./resources/terminate_transfer_process";
+import * as terminate_contract_negotiation from "./resources/terminate_contract_negotiation";
 
 const dataProvider = {
   getList: (resource: string, params: any) => {
@@ -23,18 +22,12 @@ const dataProvider = {
       return contract_definitions.getList(params);
     } else if (resource === "contractnegotiations") {
       return contract_negotiations.getList(params);
-    } else if (resource === "catalog") {
-      return catalog.getList(params);
     } else if (resource === "catalogs") {
-      return catalogManagement.getList();
+      return catalogs.getList();
     } else if (resource === "transferprocesses") {
       return transfer_processes.getList(params);
-    } else if (resource === "dataconsumerpull") {
-      return data_consumer_pull.getList(params);
     } else if (resource === "datarequests") {
-      return data_requests.getList(params);
-    } else if (resource === "terminatetransferprocess") {
-      return terminate_transfer_process.getList(params);
+      throw new Error("datarequests getList is not implemented");
     }
     throw new Error(`Unknown resource: ${resource}`);
   },
@@ -49,18 +42,14 @@ const dataProvider = {
       return contract_definitions.getOne(params);
     } else if (resource === "contractnegotiations") {
       return contract_negotiations.getOne(params);
-    } else if (resource === "catalog") {
-      return catalog.getOne(params);
     } else if (resource === "catalogs") {
-      return catalogManagement.getOne(params);
+      return catalogs.getOne(params);
     } else if (resource === "transferprocesses") {
       return transfer_processes.getOne(params);
-    } else if (resource === "dataconsumerpull") {
-      return data_consumer_pull.getOne(params);
     } else if (resource === "datarequests") {
-      return data_requests.getOne(params);
-    } else if (resource === "terminatetransferprocess") {
-      return terminate_transfer_process.getOne(params);
+      return data_address.getOne(params);
+    } else if (resource === "datasets") {
+      return datasets.getOne(params);
     }
     throw new Error(`Unknown resource: ${resource}`);
   },
@@ -75,18 +64,14 @@ const dataProvider = {
       return contract_definitions.getMany(params);
     } else if (resource === "contractnegotiations") {
       return contract_negotiations.getMany(params);
-    } else if (resource === "catalog") {
-      return catalog.getMany(params);
     } else if (resource === "catalogs") {
-      return catalogManagement.getMany();
+      return catalogs.getMany();
     } else if (resource === "transferprocesses") {
       return transfer_processes.getMany(params);
-    } else if (resource === "dataconsumerpull") {
-      return data_consumer_pull.getMany(params);
     } else if (resource === "datarequests") {
-      return data_requests.getMany(params);
-    } else if (resource === "terminatetransferprocess") {
-      return terminate_transfer_process.getMany(params);
+      return data_address.getMany(params);
+    } else if (resource === "datasets") {
+      return datasets.getMany(params);
     }
     throw new Error(`Unknown resource: ${resource}`);
   },
@@ -101,18 +86,16 @@ const dataProvider = {
       return contract_definitions.create(params);
     } else if (resource === "contractnegotiations") {
       return contract_negotiations.create(params);
-    } else if (resource === "catalog") {
-      return catalog.create(params);
     } else if (resource === "catalogs") {
-      return catalogManagement.create(params);
+      return catalogs.create(params);
     } else if (resource === "transferprocesses") {
       return transfer_processes.create(params);
-    } else if (resource === "dataconsumerpull") {
-      return data_consumer_pull.create(params);
     } else if (resource === "datarequests") {
-      return data_requests.create(params);
+      throw new Error("datarequests create is not implemented");
     } else if (resource === "terminatetransferprocess") {
       return terminate_transfer_process.create(params);
+    } else if (resource === "terminatecontractnegotiation") {
+      return terminate_contract_negotiation.create(params);
     }
     throw new Error(`Unknown resource: ${resource}`);
   },
@@ -127,18 +110,12 @@ const dataProvider = {
       return contract_definitions.update(params);
     } else if (resource === "contractnegotiations") {
       return contract_negotiations.update(params);
-    } else if (resource === "catalog") {
-      return catalog.update(params);
     } else if (resource === "catalogs") {
-      return catalogManagement.update(params);
+      return catalogs.update(params);
     } else if (resource === "transferprocesses") {
       return transfer_processes.update(params);
-    } else if (resource === "dataconsumerpull") {
-      return data_consumer_pull.update(params);
     } else if (resource === "datarequests") {
-      return data_requests.update(params);
-    } else if (resource === "terminatetransferprocess") {
-      return terminate_transfer_process.update(params);
+      throw new Error("datarequests update is not implemented");
     }
     throw new Error(`Unknown resource: ${resource}`);
   },
@@ -179,12 +156,6 @@ const dataProvider = {
       ).then((responses) => ({
         data: responses.map((response) => response.data.id),
       }));
-    } else if (resource === "catalog") {
-      return Promise.all(
-        params.ids.map((id: string) => catalog.update({ ...params, id }))
-      ).then((responses) => ({
-        data: responses.map((response) => response.data.id),
-      }));
     } else if (resource === "transferprocesses") {
       return Promise.all(
         params.ids.map((id: string) =>
@@ -193,25 +164,9 @@ const dataProvider = {
       ).then((responses) => ({
         data: responses.map((response) => response.data.id),
       }));
-    } else if (resource === "dataconsumerpull") {
-      return Promise.all(
-        params.ids.map((id: string) =>
-          data_consumer_pull.update({ ...params, id })
-        )
-      ).then((responses) => ({
-        data: responses.map((response) => response.data.id),
-      }));
     } else if (resource === "datarequests") {
       return Promise.all(
-        params.ids.map((id: string) => data_requests.update({ ...params, id }))
-      ).then((responses) => ({
-        data: responses.map((response) => response.data.id),
-      }));
-    } else if (resource === "terminatetransferprocess") {
-      return Promise.all(
-        params.ids.map((id: string) =>
-          terminate_transfer_process.update({ ...params, id })
-        )
+        Promise.reject(new Error("datarequests updateMany is not implemented"))
       ).then((responses) => ({
         data: responses.map((response) => response.data.id),
       }));
@@ -224,7 +179,9 @@ const dataProvider = {
     } else if (resource === "policies") {
       return policies.remove(params);
     } else if (resource === "catalogs") {
-      return catalogManagement.remove(params);
+      return catalogs.remove(params);
+    } else if (resource === "contractdefinitions") {
+      return contract_definitions.remove(params);
     }
     throw new Error(`Unknown resource: ${resource}`);
   },
@@ -259,35 +216,15 @@ const dataProvider = {
       ).then((responses) => ({
         data: responses.map((response) => response.data.id),
       }));
-    } else if (resource === "catalog") {
-      return Promise.all(
-        params.ids.map((id: string) => catalog.remove({ id }))
-      ).then((responses) => ({
-        data: responses.map((response) => response.data.id),
-      }));
     } else if (resource === "transferprocesses") {
       return Promise.all(
         params.ids.map((id: string) => transfer_processes.remove({ id }))
       ).then((responses) => ({
         data: responses.map((response) => response.data.id),
       }));
-    } else if (resource === "dataconsumerpull") {
-      return Promise.all(
-        params.ids.map((id: string) => data_consumer_pull.remove({ id }))
-      ).then((responses) => ({
-        data: responses.map((response) => response.data.id),
-      }));
     } else if (resource === "datarequests") {
       return Promise.all(
-        params.ids.map((id: string) => data_requests.remove({ id }))
-      ).then((responses) => ({
-        data: responses.map((response) => response.data.id),
-      }));
-    } else if (resource === "terminatetransferprocess") {
-      return Promise.all(
-        params.ids.map((id: string) =>
-          terminate_transfer_process.remove({ id })
-        )
+        Promise.reject(new Error("datarequests deleteMany is not implemented"))
       ).then((responses) => ({
         data: responses.map((response) => response.data.id),
       }));
@@ -297,6 +234,8 @@ const dataProvider = {
   getManyReference: (resource: string, params: any) => {
     if (resource === "datasets") {
       return datasets.getManyReference(params);
+    } else if (resource === "contractnegotiations") {
+      return contract_negotiations.getManyReference(params);
     }
     throw new Error(`Unknown resource: ${resource}`);
   },

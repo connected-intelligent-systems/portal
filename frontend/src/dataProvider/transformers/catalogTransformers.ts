@@ -85,7 +85,6 @@ const DatasetSchema = z
       })
       .optional(),
     "dcat:keyword": z.union([z.string(), z.array(z.string())]).optional(),
-    "dspace:participantId": z.string().optional(),
     "odrl:hasPolicy": z
       .union([PolicySchema, z.array(PolicySchema)])
       .optional()
@@ -107,13 +106,13 @@ const DatasetSchema = z
         ? d["dcat:keyword"]
         : [d["dcat:keyword"]]
       : undefined,
-    participantId: d["dspace:participantId"],
     policies: d["odrl:hasPolicy"],
   }));
 
 const CatalogSchema = z.object({
   "dct:title": z.string().optional(),
   "dct:description": z.string().optional(),
+  "dspace:participantId": z.string().optional(),
   "dcat:dataset": z
     .union([DatasetSchema, z.array(DatasetSchema)])
     .optional()
@@ -129,7 +128,6 @@ export async function parseDatasetFromJsonLd(
     const parsed = DatasetSchema.parse(jsonLdDataset);
     return removeUndefinedValues(parsed as Dataset);
   } catch (error) {
-    console.error("Error in parseDatasetFromJsonLd:", error);
     const errorMessage = error instanceof Error ? error.message : String(error);
     throw new Error(`Failed to transform JSON-LD dataset: ${errorMessage}`);
   }
@@ -153,11 +151,11 @@ export async function parseCatalogFromJsonLd(
       id: catalogId,
       title: parsed["dct:title"],
       description: parsed["dct:description"],
+      participantId: parsed["dspace:participantId"],
       datasets: parsed["dcat:dataset"] || [],
     };
     return removeUndefinedValues(catalog) as Catalog;
   } catch (error) {
-    console.error("Error in parseCatalogFromJsonLd:", error);
     const errorMessage = error instanceof Error ? error.message : String(error);
     throw new Error(`Failed to transform JSON-LD catalog: ${errorMessage}`);
   }

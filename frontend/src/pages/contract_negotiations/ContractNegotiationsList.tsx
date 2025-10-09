@@ -1,13 +1,35 @@
-import { Datagrid, List, TextField, DateField } from "react-admin";
+import {
+  Datagrid,
+  List,
+  TextField,
+  DateField,
+  ListActions,
+  useTranslate,
+} from "react-admin";
 
-export const ContractNegotiationsList = () => (
-  <List>
-    <Datagrid rowClick="show">
-      <TextField source="id" />
-      <TextField source="state" />
-      <TextField source="type" />
-      <DateField source="createdAt" showTime label="Created At" />
-      <DateField source="updatedAt" showTime label="Updated At" />
-    </Datagrid>
-  </List>
-);
+export const ContractNegotiationsList = () => {
+  const translate = useTranslate();
+  return (
+    <List exporter={false} actions={<ListActions hasCreate={false} />}>
+      <Datagrid rowClick="show" bulkActionButtons={false}>
+        <TextField
+          source="id"
+          label={translate("resources.contractnegotiations.fields.id")}
+        />
+        <TextField
+          source="state"
+          label={translate("resources.contractnegotiations.fields.state")}
+        />
+        <TextField
+          source="type"
+          label={translate("resources.contractnegotiations.fields.type")}
+        />
+        <DateField
+          source="createdAt"
+          showTime
+          label={translate("resources.contractnegotiations.fields.createdAt")}
+        />
+      </Datagrid>
+    </List>
+  );
+};

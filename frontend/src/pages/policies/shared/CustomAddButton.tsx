@@ -1,4 +1,4 @@
-import React from "react";
+import { useState } from "react";
 import { useArrayInput, useTranslate } from "react-admin";
 import { Menu, IconButton, ListItemIcon, MenuItem } from "@mui/material";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
@@ -9,18 +9,20 @@ import LocationOnIcon from "@mui/icons-material/LocationOn";
 export const CustomAddButton = () => {
   const context = useArrayInput();
   const translate = useTranslate();
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
+
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
+
   const handleClose = () => {
     setAnchorEl(null);
   };
+
   const handleAdd = (event: React.MouseEvent<HTMLElement>) => {
     const value = (event.target as HTMLElement).getAttribute("value");
 
-    // Add a permission with the clean data structure
     context.append({
       action: "odrl:use",
       constraints: [

@@ -2,7 +2,7 @@ version: "3.9"
 
 services:
 
-  portal:
+  portal-provider:
     build:
       context: ../frontend
       dockerfile: Dockerfile
@@ -10,41 +10,31 @@ services:
       - 5173:5173
     volumes:
       - ../frontend/src:/app/src
-      - ../frontend/public:/app/public
       - ../frontend/vite.config.ts:/app/vite.config.ts
       - ../frontend/package.json:/app/package.json
       - ../frontend/index.html:/app/index.html
-      - ./portal/config.js:/app/public/config.js
-    environment:
-      # EDC connection for development proxy
-      - VITE_EDC_MANAGEMENT_URL=http://edc-provider:19193/management
-      - VITE_EDC_API_KEY=supersecret
-      - VITE_FEDERATED_CATALOG_URL=http://edc-provider:19199/catalog
+      - ./portal/provider/config.js:/app/public/config.js
+      - ./portal/borlabs-cookie-icon-dynamic.svg:/app/public/borlabs-cookie-icon-dynamic.svg
     depends_on:
       edc-provider:
         condition: service_healthy
         restart: true
 
   edc-provider:
-    # image: registry.int.smartlivingnext.de/registry/public/edc:4.0.0
-    image: ghcr.io/connected-intelligent-systems/connector:v0.11.1
-    # command: sh -c 'sleep 30 && java -jar /app/launchers/sln-connector/build/libs/connector.jar'
+    image: ghcr.io/connected-intelligent-systems/connector:v0.10.0
     ports:
-      - 19191:19191 # health check
-      # - 19192:19192
-      - 19193:19193 # management endpoint
-      # - 19194:19194 # ds protocol (normaly forwarded, but edcs are in same network)
-      - 19291:19291 # public endpoint
-      - 19199:19199 # federated catalog endpoint
+      - 29291:19291
     volumes:
       - ./edc/vault.properties:/resources/vault.properties
       - ./edc/nodes.json:/resources/nodes.json
     environment:
-      # contains public & private key for oauth2
       EDC_VAULT_FILE_PATH: /resources/vault.properties
       EDC_DSP_CALLBACK_ADDRESS: http://edc-provider:19194/protocol
-      EDC_DATAPLANE_API_PUBLIC_BASEURL: http://edc-provider:19291/public
-      EDC_HOSTNAME: edc-provider
+      EDC_DATAPLANE_API_PUBLIC_BASEURL: http://localhost:29291/public
+      EDC_WEB_REST_CORS_ENABLED: true
+      EDC_WEB_REST_CORS_ORIGINS: "*"
+      EDC_WEB_REST_CORS_HEADERS: Content-Type,Authorization
+      EDC_WEB_REST_CORS_METHODS: GET,POST,OPTIONS
       WEB_HTTP_CATALOG_PORT: 19199
       WEB_HTTP_CATALOG_PATH: /catalog
       WEB_HTTP_PORT: 19191
@@ -54,40 +44,101 @@ services:
       WEB_HTTP_PROTOCOL_PORT: 19194
       WEB_HTTP_PROTOCOL_PATH: /protocol
       EDC_PUBLIC_KEY_ALIAS: public-key
-      # EDC_TRANSFER_DATAPLANE_TOKEN_SIGNER_PRIVATEKEY_ALIAS: private-key
       EDC_TRANSFER_PROXY_TOKEN_SIGNER_PRIVATEKEY_ALIAS: private-key
       EDC_TRANSFER_PROXY_TOKEN_VERIFIER_PUBLICKEY_ALIAS: public-key
       WEB_HTTP_PUBLIC_PORT: 19291
       WEB_HTTP_PUBLIC_PATH: /public
       WEB_HTTP_CONTROL_PORT: 19192
       WEB_HTTP_CONTROL_PATH: /control
-      #EDC_DATAPLANE_TOKEN_VALIDATION_ENDPOINT: http://edc-provider:19192/control/token
-      #EDC_DATAPLANE_API_PUBLIC_BASEURL: http://edc-provider:19291/public
-      EDC_SAMPLES_BASIC_03_LOGPREFIX: ProviderLogPrefix
-      # postgres configs
       EDC_DATASOURCE_DEFAULT_URL: jdbc:postgresql://postgres:5432/dataspace?currentSchema=provider
       EDC_DATASOURCE_DEFAULT_USER: user
       EDC_DATASOURCE_DEFAULT_PASSWORD: postgres
-      # oauth2
-      # EDC_OAUTH_TOKEN_URL: https://mvp-ds.dev-prd01.fsn.iotx.materna.work/realms/dataspace/protocol/openid-connect/token
       EDC_OAUTH_TOKEN_URL: http://keycloak:8080/realms/dataspace/protocol/openid-connect/token
-      # EDC_OAUTH_PROVIDER_JWKS_URL: https://mvp-ds.dev-prd01.fsn.iotx.materna.work/realms/dataspace/protocol/openid-connect/certs
       EDC_OAUTH_PROVIDER_JWKS_URL: http://keycloak:8080/realms/dataspace/protocol/openid-connect/certs
       EDC_OAUTH_CERTIFICATE_ALIAS: public-key
       EDC_OAUTH_PRIVATE_KEY_ALIAS: private-key
       EDC_OAUTH_CLIENT_ID: edc-provider
-      # EDC_OAUTH_PROVIDER_AUDIENCE: https://mvp-ds.dev-prd01.fsn.iotx.materna.work/realms/dataspace
       EDC_OAUTH_PROVIDER_AUDIENCE: http://keycloak:8080/realms/dataspace
       EDC_OAUTH_VALIDATION_NBF_LEEWAY: 20
       EDC_OAUTH_VALIDATION_ISSUED_AT_LEEWAY: 5
-      # name of the claim key
       EDC_AGENT_IDENTITY_KEY: participant_id
       EDC_PARTICIPANT_ID: company1
       EDC_NODES_FILE_PATH: /resources/nodes.json
-      # auto create database schema
       EDC_SQL_SCHEMA_AUTOCREATE: true
     depends_on:
       keycloak:
+        condition: service_healthy
+        restart: true
+
+  edc-consumer:
+    image: ghcr.io/connected-intelligent-systems/connector:v0.10.0
+    ports:
+      - 19291:19291
+    volumes:
+      - ./edc/vault.properties:/resources/vault.properties
+      - ./edc/nodes.json:/resources/nodes.json
+    environment:
+      EDC_VAULT_FILE_PATH: /resources/vault.properties
+      EDC_DSP_CALLBACK_ADDRESS: http://edc-consumer:19194/protocol
+      EDC_DATAPLANE_API_PUBLIC_BASEURL: http://localhost:19291/public
+      EDC_WEB_REST_CORS_ENABLED: true
+      EDC_WEB_REST_CORS_ORIGINS: "*"
+      EDC_WEB_REST_CORS_HEADERS: Content-Type,Authorization
+      EDC_WEB_REST_CORS_METHODS: GET,POST,OPTIONS
+      WEB_HTTP_CATALOG_PORT: 19199
+      WEB_HTTP_CATALOG_PATH: /catalog
+      WEB_HTTP_PORT: 19191
+      WEB_HTTP_PATH: /api
+      WEB_HTTP_MANAGEMENT_PORT: 19193
+      WEB_HTTP_MANAGEMENT_PATH: /management
+      WEB_HTTP_PROTOCOL_PORT: 19194
+      WEB_HTTP_PROTOCOL_PATH: /protocol
+      EDC_PUBLIC_KEY_ALIAS: public-key
+      EDC_TRANSFER_PROXY_TOKEN_SIGNER_PRIVATEKEY_ALIAS: private-key
+      EDC_TRANSFER_PROXY_TOKEN_VERIFIER_PUBLICKEY_ALIAS: public-key
+      WEB_HTTP_PUBLIC_PORT: 19291
+      WEB_HTTP_PUBLIC_PATH: /public
+      WEB_HTTP_CONTROL_PORT: 19192
+      WEB_HTTP_CONTROL_PATH: /control
+      EDC_DATASOURCE_DEFAULT_URL: jdbc:postgresql://postgres:5432/dataspace?currentSchema=consumer
+      EDC_DATASOURCE_DEFAULT_USER: user
+      EDC_DATASOURCE_DEFAULT_PASSWORD: postgres
+      EDC_OAUTH_TOKEN_URL: http://keycloak:8080/realms/dataspace/protocol/openid-connect/token
+      EDC_OAUTH_PROVIDER_JWKS_URL: http://keycloak:8080/realms/dataspace/protocol/openid-connect/certs
+      EDC_OAUTH_CERTIFICATE_ALIAS: public-key
+      EDC_OAUTH_PRIVATE_KEY_ALIAS: private-key
+      EDC_OAUTH_CLIENT_ID: edc-consumer
+      EDC_OAUTH_PROVIDER_AUDIENCE: http://keycloak:8080/realms/dataspace
+      EDC_OAUTH_VALIDATION_NBF_LEEWAY: 20
+      EDC_OAUTH_VALIDATION_ISSUED_AT_LEEWAY: 5
+      EDC_AGENT_IDENTITY_KEY: participant_id
+      EDC_PARTICIPANT_ID: company2
+      EDC_NODES_FILE_PATH: /resources/nodes.json
+      EDC_SQL_SCHEMA_AUTOCREATE: true
+    depends_on:
+      keycloak:
+        condition: service_healthy
+        restart: true
+
+  portal-consumer:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+    ports:
+      - 5174:5173
+    volumes:
+      - ../frontend/src:/app/src
+      - ../frontend/vite.config.ts:/app/vite.config.ts
+      - ../frontend/package.json:/app/package.json
+      - ../frontend/index.html:/app/index.html
+      - ./portal/consumer/config.js:/app/public/config.js
+      - ./portal/borlabs-cookie-icon-dynamic.svg:/app/public/borlabs-cookie-icon-dynamic.svg
+    environment:
+      - VITE_EDC_MANAGEMENT_API_URL=http://edc-consumer:19193
+      - VITE_EDC_PROTOCOL_API_URL=http://edc-consumer:19191
+      - VITE_EDC_API_KEY=supersecret
+    depends_on:
+      edc-consumer:
         condition: service_healthy
         restart: true
 
@@ -97,7 +148,7 @@ services:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: dataspace
-    image: bitnami/postgresql:17.2.0
+    image: bitnamilegacy/postgresql:17.2.0
     ports:
       - "5432:5432"
     volumes:
@@ -109,7 +160,7 @@ services:
       retries: 5
 
   keycloak:
-    image: bitnami/keycloak:23.0.3
+    image: bitnamilegacy/keycloak:23.0.3
     ports:
       - "8080:8080"
     environment:

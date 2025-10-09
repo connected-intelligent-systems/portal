@@ -1,7 +1,7 @@
 import { Labeled, FunctionField, useTranslate } from "react-admin";
 import { Box, Typography } from "@mui/material";
 
-export const BasicInformationTab = () => {
+export const BasicInformation = () => {
   const translate = useTranslate();
 
   return (

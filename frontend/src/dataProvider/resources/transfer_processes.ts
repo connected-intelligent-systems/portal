@@ -7,7 +7,7 @@ import {
   GetManyParams,
 } from "react-admin";
 import { httpClient } from "../httpClient";
-import { compactJsonLd, compactJsonLdArray } from "../helpers";
+import { buildQuerySpec, compactJsonLd, compactJsonLdArray } from "../helpers";
 import {
   parseTransferProcessFromJsonLd,
   parseTransferProcessFromJsonLdArray,
@@ -21,19 +21,13 @@ const frame = {
 };
 
 export async function getList(params: GetListParams) {
+  const { page = 1, perPage = 10 } = params.pagination || {};
+  const querySpec = buildQuerySpec(params);
   const response = await httpClient(
     `/api/management/v3/transferprocesses/request`,
     {
       method: "POST",
-      body: JSON.stringify({
-        "@context": {
-          "@vocab": "https://w3id.org/edc/v0.0.1/ns/",
-        },
-        "@type": "QuerySpec",
-        offset: 0,
-        limit: 20,
-        filterExpression: [],
-      }),
+      body: JSON.stringify(querySpec),
     }
   );
 
@@ -48,7 +42,10 @@ export async function getList(params: GetListParams) {
 
   return {
     data: cleanData,
-    total: cleanData.length,
+    pageInfo: {
+      hasNextPage: transferProcesses.length === perPage,
+      hasPreviousPage: page > 1,
+    },
   };
 }
 
@@ -77,14 +74,37 @@ export async function remove(params: DeleteParams) {
 }
 
 export async function create(params: CreateParams) {
-  const framedTransferProcess = await compactJsonLd(params.data, frame);
+  const requestDto: any = {
+    "@context": {
+      "@vocab": "https://w3id.org/edc/v0.0.1/ns/",
+    },
+    "@type": "TransferRequestDto",
+    counterPartyAddress: params.data.counterPartyAddress,
+    contractId: params.data.contractId,
+    assetId: params.data.assetId,
+    protocol: params.data.protocol || "dataspace-protocol-http",
+    transferType: params.data.transferType,
+  };
+
+  // Add dataDestination if provided (for PUSH transfers)
+  if (params.data.dataDestination) {
+    requestDto.dataDestination = params.data.dataDestination;
+  }
+
   const response = await httpClient(`/api/management/v3/transferprocesses`, {
     method: "POST",
-    body: JSON.stringify(framedTransferProcess),
+    body: JSON.stringify(requestDto),
   });
-  const cleanData = await parseTransferProcessFromJsonLd(response.json);
+
+  const idResponse = response.json;
+
   return {
-    data: cleanData,
+    data: {
+      id: idResponse["@id"],
+      createdAt: idResponse.createdAt
+        ? new Date(idResponse.createdAt).toISOString()
+        : new Date().toISOString(),
+    },
   };
 }
 

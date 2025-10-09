@@ -5,12 +5,14 @@ import {
   CreateParams,
   UpdateParams,
   GetManyParams,
+  GetManyReferenceParams,
 } from "react-admin";
 import { httpClient } from "../httpClient";
 import { compactJsonLd, compactJsonLdArray } from "../helpers";
 import {
   parseContractNegotiationFromJsonLd,
   parseContractNegotiationFromJsonLdArray,
+  serializeContractNegotiationToJsonLd,
 } from "../transformers/contractNegotiationTransformers";
 
 const frame = {
@@ -83,16 +85,36 @@ export async function remove(params: DeleteParams) {
 }
 
 export async function create(params: CreateParams) {
-  const framedContractNegotiation = await compactJsonLd(params.data, frame);
+  const jsonLdNegotiation = await serializeContractNegotiationToJsonLd(
+    params.data
+  );
   const response = await httpClient(`/api/management/v3/contractnegotiations`, {
     method: "POST",
-    body: JSON.stringify(framedContractNegotiation),
+    body: JSON.stringify(jsonLdNegotiation),
   });
-  const cleanNegotiation = await parseContractNegotiationFromJsonLd(
-    response.json
-  );
+
+  // The create response typically only returns an @id
+  const responseId = response.json["@id"];
+
+  // Fetch the full negotiation object
+  if (responseId) {
+    const fullNegotiation = await httpClient(
+      `/api/management/v3/contractnegotiations/${responseId}`
+    );
+    const framedResponse = await compactJsonLd(fullNegotiation.json, frame);
+    const cleanNegotiation = await parseContractNegotiationFromJsonLd(
+      framedResponse
+    );
+    return {
+      data: cleanNegotiation,
+    };
+  }
+
+  // Fallback: return minimal data with just the ID
   return {
-    data: cleanNegotiation,
+    data: {
+      id: responseId || response.json["@id"],
+    },
   };
 }
 
@@ -127,5 +149,44 @@ export async function getMany(params: GetManyParams) {
   );
   return {
     data: cleanNegotiations,
+  };
+}
+
+export async function getManyReference(params: GetManyReferenceParams) {
+  const { page, perPage } = params.pagination || { page: 1, perPage: 10 };
+  const response = await httpClient(
+    `/api/management/v3/contractnegotiations/request`,
+    {
+      method: "POST",
+      body: JSON.stringify({
+        "@context": {
+          "@vocab": "https://w3id.org/edc/v0.0.1/ns/",
+        },
+        "@type": "QuerySpec",
+        offset: (page - 1) * perPage,
+        limit: perPage,
+        filterExpression: [
+          {
+            operandLeft: params.target,
+            operator: "=",
+            operandRight: params.id,
+          },
+        ],
+      }),
+    }
+  );
+
+  const contractNegotiations = response.json;
+  const framedContractNegotiations = await compactJsonLdArray(
+    contractNegotiations,
+    frame
+  );
+  const cleanNegotiations = await parseContractNegotiationFromJsonLdArray(
+    framedContractNegotiations
+  );
+
+  return {
+    data: cleanNegotiations,
+    total: cleanNegotiations.length,
   };
 }

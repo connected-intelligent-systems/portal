@@ -12,28 +12,20 @@ import {
   parsePolicyFromJsonLdArray,
   serializePolicyToJsonLd,
 } from "../transformers/policyTransformers";
+import { buildQuerySpec } from "../helpers";
 
 export async function getList(params: GetListParams) {
-  const { page, perPage } = params.pagination || { page: 1, perPage: 10 };
+  const { page = 1, perPage = 10 } = params.pagination || {};
+  const querySpec = buildQuerySpec(params);
   const response = await httpClient(
     `/api/management/v3/policydefinitions/request`,
     {
       method: "POST",
-      body: JSON.stringify({
-        "@context": {
-          "@vocab": "https://w3id.org/edc/v0.0.1/ns/",
-        },
-        "@type": "QuerySpec",
-        offset: (page - 1) * perPage,
-        limit: perPage,
-        filterExpression: [],
-      }),
+      body: JSON.stringify(querySpec),
     }
   );
 
   const policies = response.json;
-
-  // Transform JSON-LD policies to clean Policy objects directly
   const cleanPolicies = await parsePolicyFromJsonLdArray(policies);
 
   return {
@@ -50,8 +42,6 @@ export async function getOne(params: GetOneParams) {
     `/api/management/v3/policydefinitions/${params.id}`
   );
   const policy = response.json;
-
-  // Transform JSON-LD policy to clean Policy object directly
   const cleanPolicy = await parsePolicyFromJsonLd(policy);
 
   return {
@@ -71,15 +61,11 @@ export async function remove(params: DeleteParams) {
 }
 
 export async function create(params: CreateParams) {
-  // Transform clean Policy data to JSON-LD format
   const jsonLdPolicy = await serializePolicyToJsonLd(params.data);
-
   const response = await httpClient(`/api/management/v3/policydefinitions`, {
     method: "POST",
     body: JSON.stringify(jsonLdPolicy),
   });
-
-  // Transform response back to clean Policy object
   const cleanPolicy = await parsePolicyFromJsonLd(response.json);
 
   return {
@@ -88,7 +74,6 @@ export async function create(params: CreateParams) {
 }
 
 export async function update(params: UpdateParams) {
-  // Transform clean Policy data to JSON-LD format
   const jsonLdPolicy = await serializePolicyToJsonLd(params.data);
 
   await httpClient(`/api/management/v3/policydefinitions/${params.id}`, {
@@ -96,7 +81,6 @@ export async function update(params: UpdateParams) {
     body: JSON.stringify(jsonLdPolicy),
   });
 
-  // Return the clean Policy data with the ID
   return {
     data: {
       ...params.data,
@@ -114,7 +98,6 @@ export async function getMany(params: GetManyParams) {
     )
   );
 
-  // Transform JSON-LD policies to clean Policy objects directly
   const cleanPolicies = await parsePolicyFromJsonLdArray(policies);
 
   return {

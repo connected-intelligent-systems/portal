@@ -26,7 +26,6 @@ export async function parseDataConsumerPullFromJsonLd(
     };
     return removeUndefinedValues(pull as any);
   } catch (error) {
-    console.error("Error in parseDataConsumerPullFromJsonLd:", error);
     const errorMessage = error instanceof Error ? error.message : String(error);
     throw new Error(
       `Failed to transform JSON-LD data consumer pull: ${errorMessage}`

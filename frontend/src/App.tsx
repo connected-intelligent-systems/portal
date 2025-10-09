@@ -16,6 +16,8 @@ import InventoryIcon from "@mui/icons-material/Inventory";
 import HandshakeIcon from "@mui/icons-material/Handshake";
 import AssignmentTurnedInIcon from "@mui/icons-material/AssignmentTurnedIn";
 import Toolbar from "@mui/material/Toolbar";
+import Box from "@mui/material/Box";
+import { useTheme } from "@mui/material/styles";
 import dataProvider from "./dataProvider";
 import { i18nProvider } from "./i18n";
 import { AssetCreate, AssetEdit, AssetShow, AssetsList } from "./pages/assets";
@@ -41,34 +43,54 @@ import contractnegotiations from "./pages/contract_negotiations";
 import contractagreements from "./pages/contract_agreements";
 import transferprocesses from "./pages/transfer_processes";
 import { DataRequestShow } from "./pages/datarequests";
-import {
-  DataConsumerPullShow,
-  RawDataDownloadShow,
-} from "./pages/data_consumer_pull";
-import { darkTheme, theme } from "./theme";
+import { DatasetShow } from "./pages/datasets";
+import { darkTheme, getThemeLogo, theme } from "./theme";
+import { useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import Typography from "@mui/material/Typography";
 
-const CustomAppBar = () => (
-  <AppBar>
-    <Toolbar />
-    <span style={{ flex: 1 }} />
-  </AppBar>
-);
+const CustomAppBar = () => {
+  const theme = useTheme();
+  const paletteMode = theme.palette.mode === "dark" ? "dark" : "light";
+  const logoConfig =
+    getThemeLogo(paletteMode) || getThemeLogo("light") || undefined;
+
+  return (
+    <AppBar>
+      <Toolbar sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+        <Box
+          component={logoConfig?.src ? "img" : "div"}
+          src={logoConfig?.src}
+          alt={logoConfig?.alt || window.config.title || "Portal logo"}
+          sx={{
+            height: 40,
+            width: 40,
+            objectFit: "contain",
+            ...logoConfig?.sx,
+          }}
+        />
+        {window.config.title && (
+          <Typography variant="h6" color="inherit" noWrap sx={{ flexGrow: 1 }}>
+            {window.config.title}
+          </Typography>
+        )}
+        <Box sx={{ flexGrow: window.config.title ? 0 : 1 }} />
+      </Toolbar>
+      <span style={{ flexGrow: 1 }} />
+    </AppBar>
+  );
+};
 
 const CustomMenu = () => {
   return (
     <Menu dense={false} sx={{ pt: 1 }}>
-      {window.config.showAssets && <Menu.ResourceItem name="assets" />}
-      {window.config.showPolicies && <Menu.ResourceItem name="policies" />}
-      {window.config.showContractDefinitions && (
-        <Menu.ResourceItem name="contractdefinitions" />
-      )}
-      {window.config.showCatalog && <Menu.ResourceItem name="catalogs" />}
-      {window.config.showContractAgreements && (
-        <Menu.ResourceItem name="contractagreements" />
-      )}
-      {window.config.showTransferProcesses && (
-        <Menu.ResourceItem name="transferprocesses" />
-      )}
+      <Menu.ResourceItem name="assets" />
+      <Menu.ResourceItem name="policies" />
+      <Menu.ResourceItem name="contractdefinitions" />
+      <Menu.ResourceItem name="catalogs" />
+      <Menu.ResourceItem name="contractnegotiations" />
+      <Menu.ResourceItem name="contractagreements" />
+      <Menu.ResourceItem name="transferprocesses" />
     </Menu>
   );
 };
@@ -79,6 +101,26 @@ const CustomLayout = (props: any) => {
       <Container maxWidth="lg">{props.children}</Container>
     </Layout>
   );
+};
+
+// Redirect component for dataset show - redirects to nested route
+const DatasetShowRedirect = () => {
+  const navigate = useNavigate();
+  const { id } = useParams<{ id: string }>();
+
+  useEffect(() => {
+    if (id) {
+      // Split composite ID: catalogId--datasetId
+      const [catalogId, datasetId] = id.split("--");
+      if (catalogId && datasetId) {
+        navigate(`/catalogs/${catalogId}/datasets/${datasetId}/show`, {
+          replace: true,
+        });
+      }
+    }
+  }, [id, navigate]);
+
+  return null;
 };
 
 export const App = () => (
@@ -100,40 +142,38 @@ export const App = () => (
         path="/transferprocesses/:id/terminate"
         element={<transferprocesses.terminate />}
       />
+      <Route
+        path="/catalogs/:catalogId/datasets/:datasetId/show"
+        element={<DatasetShow />}
+      />
     </CustomRoutes>
-    {window.config.showAssets && (
-      <Resource
-        name="assets"
-        options={{ label: "Assets" }}
-        icon={InventoryIcon}
-        list={AssetsList}
-        show={AssetShow}
-        create={AssetCreate}
-        edit={AssetEdit}
-      />
-    )}
-    {window.config.showPolicies && (
-      <Resource
-        name="policies"
-        options={{ label: "Policies" }}
-        icon={PolicyIcon}
-        list={PoliciesList}
-        show={PolicyShow}
-        create={PolicyCreate}
-        edit={PolicyEdit}
-      />
-    )}
-    {window.config.showContractDefinitions && (
-      <Resource
-        name="contractdefinitions"
-        options={{ label: "Contract Definitions" }}
-        icon={GavelIcon}
-        list={ContractDefinitionsList}
-        show={ContractDefinitionShow}
-        create={ContractDefinitionCreate}
-        edit={ContractDefinitionEdit}
-      />
-    )}
+    <Resource
+      name="assets"
+      options={{ label: "Assets" }}
+      icon={InventoryIcon}
+      list={AssetsList}
+      show={AssetShow}
+      create={AssetCreate}
+      edit={AssetEdit}
+    />
+    <Resource
+      name="policies"
+      options={{ label: "Policies" }}
+      icon={PolicyIcon}
+      list={PoliciesList}
+      show={PolicyShow}
+      create={PolicyCreate}
+      edit={PolicyEdit}
+    />
+    <Resource
+      name="contractdefinitions"
+      options={{ label: "Contract Definitions" }}
+      icon={GavelIcon}
+      list={ContractDefinitionsList}
+      show={ContractDefinitionShow}
+      create={ContractDefinitionCreate}
+      edit={ContractDefinitionEdit}
+    />
     <Resource
       name="contractnegotiations"
       options={{ label: "Contract Negotiations" }}
@@ -142,51 +182,35 @@ export const App = () => (
       show={contractnegotiations.show}
       create={contractnegotiations.create}
     />
-    {window.config.showContractAgreements && (
-      <Resource
-        name="contractagreements"
-        options={{ label: "Contract Agreements" }}
-        icon={AssignmentTurnedInIcon}
-        list={contractagreements.list}
-        show={contractagreements.show}
-      />
-    )}
-    {window.config.showTransferProcesses && (
-      <Resource
-        name="transferprocesses"
-        icon={AutoModeIcon}
-        options={{ label: "Transfer Processes" }}
-        list={transferprocesses.list}
-        show={transferprocesses.show}
-        create={transferprocesses.create}
-      />
-    )}
+    <Resource
+      name="contractagreements"
+      options={{ label: "Contract Agreements" }}
+      icon={AssignmentTurnedInIcon}
+      list={contractagreements.list}
+      show={contractagreements.show}
+    />
+    <Resource
+      name="transferprocesses"
+      icon={AutoModeIcon}
+      options={{ label: "Transfer Processes" }}
+      list={transferprocesses.list}
+      show={transferprocesses.show}
+      create={transferprocesses.create}
+    />
     <Resource
       name="datarequests"
       options={{ label: "Data Requests" }}
       show={DataRequestShow}
     />
     <Resource
-      name="dataconsumerpull"
-      options={{ label: "Data Consumer Pull" }}
-      show={DataConsumerPullShow}
+      name="catalogs"
+      options={{ label: "Catalogs" }}
+      icon={AutoStoriesIcon}
+      list={CatalogList}
+      show={CatalogShow}
+      create={CatalogCreate}
+      edit={CatalogEdit}
     />
-    <Resource
-      name="rawdataconsumerpull"
-      options={{ label: "Data Download" }}
-      show={RawDataDownloadShow}
-    ></Resource>
-    {window.config.showCatalog && (
-      <Resource
-        name="catalogs"
-        options={{ label: "Catalogs" }}
-        icon={AutoStoriesIcon}
-        list={CatalogList}
-        show={CatalogShow}
-        create={CatalogCreate}
-        edit={CatalogEdit}
-      />
-    )}
-    <Resource name="datasets" />
+    <Resource name="datasets" show={DatasetShowRedirect} />
   </Admin>
 );

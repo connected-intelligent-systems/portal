@@ -1,27 +1,34 @@
-import { Edit, SimpleForm, TextInput, required } from "react-admin";
+import {
+  Edit,
+  SimpleForm,
+  TextInput,
+  required,
+  useTranslate,
+} from "react-admin";
 
 export const CatalogEdit = () => {
+  const translate = useTranslate();
   return (
     <Edit>
       <SimpleForm>
         <TextInput
           source="url"
-          label="Catalog URL"
-          helperText="The EDC catalog endpoint URL"
+          label={translate("resources.catalog.add.url")}
+          helperText={translate("resources.catalog.forms.editUrlHelper")}
           fullWidth
           validate={required()}
         />
         <TextInput
           source="name"
-          label="Catalog Name"
-          helperText="A friendly name for this catalog"
+          label={translate("resources.catalog.add.name")}
+          helperText={translate("resources.catalog.forms.nameHelper")}
           fullWidth
           validate={required()}
         />
         <TextInput
           source="description"
-          label="Description"
-          helperText="Optional description"
+          label={translate("resources.catalog.fields.description")}
+          helperText={translate("resources.catalog.forms.descriptionHelper")}
           multiline
           rows={3}
           fullWidth

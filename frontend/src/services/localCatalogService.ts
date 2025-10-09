@@ -1,5 +1,4 @@
 import { LocalCatalog } from "../types/catalog";
-import * as catalogDataProvider from "../dataProvider/resources/catalog";
 
 const STORAGE_KEY = "local_catalogs";
 
@@ -17,9 +16,12 @@ export class LocalCatalogService {
     catalog: Omit<LocalCatalog, "id" | "dateAdded" | "isActive">
   ): LocalCatalog {
     const catalogs = this.getCatalogs();
+    const catalogId = this.generateIdFromUrl(catalog.url);
+
+    // Create new catalog (duplicate check should be done at data provider level)
     const newCatalog: LocalCatalog = {
       ...catalog,
-      id: this.generateId(),
+      id: catalogId,
       dateAdded: new Date().toISOString(),
       isActive: false,
     };
@@ -88,7 +90,8 @@ export class LocalCatalogService {
 
   static updateLastConnected(catalogUrl: string): void {
     const catalogs = this.getCatalogs();
-    const catalog = catalogs.find((c) => c.url === catalogUrl);
+    const catalogId = this.generateIdFromUrl(catalogUrl);
+    const catalog = catalogs.find((c) => c.id === catalogId);
 
     if (catalog) {
       catalog.lastConnected = new Date().toISOString();
@@ -100,8 +103,28 @@ export class LocalCatalogService {
     url: string
   ): Promise<{ success: boolean; error?: string }> {
     try {
-      // Use the catalog dataProvider's getOne method to test the connection
-      await catalogDataProvider.getOne({ id: url });
+      // Test connection by fetching catalog directly from counterPartyAddress
+      const response = await fetch(`/api/management/v3/catalog/request`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        method: "POST",
+        body: JSON.stringify({
+          "@context": {
+            "@vocab": "https://w3id.org/edc/v0.0.1/ns/",
+          },
+          counterPartyAddress: url,
+          protocol: "dataspace-protocol-http",
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(
+          errorData.message || `HTTP error! status: ${response.status}`
+        );
+      }
+
       return { success: true };
     } catch (error) {
       return {
@@ -111,9 +134,9 @@ export class LocalCatalogService {
     }
   }
 
-  private static generateId(): string {
-    return `catalog_${Date.now()}_${Math.random()
-      .toString(36)
-      .substring(2, 11)}`;
+  private static generateIdFromUrl(url: string): string {
+    // Use base64 encoding of URL as deterministic ID
+    // This prevents duplicate catalogs and provides consistent IDs
+    return btoa(url);
   }
 }

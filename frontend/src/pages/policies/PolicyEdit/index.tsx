@@ -1,4 +1,3 @@
-import React from "react";
 import {
   Edit,
   TextInput,
@@ -6,7 +5,7 @@ import {
   ArrayInput,
   useTranslate,
 } from "react-admin";
-import { PermissionCreate } from "../PolicyCreate/PermissionCreate";
+import { PermissionCreate } from "../shared/PermissionCreate";
 
 export const PolicyEdit = (props: any) => {
   const translate = useTranslate();

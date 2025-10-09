@@ -10,8 +10,8 @@ import {
   Button,
   TopToolbar,
   useRecordContext,
+  useTranslate,
 } from "react-admin";
-import { useEffect } from "react";
 import Alert from "@mui/material/Alert";
 import { Link } from "react-router-dom";
 import CancelIcon from "@mui/icons-material/Cancel";
@@ -19,14 +19,19 @@ import { ContractNegotiation } from "../../types/contractNegotiation";
 
 const ContractNegotiationShowBar = () => {
   const record = useRecordContext<ContractNegotiation>();
+  const translate = useTranslate();
+  const isTerminated = record?.state === "TERMINATED";
+  const isFinalized = record?.state === "FINALIZED";
+  const cannotTerminate = isTerminated || isFinalized;
+
   return (
     <TopToolbar>
       <Button
         component={Link}
-        to={`/terminatecontractnegotiation/create?id=${record?.id}`}
+        to={`/contractnegotiations/${record?.id}/terminate`}
         color="error"
-        label="Terminate"
-        disabled={record?.state === "TERMINATED"}
+        label={translate("resources.contractnegotiations.actions.terminate")}
+        disabled={cannotTerminate}
         startIcon={<CancelIcon />}
       />
     </TopToolbar>
@@ -35,6 +40,7 @@ const ContractNegotiationShowBar = () => {
 
 export const ContractNegotiationShow = () => {
   const { error, isLoading, record } = useShowController<ContractNegotiation>();
+  const translate = useTranslate();
 
   if (isLoading) {
     return <LinearProgress />;
@@ -47,27 +53,60 @@ export const ContractNegotiationShow = () => {
   return (
     <Show actions={<ContractNegotiationShowBar />}>
       <SimpleShowLayout>
-        <TextField source="id" label="Id" />
+        <TextField
+          source="id"
+          label={translate("resources.contractnegotiations.fields.id")}
+        />
         {record?.createdAt && (
-          <DateField source="createdAt" showTime label="Created At" />
+          <DateField
+            source="createdAt"
+            showTime
+            label={translate("resources.contractnegotiations.fields.createdAt")}
+          />
         )}
-        <TextField source="type" />
-        <TextField source="counterPartyAddress" label="Counter Party Address" />
-        <TextField source="counterPartyId" label="Counter Party Id" />
-        <TextField source="protocol" />
-        <TextField source="state" />
+        <TextField
+          source="type"
+          label={translate("resources.contractnegotiations.fields.type")}
+        />
+        <TextField
+          source="counterPartyAddress"
+          label={translate(
+            "resources.contractnegotiations.fields.counterPartyAddress"
+          )}
+        />
+        <TextField
+          source="counterPartyId"
+          label={translate(
+            "resources.contractnegotiations.fields.counterPartyId"
+          )}
+        />
+        <TextField
+          source="protocol"
+          label={translate("resources.contractnegotiations.fields.protocol")}
+        />
+        <TextField
+          source="state"
+          label={translate("resources.contractnegotiations.fields.state")}
+        />
         {record?.contractAgreementId && (
           <ReferenceField
             source="contractAgreementId"
             reference="contractagreements"
             link="show"
-            label="Contract Agreement"
+            label={translate(
+              "resources.contractnegotiations.fields.contractAgreementId"
+            )}
           >
             <TextField source="id" />
           </ReferenceField>
         )}
         {record?.errorDetail && (
-          <Labeled label="Error Detail" fullWidth>
+          <Labeled
+            label={translate(
+              "resources.contractnegotiations.fields.errorDetail"
+            )}
+            fullWidth
+          >
             <Alert severity="error">{record?.errorDetail}</Alert>
           </Labeled>
         )}

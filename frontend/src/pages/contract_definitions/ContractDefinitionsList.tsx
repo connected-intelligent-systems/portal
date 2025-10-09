@@ -1,7 +1,6 @@
 import {
   List,
   Datagrid,
-  DateField,
   FunctionField,
   ListActions,
   useTranslate,
@@ -50,7 +49,8 @@ export const ContractDefinitionsList = () => {
         <FunctionField
           label={translate("resources.contract_definitions.fields.name")}
           render={renderNameWithId}
-          sortable={false}
+          sortable={true}
+          sortBy="privateProperties.'https://w3id.org/edc/v0.0.1/ns/name'"
         />
       </Datagrid>
     </List>

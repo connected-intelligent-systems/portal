@@ -38,7 +38,6 @@ export async function parseContractAgreementFromJsonLd(
     };
     return removeUndefinedValues(agreement as any);
   } catch (error) {
-    console.error("Error in parseContractAgreementFromJsonLd:", error);
     const errorMessage = error instanceof Error ? error.message : String(error);
     throw new Error(
       `Failed to transform JSON-LD contract agreement: ${errorMessage}`

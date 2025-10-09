@@ -9,61 +9,158 @@ import {
   TopToolbar,
   useRecordContext,
   ReferenceField,
+  ReferenceOneField,
+  useGetList,
+  useTranslate,
+  FunctionField,
 } from "react-admin";
 import { Link } from "react-router-dom";
 import DownloadIcon from "@mui/icons-material/Download";
 import { ContractAgreement } from "../../types/contractAgreement";
+import { PolicyRulesTabs } from "../../components/PolicyRulesTabs";
 
 const ContractAgreementShowBar = () => {
+  const translate = useTranslate();
   const record = useRecordContext<ContractAgreement>();
+
+  const { data: negotiations } = useGetList(
+    "contractnegotiations",
+    {
+      filter: { "contractAgreement.id": record?.id },
+      pagination: { page: 1, perPage: 1 },
+    },
+    { enabled: !!record?.id }
+  );
+
+  const negotiation = negotiations?.[0];
+  const counterPartyAddress = negotiation?.counterPartyAddress;
+
   // TODO: Re-enable this logic when negotiation state is available
-  const enabled = true; // record?.negotiation.state !== "TERMINATED";
+  const enabled = true; // negotiation?.state !== "TERMINATED";
+
   return (
     <TopToolbar>
       <Button
         component={Link}
-        to={`/transferprocesses/create?contractId=${record?.id}&assetId=${record?.assetId}`}
-        disabled={!enabled}
-        label="Transfer Dataset"
+        to="/transferprocesses/create"
+        state={{
+          record: {
+            counterPartyAddress: counterPartyAddress,
+            contractId: record?.id,
+            assetId: record?.assetId,
+          },
+        }}
+        disabled={!enabled || !counterPartyAddress}
+        label={translate(
+          "resources.contractagreements.actions.transferDataset"
+        )}
         startIcon={<DownloadIcon />}
       />
     </TopToolbar>
   );
 };
 
+const ContractNegotiation = ({
+  contractAggreement,
+}: {
+  contractAggreement: ContractAgreement;
+}) => {
+  const translate = useTranslate();
+  const record = useRecordContext();
+  if (record?.type === "CONSUMER") {
+    // Create composite ID for dataset: catalogId--datasetId
+    const catalogId = btoa(record.counterPartyAddress);
+    const compositeId = `${catalogId}--${contractAggreement.assetId}`;
+
+    return (
+      <Labeled label={translate("resources.contractagreements.fields.dataset")}>
+        <ReferenceField
+          record={{ ...contractAggreement, assetId: compositeId }}
+          reference="datasets"
+          source="assetId"
+          link="show"
+        >
+          <TextField source="originalId" />
+        </ReferenceField>
+      </Labeled>
+    );
+  } else if (record?.type === "PROVIDER") {
+    return (
+      <Labeled label={translate("resources.contractagreements.fields.asset")}>
+        <ReferenceField
+          record={contractAggreement}
+          reference="assets"
+          source="assetId"
+        >
+          <TextField source="id" />
+        </ReferenceField>
+      </Labeled>
+    );
+  }
+};
+
 export const ContractAgreementShow = () => {
-  const { record, isPending } = useShowController<ContractAgreement>();
+  const translate = useTranslate();
+  const { isPending, record } = useShowController<ContractAgreement>();
   if (isPending) {
-    return <div>Loading...</div>;
+    return (
+      <div>{translate("resources.contractagreements.messages.loading")}</div>
+    );
   }
 
   return (
     <Show emptyWhileLoading={false} actions={<ContractAgreementShowBar />}>
       <SimpleShowLayout>
-        <TextField label="Id" source="id" />
-        <TextField label="Asset Id" source="assetId" />
-        <TextField label="Consumer Id" source="consumerId" />
-        <TextField label="Provider Id" source="providerId" />
+        <TextField
+          label={translate("resources.contractagreements.fields.id")}
+          source="id"
+        />
+        <TextField
+          label={translate("resources.contractagreements.fields.assetId")}
+          source="assetId"
+        />
+        <TextField
+          label={translate("resources.contractagreements.fields.consumerId")}
+          source="consumerId"
+        />
+        <TextField
+          label={translate("resources.contractagreements.fields.providerId")}
+          source="providerId"
+        />
         <DateField
-          label="Contract Signing Date"
+          label={translate(
+            "resources.contractagreements.fields.contractSigningDate"
+          )}
           source="contractSigningDate"
           showTime
         />
-        <Labeled label="Policy">
-          <SimpleShowLayout>
-            <TextField label="Type" source="policy.type" />
-            <TextField label="Target" source="policy.rules.target" />
-            {/* Add more policy fields as needed */}
-          </SimpleShowLayout>
-        </Labeled>
-        <ReferenceField
-          label="Asset"
-          source="assetId"
-          reference="assets"
-          link="show"
+        {record && (
+          <ReferenceOneField
+            reference="contractnegotiations"
+            target="contractAgreement.id"
+            render={() => <ContractNegotiation contractAggreement={record} />}
+          />
+        )}
+        <Labeled
+          label={translate("resources.contractagreements.sections.policy")}
+          fullWidth
         >
-          <TextField source="title" />
-        </ReferenceField>
+          <FunctionField
+            render={(record: any) => {
+              const permissions = record?.policy?.rules?.permissions || [];
+              const obligations = record?.policy?.rules?.obligations || [];
+              const prohibitions = record?.policy?.rules?.prohibitions || [];
+
+              return (
+                <PolicyRulesTabs
+                  permissions={permissions}
+                  obligations={obligations}
+                  prohibitions={prohibitions}
+                />
+              );
+            }}
+          />
+        </Labeled>
       </SimpleShowLayout>
     </Show>
   );

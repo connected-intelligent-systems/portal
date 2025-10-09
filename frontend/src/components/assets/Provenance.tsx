@@ -1,13 +1,13 @@
 import { Labeled, FunctionField, useTranslate } from "react-admin";
-import { Typography, Box, Link } from "@mui/material";
+import { Typography, Box } from "@mui/material";
 
-export const ProvenanceTab = () => {
+export const Provenance = () => {
   const translate = useTranslate();
 
   return (
     <Box>
       <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-        Information about the origin and history of this asset.
+        {translate("resources.assets.tabs.provenanceTab.shortDescription")}
       </Typography>
 
       <Labeled

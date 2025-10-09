@@ -15,7 +15,6 @@ import {
   DataAddressStep,
   OptionalFeaturesStep,
 } from "../shared/steps";
-import { ErrorBoundary } from "../../catalogs/DatasetCard/ErrorBoundary";
 
 interface AssetEditToolbarProps {
   activeStep: number;
@@ -55,9 +54,9 @@ const AssetEditToolbar = ({
     // For step 1 (Data Address), add conditional required fields based on type
     if (stepIndex === 1) {
       const dataAddressType = formData?.dataAddress?.type;
-      if (dataAddressType === "http" || dataAddressType === "HttpData") {
+      if (dataAddressType === "HttpData" || dataAddressType === "http") {
         requiredFields = [...requiredFields, "dataAddress.baseUrl"];
-      } else if (dataAddressType === "s3" || dataAddressType === "AmazonS3") {
+      } else if (dataAddressType === "AmazonS3" || dataAddressType === "s3") {
         requiredFields = [
           ...requiredFields,
           "dataAddress.region",
@@ -138,7 +137,7 @@ const AssetEditToolbar = ({
             onSuccess: () => {
               notify(translate("resources.assets.messages.assetUpdated"));
               redirect("list", "assets");
-            }
+            },
           }}
         />
       )}
@@ -164,34 +163,32 @@ export const AssetEdit = () => {
   };
 
   return (
-    <ErrorBoundary>
-      <Edit>
-        <SimpleForm
-          toolbar={
-            <AssetEditToolbar
-              activeStep={activeStep}
-              setActiveStep={setActiveStep}
-              markStepCompleted={markStepCompleted}
-              notify={notify}
-              redirect={redirect}
-              translate={translate}
-            />
-          }
-        >
-          <Box sx={{ width: "100%", mb: 2 }}>
-            <Stepper activeStep={activeStep} alternativeLabel>
-              {steps.map((label, index) => (
-                <Step key={label} completed={completedSteps.has(index)}>
-                  <StepLabel>{label}</StepLabel>
-                </Step>
-              ))}
-            </Stepper>
-          </Box>
-          {activeStep === 0 && <BasicInformationStep />}
-          {activeStep === 1 && <DataAddressStep />}
-          {activeStep === 2 && <OptionalFeaturesStep />}
-        </SimpleForm>
-      </Edit>
-    </ErrorBoundary>
+    <Edit>
+      <SimpleForm
+        toolbar={
+          <AssetEditToolbar
+            activeStep={activeStep}
+            setActiveStep={setActiveStep}
+            markStepCompleted={markStepCompleted}
+            notify={notify}
+            redirect={redirect}
+            translate={translate}
+          />
+        }
+      >
+        <Box sx={{ width: "100%", mb: 2 }}>
+          <Stepper activeStep={activeStep} alternativeLabel>
+            {steps.map((label, index) => (
+              <Step key={label} completed={completedSteps.has(index)}>
+                <StepLabel>{label}</StepLabel>
+              </Step>
+            ))}
+          </Stepper>
+        </Box>
+        {activeStep === 0 && <BasicInformationStep />}
+        {activeStep === 1 && <DataAddressStep />}
+        {activeStep === 2 && <OptionalFeaturesStep />}
+      </SimpleForm>
+    </Edit>
   );
 };

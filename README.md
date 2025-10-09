@@ -22,6 +22,54 @@ npm run dev
 
 Configure the EDC connection in your Vite development proxy or directly in the frontend application. The frontend communicates directly with the EDC management API.
 
+The runtime behavior of the portal can be adjusted via the `config.js` file that is served next to the built assets (see `frontend/public/config.js` for the template). Set `title`, toggle feature availability flags, and brand the top navigation bar by defining per-theme logo entries (including arbitrary `sx` styling) inside the `theme` section—no rebuild required.
+
+For color and typography branding, use the `theme` section to override the default light and dark Material UI palettes at runtime:
+
+```javascript
+var config = {
+	// ...existing flags...
+	theme: {
+		light: {
+			palette: {
+				primary: { main: "#0043ce" },
+				background: { default: "#ffffff" }
+			},
+			logo: {
+				src: "/assets/logo-light.svg",
+				alt: "Portal logo",
+				sx: {
+					height: 40,
+					width: "auto",
+					objectFit: "contain"
+				}
+			},
+			typography: {
+				fontFamily: "Inter, sans-serif"
+			},
+			spacing: 8,
+			sidebarWidth: 280
+		},
+		dark: {
+			palette: {
+				primary: { main: "#8c54ff" },
+				background: { default: "#0c0a14" }
+			},
+			logo: {
+				src: "/assets/logo-dark.svg",
+				alt: "Portal logo",
+				sx: {
+					height: 40,
+					filter: "brightness(1.2)"
+				}
+			}
+		}
+	}
+}
+```
+
+Only the keys you supply are overridden; everything else falls back to the defaults defined in `theme.tsx`.
+
 ## Production Deployment
 
 The production build uses nginx to serve the static frontend files. An optional nginx proxy configuration is provided for routing API calls to EDC services.

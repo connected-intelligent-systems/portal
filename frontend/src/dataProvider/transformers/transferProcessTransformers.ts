@@ -46,7 +46,6 @@ export async function parseTransferProcessFromJsonLd(
     };
     return removeUndefinedValues(transfer as any);
   } catch (error) {
-    console.error("Error in parseTransferProcessFromJsonLd:", error);
     const errorMessage = error instanceof Error ? error.message : String(error);
     throw new Error(
       `Failed to transform JSON-LD transfer process: ${errorMessage}`

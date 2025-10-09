@@ -4,7 +4,7 @@ import {
   SimpleFormIterator,
   useTranslate,
 } from "react-admin";
-import { Typography, Link, Box } from "@mui/material";
+import { Typography, Box } from "@mui/material";
 
 export const DataPrivacyTab = () => {
   const translate = useTranslate();
@@ -182,14 +182,6 @@ export const DataPrivacyTab = () => {
     <Box sx={{ width: "100%" }}>
       <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
         {translate("resources.assets.create.dataPrivacy.description")}
-        <Link
-          href="https://w3c.github.io/dpv/2.1/dpv/"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Data Privacy Vocabulary (DPV)
-        </Link>
-        .
       </Typography>
       <ArrayInput
         source="privacySettings.personalDataHandling"

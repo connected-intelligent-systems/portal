@@ -2,11 +2,11 @@ import React from "react";
 import { useTranslate } from "react-admin";
 import { Typography, Box, List, ListItem, ListItemText } from "@mui/material";
 
-interface ServiceInformationTabProps {
+interface ServiceInformationProps {
   dataset: any;
 }
 
-export const ServiceInformationTab: React.FC<ServiceInformationTabProps> = ({
+export const ServiceInformation: React.FC<ServiceInformationProps> = ({
   dataset,
 }) => {
   const translate = useTranslate();

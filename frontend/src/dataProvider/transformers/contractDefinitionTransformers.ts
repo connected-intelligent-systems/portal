@@ -2,7 +2,6 @@ import { z } from "zod";
 import {
   ContractDefinition,
   ContractDefinitionFormData,
-  ContractDefinitionAssetSelector,
 } from "../../types/contractDefinition";
 import { removeUndefinedValues } from "../helpers";
 
@@ -88,7 +87,6 @@ export async function parseContractDefinitionFromJsonLd(
 
     return removeUndefinedValues(contractDefinition as any);
   } catch (error) {
-    console.error("Error in parseContractDefinitionFromJsonLd:", error);
     const errorMessage = error instanceof Error ? error.message : String(error);
     throw new Error(
       `Failed to transform JSON-LD contract definition: ${errorMessage}`

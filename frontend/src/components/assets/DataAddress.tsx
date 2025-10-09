@@ -6,9 +6,28 @@ import {
   useTranslate,
 } from "react-admin";
 import { Typography, Box } from "@mui/material";
-import { PasswordField } from "../../../../components/password_field";
+import { PasswordField } from "../password_field";
 
-const HttpDataTab = () => {
+const resolveBooleanDisplay = (value: unknown, translate: any) => {
+  if (value === undefined || value === null || value === "") {
+    return "-";
+  }
+
+  const normalized =
+    typeof value === "string" ? value.toLowerCase() : value === true;
+
+  if (normalized === true || normalized === "true") {
+    return translate("resources.assets.tabs.dataAddressTab.yes");
+  }
+
+  if (normalized === false || normalized === "false") {
+    return translate("resources.assets.tabs.dataAddressTab.no");
+  }
+
+  return String(value);
+};
+
+const HttpData = () => {
   const translate = useTranslate();
 
   return (
@@ -21,14 +40,18 @@ const HttpDataTab = () => {
         fullWidth
         label={translate("resources.assets.tabs.dataAddressTab.baseUrl")}
       >
-        <TextField source="dataAddress.baseUrl" />
+        <TextField source="dataAddress.baseUrl" emptyText="-" />
       </Labeled>
 
       <Labeled
         fullWidth
         label={translate("resources.assets.tabs.dataAddressTab.acceptHeader")}
       >
-        <TextField source="dataAddress.header:Accept" emptyText="-" />
+        <FunctionField
+          render={(record: any) =>
+            record?.dataAddress?.["header:Accept"] ?? "-"
+          }
+        />
       </Labeled>
 
       <Labeled
@@ -37,9 +60,7 @@ const HttpDataTab = () => {
       >
         <FunctionField
           render={(record: any) =>
-            record?.dataAddress?.proxyPath === "true"
-              ? translate("resources.assets.tabs.dataAddressTab.yes")
-              : translate("resources.assets.tabs.dataAddressTab.no")
+            resolveBooleanDisplay(record?.dataAddress?.proxyPath, translate)
           }
         />
       </Labeled>
@@ -52,9 +73,10 @@ const HttpDataTab = () => {
       >
         <FunctionField
           render={(record: any) =>
-            record?.dataAddress?.proxyQueryParams === "true"
-              ? translate("resources.assets.tabs.dataAddressTab.yes")
-              : translate("resources.assets.tabs.dataAddressTab.no")
+            resolveBooleanDisplay(
+              record?.dataAddress?.proxyQueryParams,
+              translate
+            )
           }
         />
       </Labeled>
@@ -65,9 +87,7 @@ const HttpDataTab = () => {
       >
         <FunctionField
           render={(record: any) =>
-            record?.dataAddress?.proxyBody === "true"
-              ? translate("resources.assets.tabs.dataAddressTab.yes")
-              : translate("resources.assets.tabs.dataAddressTab.no")
+            resolveBooleanDisplay(record?.dataAddress?.proxyBody, translate)
           }
         />
       </Labeled>
@@ -78,9 +98,7 @@ const HttpDataTab = () => {
       >
         <FunctionField
           render={(record: any) =>
-            record?.dataAddress?.proxyMethod === "true"
-              ? translate("resources.assets.tabs.dataAddressTab.yes")
-              : translate("resources.assets.tabs.dataAddressTab.no")
+            resolveBooleanDisplay(record?.dataAddress?.proxyMethod, translate)
           }
         />
       </Labeled>
@@ -97,7 +115,7 @@ const HttpDataTab = () => {
             return record?.dataAddress?.authHeader ? (
               <PasswordField source="dataAddress.authHeader" />
             ) : (
-              <TextField source="dataAddress.authHeader" emptyText="-" />
+              <Typography component="span">-</Typography>
             );
           }}
         />
@@ -106,7 +124,7 @@ const HttpDataTab = () => {
   );
 };
 
-const AmazonS3Tab = () => {
+const AmazonS3 = () => {
   const translate = useTranslate();
 
   return (
@@ -119,7 +137,7 @@ const AmazonS3Tab = () => {
         fullWidth
         label={translate("resources.assets.tabs.dataAddressTab.region")}
       >
-        <TextField source="dataAddress.region" />
+        <TextField source="dataAddress.region" emptyText="-" />
       </Labeled>
 
       <Labeled
@@ -135,7 +153,7 @@ const AmazonS3Tab = () => {
         fullWidth
         label={translate("resources.assets.tabs.dataAddressTab.bucketName")}
       >
-        <TextField source="dataAddress.bucketName" />
+        <TextField source="dataAddress.bucketName" emptyText="-" />
       </Labeled>
 
       <Labeled
@@ -180,9 +198,36 @@ const AmazonS3Tab = () => {
   );
 };
 
-export const DataAddressTab = () => {
+export const DataAddress = () => {
   const record = useRecordContext();
   const translate = useTranslate();
+  const resolveType = (typeValue: unknown) => {
+    if (!typeValue || typeof typeValue !== "string") {
+      return undefined;
+    }
+
+    const normalized = typeValue.toLowerCase();
+
+    if (
+      normalized === "http" ||
+      normalized === "httpdata" ||
+      normalized.includes("http")
+    ) {
+      return "http";
+    }
+
+    if (
+      normalized === "s3" ||
+      normalized === "amazons3" ||
+      normalized.includes("s3")
+    ) {
+      return "s3";
+    }
+
+    return normalized;
+  };
+
+  const dataAddressType = resolveType(record?.dataAddress?.type);
 
   return (
     <Box>
@@ -201,10 +246,10 @@ export const DataAddressTab = () => {
 
       <FunctionField
         render={() => {
-          if (record?.dataAddress?.type === "http") {
-            return <HttpDataTab />;
-          } else if (record?.dataAddress?.type === "s3") {
-            return <AmazonS3Tab />;
+          if (dataAddressType === "http") {
+            return <HttpData />;
+          } else if (dataAddressType === "s3") {
+            return <AmazonS3 />;
           }
           return null;
         }}

@@ -38,7 +38,7 @@ export interface Dataset {
   theme?: DatasetTheme;
   keywords?: string[];
 
-  // Participant information
+  // Participant information - inherited from parent catalog
   participantId?: string;
 
   // Policies attached to this dataset
@@ -54,6 +54,9 @@ export interface Catalog {
   // Catalog metadata
   title?: string;
   description?: string;
+
+  // Participant information - identifies the catalog provider
+  participantId?: string;
 
   // The datasets in this catalog
   datasets: Dataset[];

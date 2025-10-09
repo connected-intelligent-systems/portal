@@ -5,6 +5,7 @@ import {
   required,
   useNotify,
   FormDataConsumer,
+  useTranslate,
 } from "react-admin";
 import { Box, Button, CircularProgress, Typography } from "@mui/material";
 import { useState } from "react";
@@ -15,10 +16,13 @@ const TestConnectionButton = ({ formData }: { formData: any }) => {
   const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
   const [error, setError] = useState<string | null>(null);
   const notify = useNotify();
+  const translate = useTranslate();
 
   const handleTest = async () => {
     if (!formData.url) {
-      notify("Please enter a URL first", { type: "warning" });
+      notify(translate("resources.catalog.connectionTest.requiresUrl"), {
+        type: "warning",
+      });
       return;
     }
 
@@ -30,16 +34,24 @@ const TestConnectionButton = ({ formData }: { formData: any }) => {
       const result = await LocalCatalogService.testConnection(formData.url);
       if (result.success) {
         setStatus("success");
-        notify("Connection successful!", { type: "success" });
+        notify(
+          translate("resources.catalog.connectionTest.successNotification"),
+          { type: "success" }
+        );
       } else {
         setStatus("error");
-        setError(result.error || "Connection failed");
-        notify(result.error || "Connection failed", { type: "error" });
+        const failureMessage =
+          result.error ||
+          translate("resources.catalog.connectionTest.failureNotification");
+        setError(failureMessage);
+        notify(failureMessage, { type: "error" });
       }
     } catch (err) {
       setStatus("error");
       const errorMsg =
-        err instanceof Error ? err.message : "Connection test failed";
+        err instanceof Error
+          ? err.message
+          : translate("resources.catalog.connectionTest.errorNotification");
       setError(errorMsg);
       notify(errorMsg, { type: "error" });
     } finally {
@@ -54,16 +66,24 @@ const TestConnectionButton = ({ formData }: { formData: any }) => {
         onClick={handleTest}
         disabled={testing || !formData.url}
       >
-        {testing ? <CircularProgress size={20} /> : "Test Connection"}
+        {testing ? (
+          <CircularProgress size={20} />
+        ) : (
+          translate("resources.catalog.connectionTest.button")
+        )}
       </Button>
       {status === "success" && (
         <Typography color="success.main" variant="body2">
-          ✓ Connection successful
+          {translate("resources.catalog.connectionTest.successStatus")}
         </Typography>
       )}
       {status === "error" && (
         <Typography color="error.main" variant="body2">
-          ✗ {error}
+          {translate("resources.catalog.connectionTest.errorStatusPrefix", {
+            error:
+              error ||
+              translate("resources.catalog.connectionTest.failureNotification"),
+          })}
         </Typography>
       )}
     </Box>
@@ -71,13 +91,14 @@ const TestConnectionButton = ({ formData }: { formData: any }) => {
 };
 
 export const CatalogCreate = () => {
+  const translate = useTranslate();
   return (
     <Create redirect="show">
       <SimpleForm>
         <TextInput
           source="url"
-          label="Catalog URL"
-          helperText="Enter the EDC catalog endpoint URL (e.g., https://example.com/api/dsp)"
+          label={translate("resources.catalog.add.url")}
+          helperText={translate("resources.catalog.forms.urlHelper")}
           fullWidth
           validate={required()}
         />
@@ -86,15 +107,15 @@ export const CatalogCreate = () => {
         </FormDataConsumer>
         <TextInput
           source="name"
-          label="Catalog Name"
-          helperText="A friendly name for this catalog"
+          label={translate("resources.catalog.add.name")}
+          helperText={translate("resources.catalog.forms.nameHelper")}
           fullWidth
           validate={required()}
         />
         <TextInput
           source="description"
-          label="Description"
-          helperText="Optional description"
+          label={translate("resources.catalog.add.description")}
+          helperText={translate("resources.catalog.forms.descriptionHelper")}
           multiline
           rows={3}
           fullWidth

@@ -1,9 +1,13 @@
-export interface DataRequest {
+export interface EndpointDataReference {
   id: string;
   type: string;
+  providerId: string;
   assetId: string;
-  contractId: string;
-  state: string;
+  agreementId: string;
+  transferProcessId: string;
   createdAt: string;
-  updatedAt: string;
+  contractNegotiationId?: string;
 }
+
+// Legacy alias for backwards compatibility
+export type DataRequest = EndpointDataReference;

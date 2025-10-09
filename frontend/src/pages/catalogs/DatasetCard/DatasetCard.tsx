@@ -34,6 +34,8 @@ export const DatasetCard = ({
     dataset?.name ||
     translate("resources.catalog.dataset.unnamedDataset");
   const datasetId = dataset?.id;
+  const datasetIdDisplay = datasetId ?? "-";
+  const datasetIdLabel = <>{datasetIdDisplay}</>;
 
   return (
     <Grid item xs={12} md={6} lg={4} key={datasetId || `dataset-${index}`}>
@@ -48,7 +50,6 @@ export const DatasetCard = ({
         aria-describedby={`dataset-description-${index}`}
       >
         <CardContent sx={{ flexGrow: 1, pb: 1 }}>
-          {/* Header */}
           <Typography
             variant="h6"
             component="h3"
@@ -58,40 +59,18 @@ export const DatasetCard = ({
             {datasetTitle}
           </Typography>
 
-          {/* ID - small and less prominent */}
           <Typography
             variant="caption"
             color="textSecondary"
             sx={{ display: "block", mb: 2 }}
-            aria-label={`Dataset ID: ${datasetId}`}
+            aria-label={translate("resources.catalog.dataset.aria.datasetId", {
+              id: datasetIdDisplay,
+            })}
           >
-            ID: {datasetId}
+            {datasetIdLabel}
           </Typography>
 
-          {/* Short Description */}
-          <Typography
-            variant="body2"
-            color="text.secondary"
-            sx={{
-              mb: 2,
-              lineHeight: 1.4,
-              fontStyle: dataset?.abstract ? "normal" : "italic",
-            }}
-            id={`dataset-description-${index}`}
-          >
-            {dataset?.abstract ||
-              translate("resources.catalog.dataset.noDescriptionAvailable")}
-          </Typography>
-
-          {/* Participant, Type, Category, Media Type & Keywords */}
           <Box sx={{ display: "flex", gap: 1, mb: 2, flexWrap: "wrap" }}>
-            {dataset["dspace:participantId"] && (
-              <Chip
-                size="small"
-                label={dataset["dspace:participantId"]}
-                variant="outlined"
-              />
-            )}
             {dataset.type && (
               <Chip
                 size="small"
@@ -115,7 +94,7 @@ export const DatasetCard = ({
                   typeof dataset.theme === "object"
                     ? dataset.theme?.title ||
                       dataset.theme?.id ||
-                      "Unknown Category"
+                      translate("resources.catalog.dataset.unknownCategory")
                     : dataset.theme
                 }
                 color="primary"
@@ -132,31 +111,42 @@ export const DatasetCard = ({
             )}
           </Box>
 
+          <Box sx={{ mb: 2 }}>
+            <Typography variant="body2" fontWeight="medium" sx={{ mb: 1 }}>
+              {translate("resources.catalog.dataset.shortDescription")}
+            </Typography>
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              sx={{
+                mb: 2,
+                lineHeight: 1.4,
+                fontStyle: dataset?.abstract ? "normal" : "italic",
+              }}
+              id={`dataset-description-${index}`}
+            >
+              {dataset?.abstract ||
+                translate("resources.catalog.dataset.noDescriptionAvailable")}
+            </Typography>
+          </Box>
+
           {/* Keywords */}
           <Box sx={{ mb: 2 }}>
             <Typography variant="body2" fontWeight="medium" sx={{ mb: 1 }}>
               {translate("resources.catalog.dataset.keywords")}
             </Typography>
             <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
-              {dataset.keywords ? (
-                Array.isArray(dataset.keywords) ? (
-                  dataset.keywords.map((keyword: string, index: number) => (
-                    <Chip
-                      key={index}
-                      size="small"
-                      label={keyword}
-                      color="secondary"
-                      variant="outlined"
-                    />
-                  ))
-                ) : (
+              {Array.isArray(dataset?.keywords) &&
+              dataset.keywords.length > 0 ? (
+                dataset.keywords.map((keyword: string, index: number) => (
                   <Chip
+                    key={index}
                     size="small"
-                    label={dataset.keywords}
+                    label={keyword}
                     color="secondary"
                     variant="outlined"
                   />
-                )
+                ))
               ) : (
                 <Typography
                   variant="body2"
@@ -183,7 +173,7 @@ export const DatasetCard = ({
           )}
         </CardContent>
 
-        {/* Always visible Start Negotiation button */}
+        {/* Action buttons */}
         <CardActions sx={{ p: 2, pt: 0 }}>
           <Button
             variant="contained"
@@ -191,7 +181,10 @@ export const DatasetCard = ({
             onClick={() => setDialogOpen(true)}
             disabled={!dataset.policies || dataset.policies.length === 0}
             fullWidth
-            aria-label={`View and negotiate dataset: ${datasetTitle}`}
+            aria-label={translate(
+              "resources.catalog.dataset.aria.viewAndNegotiate",
+              { title: datasetTitle }
+            )}
             aria-describedby={`dataset-description-${index}`}
           >
             {translate("resources.catalog.dataset.viewAndNegotiate")}

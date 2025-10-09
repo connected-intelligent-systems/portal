@@ -1,6 +1,11 @@
-import React, { useState, Suspense } from "react";
-import { Link } from "react-router-dom";
-import { useRecordContext, useTranslate } from "react-admin";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  useTranslate,
+  useCreate,
+  useNotify,
+  RecordContextProvider,
+} from "react-admin";
 import {
   Dialog,
   DialogTitle,
@@ -13,6 +18,9 @@ import {
   Typography,
   useMediaQuery,
   useTheme,
+  RadioGroup,
+  Radio,
+  FormControlLabel,
 } from "@mui/material";
 import HandshakeIcon from "@mui/icons-material/Handshake";
 import InfoIcon from "@mui/icons-material/Info";
@@ -21,28 +29,16 @@ import AccountTreeIcon from "@mui/icons-material/AccountTree";
 import SecurityIcon from "@mui/icons-material/Security";
 import AssessmentIcon from "@mui/icons-material/Assessment";
 import CloudIcon from "@mui/icons-material/Cloud";
-import { ErrorBoundary } from "./ErrorBoundary";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { Dataset } from "../../../types/catalog";
-
-// Lazy load tab components
-const OverviewTab = React.lazy(() =>
-  import("./tabs").then((module) => ({ default: module.OverviewTab }))
-);
-const VersioningTab = React.lazy(() =>
-  import("./tabs").then((module) => ({ default: module.VersioningTab }))
-);
-const ProvenanceTab = React.lazy(() =>
-  import("./tabs").then((module) => ({ default: module.ProvenanceTab }))
-);
-const DataPrivacyTab = React.lazy(() =>
-  import("./tabs").then((module) => ({ default: module.DataPrivacyTab }))
-);
-const DataQualityTab = React.lazy(() =>
-  import("./tabs").then((module) => ({ default: module.DataQualityTab }))
-);
-const ServiceInformationTab = React.lazy(() =>
-  import("./tabs").then((module) => ({ default: module.ServiceInformationTab }))
-);
+import { PermissionAccordion } from "./PermissionAccordion";
+import {
+  BasicInformation,
+  Provenance,
+  DataPrivacy,
+  DataQuality,
+} from "../../../components/assets";
+import { ServiceInformation } from "../../../components/datasets";
 
 interface ContractNegotiationDialogProps {
   dataset: Dataset;
@@ -51,13 +47,79 @@ interface ContractNegotiationDialogProps {
   onClose: () => void;
 }
 
+interface PolicySelectionViewProps {
+  policies: any[];
+  selectedPolicy: number;
+  onSelectPolicy: (index: number) => void;
+}
+
+const PolicySelectionView: React.FC<PolicySelectionViewProps> = ({
+  policies,
+  selectedPolicy,
+  onSelectPolicy,
+}) => {
+  const translate = useTranslate();
+
+  if (!policies.length) {
+    return (
+      <Box sx={{ textAlign: "center", py: 4 }}>
+        <Typography variant="h6" color="textSecondary" gutterBottom>
+          {translate("resources.catalog.dataset.noPolicies")}
+        </Typography>
+        <Typography color="textSecondary">
+          {translate("resources.catalog.dataset.noPoliciesDescription")}
+        </Typography>
+      </Box>
+    );
+  }
+
+  return (
+    <Box sx={{ width: "100%", minWidth: 0 }}>
+      <Typography variant="h6" gutterBottom>
+        {translate("resources.catalog.dataset.selectPolicyForNegotiation")}
+      </Typography>
+
+      <RadioGroup
+        value={selectedPolicy}
+        onChange={(e) => onSelectPolicy(Number(e.target.value))}
+      >
+        {policies.map((policy: any, index: number) => (
+          <Box key={index} sx={{ mb: 2 }}>
+            <FormControlLabel
+              value={index}
+              control={<Radio />}
+              label={
+                <Box>
+                  <Typography variant="subtitle2">
+                    {translate("resources.catalog.dataset.policy")} {index + 1}
+                  </Typography>
+                  <Typography variant="caption" color="textSecondary">
+                    {policy.id}
+                  </Typography>
+                </Box>
+              }
+            />
+            {selectedPolicy === index && (
+              <Box sx={{ ml: 4, mt: 1 }}>
+                <PermissionAccordion record={policy} />
+              </Box>
+            )}
+          </Box>
+        ))}
+      </RadioGroup>
+    </Box>
+  );
+};
+
 export const ContractNegotiationDialog: React.FC<
   ContractNegotiationDialogProps
 > = ({ dataset, open, onClose, counterPartyAddress }) => {
-  const record = useRecordContext();
-  console.log("Record in ContractNegotiationDialog:", record);
-  const selectedPolicy = 0;
+  const navigate = useNavigate();
+  const notify = useNotify();
+  const [create, { isPending: isCreating }] = useCreate();
   const [activeTab, setActiveTab] = useState(0);
+  const [step, setStep] = useState<"view" | "policySelection">("view");
+  const [selectedPolicy, setSelectedPolicy] = useState(0);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const translate = useTranslate();
@@ -70,78 +132,135 @@ export const ContractNegotiationDialog: React.FC<
     setActiveTab(newValue);
   };
 
+  const handleStartNegotiation = () => {
+    if (policies.length === 0) return;
+    setStep("policySelection");
+  };
+
+  const handleBackToView = () => {
+    setStep("view");
+  };
+
+  const handleConfirmNegotiation = () => {
+    const negotiationData = {
+      policy: {
+        type: policies[selectedPolicy]?.type,
+        id: policies[selectedPolicy]?.id,
+        assigner: participantId,
+        obligations: policies[selectedPolicy]?.obligations,
+        permissions: policies[selectedPolicy]?.permissions,
+        prohibitions: policies[selectedPolicy]?.prohibitions,
+        target: datasetId,
+      },
+      counterPartyAddress,
+      protocol: "dataspace-protocol-http",
+    };
+
+    create(
+      "contractnegotiations",
+      { data: negotiationData },
+      {
+        onSuccess: (data) => {
+          notify(
+            translate(
+              "resources.contractnegotiations.messages.negotiationStarted"
+            ),
+            { type: "success" }
+          );
+          handleClose();
+          navigate(`/contractnegotiations/${data.id}/show`);
+        },
+        onError: (error: any) => {
+          notify(
+            error?.message ||
+              translate(
+                "resources.contractnegotiations.messages.negotiationFailed"
+              ),
+            { type: "error" }
+          );
+        },
+      }
+    );
+  };
+
+  const handleClose = () => {
+    setStep("view");
+    setSelectedPolicy(0);
+    onClose();
+  };
+
   const renderTabContent = () => {
     const tabProps = { dataset };
 
     switch (activeTab) {
       case 0:
         return (
-          <Suspense>
-            <OverviewTab
-              {...tabProps}
-              policies={policies}
-              selectedPolicy={selectedPolicy}
-            />
-          </Suspense>
+          <RecordContextProvider value={dataset}>
+            <BasicInformation />
+          </RecordContextProvider>
         );
       case 1:
         return (
-          <Suspense>
-            <VersioningTab {...tabProps} />
-          </Suspense>
+          <RecordContextProvider value={dataset}>
+            <BasicInformation />
+          </RecordContextProvider>
         );
       case 2:
         return (
-          <Suspense>
-            <ProvenanceTab {...tabProps} />
-          </Suspense>
+          <RecordContextProvider value={dataset}>
+            <Provenance />
+          </RecordContextProvider>
         );
       case 3:
         return (
-          <Suspense>
-            <DataPrivacyTab {...tabProps} />
-          </Suspense>
+          <RecordContextProvider value={dataset}>
+            <DataPrivacy />
+          </RecordContextProvider>
         );
       case 4:
         return (
-          <Suspense>
-            <DataQualityTab {...tabProps} />
-          </Suspense>
+          <RecordContextProvider value={dataset}>
+            <DataQuality />
+          </RecordContextProvider>
         );
       case 5:
-        return (
-          <Suspense>
-            <ServiceInformationTab {...tabProps} />
-          </Suspense>
-        );
+        return <ServiceInformation {...tabProps} />;
       default:
         return null;
     }
   };
 
   return (
-    <ErrorBoundary>
-      <Dialog
-        open={open}
-        onClose={onClose}
-        maxWidth="md"
-        fullWidth
-        fullScreen={isMobile}
-        sx={isMobile ? {} : { "& .MuiDialog-paper": { minHeight: "70vh" } }}
-        aria-labelledby="dataset-dialog-title"
-        aria-describedby="dataset-dialog-description"
-      >
-        <DialogTitle id="dataset-dialog-title">
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-            <InfoIcon />
-            <Typography variant="h6" component="div">
-              {translate(
-                "resources.catalog.dataset.datasetDetailsAndNegotiation"
-              )}
-            </Typography>
-          </Box>
-        </DialogTitle>
+    <Dialog
+      open={open}
+      onClose={handleClose}
+      maxWidth="md"
+      fullWidth
+      fullScreen={isMobile}
+      sx={isMobile ? {} : { "& .MuiDialog-paper": { minHeight: "70vh" } }}
+      aria-labelledby="dataset-dialog-title"
+      aria-describedby="dataset-dialog-description"
+    >
+      <DialogTitle id="dataset-dialog-title">
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+          {step === "policySelection" && (
+            <ArrowBackIcon
+              sx={{ cursor: "pointer" }}
+              onClick={handleBackToView}
+            />
+          )}
+          <InfoIcon />
+          <Typography variant="h6" component="div">
+            {step === "view"
+              ? translate(
+                  "resources.catalog.dataset.datasetDetailsAndNegotiation"
+                )
+              : translate("resources.catalog.dataset.selectPolicy")}
+          </Typography>
+        </Box>
+      </DialogTitle>
 
+      {step === "view" && (
         <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
           <Tabs
             value={activeTab}
@@ -182,47 +301,57 @@ export const ContractNegotiationDialog: React.FC<
             />
           </Tabs>
         </Box>
+      )}
 
-        <DialogContent sx={{ p: 0 }} id="dataset-dialog-description">
-          <Box sx={{ p: 3 }}>
-            <ErrorBoundary>{renderTabContent()}</ErrorBoundary>
-          </Box>
-        </DialogContent>
-
-        <DialogActions>
-          <Button onClick={onClose} aria-label="Close dialog">
-            {translate("resources.catalog.dataset.close")}
-          </Button>
-          {policies.length > 0 && activeTab === 0 && (
-            <Button
-              component={Link}
-              to={{
-                pathname: "/contractnegotiations/create",
-              }}
-              state={{
-                record: {
-                  policy: {
-                    type: policies[selectedPolicy]?.type,
-                    id: policies[selectedPolicy]?.id,
-                    assigner: participantId,
-                    obligations: policies[selectedPolicy]?.obligations,
-                    permissions: policies[selectedPolicy]?.permissions,
-                    prohibitions: policies[selectedPolicy]?.prohibitions,
-                    target: datasetId,
-                  },
-                  counterPartyAddress,
-                },
-              }}
-              variant="contained"
-              startIcon={<HandshakeIcon />}
-              onClick={onClose}
-              aria-label="Start contract negotiation"
-            >
-              {translate("resources.catalog.dataset.startNegotiation")}
-            </Button>
+      <DialogContent sx={{ p: 0 }} id="dataset-dialog-description">
+        <Box sx={{ p: 3 }}>
+          {step === "view" ? (
+            renderTabContent()
+          ) : (
+            <PolicySelectionView
+              policies={policies}
+              selectedPolicy={selectedPolicy}
+              onSelectPolicy={setSelectedPolicy}
+            />
           )}
-        </DialogActions>
-      </Dialog>
-    </ErrorBoundary>
+        </Box>
+      </DialogContent>
+
+      <DialogActions>
+        <Button
+          onClick={handleClose}
+          aria-label={translate("resources.catalog.dataset.aria.closeDialog")}
+        >
+          {translate("resources.catalog.dataset.close")}
+        </Button>
+        {step === "view" && policies.length > 0 && (
+          <Button
+            variant="contained"
+            startIcon={<HandshakeIcon />}
+            onClick={handleStartNegotiation}
+            aria-label={translate(
+              "resources.catalog.dataset.aria.startNegotiation"
+            )}
+          >
+            {translate("resources.catalog.dataset.startNegotiation")}
+          </Button>
+        )}
+        {step === "policySelection" && (
+          <Button
+            variant="contained"
+            startIcon={<HandshakeIcon />}
+            onClick={handleConfirmNegotiation}
+            disabled={isCreating}
+            aria-label={translate(
+              "resources.catalog.dataset.aria.confirmNegotiation"
+            )}
+          >
+            {isCreating
+              ? translate("resources.catalog.dataset.creatingNegotiation")
+              : translate("resources.catalog.dataset.confirmNegotiation")}
+          </Button>
+        )}
+      </DialogActions>
+    </Dialog>
   );
 };

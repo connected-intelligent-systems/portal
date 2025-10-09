@@ -95,7 +95,6 @@ export async function parsePolicyFromJsonLd(
 
     return removeUndefinedValues(policy);
   } catch (error) {
-    console.error("Error in parsePolicyFromJsonLd (Zod):", error);
     const errorMessage = error instanceof Error ? error.message : String(error);
     throw new Error(`Failed to transform JSON-LD policy: ${errorMessage}`);
   }

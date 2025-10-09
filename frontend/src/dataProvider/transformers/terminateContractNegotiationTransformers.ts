@@ -5,11 +5,25 @@ import { removeUndefinedValues } from "../helpers";
 const CoreTerminateContractNegotiationSchema = z.object({
   "@id": z.string(),
   "@type": z.string(),
-  negotiationId: z.string(),
+  negotiationId: z.string().optional(),
   reason: z.string().optional(),
-  state: z.string(),
-  createdAt: z.number().transform((val) => new Date(val).toISOString()),
+  state: z.string().optional(),
+  createdAt: z
+    .number()
+    .optional()
+    .transform((val) => (val ? new Date(val).toISOString() : undefined)),
 });
+
+export function transformToJsonLd(data: { id: string; reason?: string }): any {
+  return {
+    "@context": {
+      "@vocab": "https://w3id.org/edc/v0.0.1/ns/",
+    },
+    "@type": "https://w3id.org/edc/v0.0.1/ns/TerminateNegotiation",
+    "@id": data.id,
+    reason: data.reason || "",
+  };
+}
 
 export async function parseTerminateContractNegotiationFromJsonLd(
   jsonLd: any
@@ -19,17 +33,13 @@ export async function parseTerminateContractNegotiationFromJsonLd(
     const termination: TerminateContractNegotiation = {
       id: parsed["@id"],
       type: parsed["@type"],
-      negotiationId: parsed.negotiationId,
+      negotiationId: parsed.negotiationId || parsed["@id"],
       reason: parsed.reason || "",
-      state: parsed.state,
-      createdAt: parsed.createdAt,
+      state: parsed.state || "UNKNOWN",
+      createdAt: parsed.createdAt || new Date().toISOString(),
     };
     return removeUndefinedValues(termination as any);
   } catch (error) {
-    console.error(
-      "Error in parseTerminateContractNegotiationFromJsonLd:",
-      error
-    );
     const errorMessage = error instanceof Error ? error.message : String(error);
     throw new Error(`Failed to transform JSON-LD: ${errorMessage}`);
   }
