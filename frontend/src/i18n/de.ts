@@ -676,6 +676,15 @@ const germanMessages: Partial<TranslationMessages> = {
           "Diese Vertragsdefinition gilt für ALLE Assets (keine Assets ausgewählt)",
       },
     },
+    datarequests: {
+      name: "Datenanfrage |||| Datenanfragen",
+      fields: {
+        id: "ID",
+        endpoint: "Endpunkt",
+        authType: "Authentifizierungstyp",
+        authorization: "Autorisierung",
+      },
+    },
     transferprocesses: {
       name: "Übertragungsprozess |||| Übertragungsprozesse",
       fields: {

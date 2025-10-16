@@ -1,14 +1,27 @@
-import { TextField, Show, SimpleShowLayout } from "react-admin";
+import { TextField, Show, SimpleShowLayout, useTranslate } from "react-admin";
 import { PasswordField } from "../../components/password_field";
 
 export const DataRequestShow = () => {
+  const translate = useTranslate();
   return (
     <Show>
       <SimpleShowLayout>
-        <TextField source="id" />
-        <TextField source="endpoint" />
-        <TextField source="authType" label="Authentication Type" />
-        <PasswordField source="authorization" />
+        <TextField
+          label={translate("resources.datarequests.fields.id")}
+          source="id"
+        />
+        <TextField
+          label={translate("resources.datarequests.fields.endpoint")}
+          source="endpoint"
+        />
+        <TextField
+          label={translate("resources.datarequests.fields.authType")}
+          source="authType"
+        />
+        <PasswordField
+          label={translate("resources.datarequests.fields.authorization")}
+          source="authorization"
+        />
       </SimpleShowLayout>
     </Show>
   );

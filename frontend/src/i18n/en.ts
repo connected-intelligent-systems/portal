@@ -693,6 +693,15 @@ const englishMessages: Partial<TranslationMessages> = {
         "This contract definition applies to ALL assets (no assets selected)",
     },
   },
+  datarequests: {
+    name: "Data Request |||| Data Requests",
+    fields: {
+      id: "ID",
+      endpoint: "Endpoint",
+      authType: "Authentication Type",
+      authorization: "Authorization",
+    },
+  },
   transferprocesses: {
     name: "Transfer Process |||| Transfer Processes",
     fields: {
@@ -751,5 +760,31 @@ const englishMessages: Partial<TranslationMessages> = {
     },
   },
 };
+
+const resources = englishMessages.resources as Record<string, any> | undefined;
+
+if (resources) {
+  resources.catalog = englishMessages.catalog as
+    | Record<string, any>
+    | undefined;
+  resources.policies = englishMessages.policies as
+    | Record<string, any>
+    | undefined;
+  resources.contractagreements = englishMessages.contractagreements as
+    | Record<string, any>
+    | undefined;
+  resources.contractnegotiations = englishMessages.contractnegotiations as
+    | Record<string, any>
+    | undefined;
+  resources.contract_definitions = englishMessages.contract_definitions as
+    | Record<string, any>
+    | undefined;
+  resources.datarequests = englishMessages.datarequests as
+    | Record<string, any>
+    | undefined;
+  resources.transferprocesses = englishMessages.transferprocesses as
+    | Record<string, any>
+    | undefined;
+}
 
 export default englishMessages;

@@ -158,6 +158,7 @@ const TransferProcessesShowBar = () => {
 };
 
 export const TransferProcessesShow = () => {
+  const translate = useTranslate();
   const { record } = useShowController<TransferProcess>();
 
   const { data: negotiations } = useGetList(
@@ -175,38 +176,43 @@ export const TransferProcessesShow = () => {
   return (
     <Show actions={<TransferProcessesShowBar />}>
       <SimpleShowLayout>
-        <TextField label="resources.transferprocesses.fields.id" source="id" />
         <TextField
-          label="resources.transferprocesses.fields.transferDirection"
+          label={translate("resources.transferprocesses.fields.id")}
+          source="id"
+        />
+        <TextField
+          label={translate(
+            "resources.transferprocesses.fields.transferDirection"
+          )}
           source="transferDirection"
         />
         <TextField
-          label="resources.transferprocesses.fields.transferType"
+          label={translate("resources.transferprocesses.fields.transferType")}
           source="transferType"
         />
         <DateField
-          label="resources.transferprocesses.fields.stateTimestamp"
+          label={translate("resources.transferprocesses.fields.stateTimestamp")}
           source="stateTimestamp"
           showTime
         />
         <TextField
-          label="resources.transferprocesses.fields.state"
+          label={translate("resources.transferprocesses.fields.state")}
           source="state"
         />
         <TextField
-          label="resources.transferprocesses.fields.correlationId"
+          label={translate("resources.transferprocesses.fields.correlationId")}
           source="correlationId"
         />
         {record?.errorDetail && (
           <Labeled
-            label="resources.transferprocesses.fields.errorDetail"
+            label={translate("resources.transferprocesses.fields.errorDetail")}
             fullWidth
           >
             <Alert severity="error">{record?.errorDetail}</Alert>
           </Labeled>
         )}
         <ReferenceField
-          label="resources.transferprocesses.fields.contractId"
+          label={translate("resources.transferprocesses.fields.contractId")}
           source="contractId"
           reference="contractagreements"
           link="show"
@@ -223,7 +229,9 @@ export const TransferProcessesShow = () => {
           record?.transferDirection === "CONSUMER" &&
           record?.state !== "TERMINATED" && (
             <ReferenceField
-              label="resources.transferprocesses.fields.dataRequest"
+              label={translate(
+                "resources.transferprocesses.fields.dataRequest"
+              )}
               source="id"
               reference="datarequests"
               link="show"

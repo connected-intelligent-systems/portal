@@ -10,9 +10,6 @@ const messages: { [key: string]: any } = {
   de: merge({}, formalGermanMessages, germanMessagesCustom),
 };
 
-console.log(messages)
-
-
 const detectBrowserLanguage = (): string => {
   if (typeof navigator === "undefined") {
     return "en"; // Default for server-side rendering
