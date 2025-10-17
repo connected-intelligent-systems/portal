@@ -7,7 +7,7 @@ import {
   GetManyParams,
 } from "react-admin";
 import { httpClient } from "../httpClient";
-import { compactJsonLd, compactJsonLdArray } from "../helpers";
+import { buildQuerySpec, compactJsonLd, compactJsonLdArray } from "../helpers";
 import {
   parseContractAgreementFromJsonLd,
   parseContractAgreementFromJsonLdArray,
@@ -20,20 +20,37 @@ const frame = {
   "@type": "ContractAgreement",
 };
 
+const filterMapping = (key: string, value: any) => {
+  switch (key) {
+    case "consumerId":
+      return {
+        field: "consumerId",
+        operator: "like",
+        value: `%${value}%`,
+      };
+    case "providerId":
+      return {
+        field: "providerId",
+        operator: "like",
+        value: `%${value}%`,
+      };
+    default:
+      return {
+        field: key,
+        operator: "=",
+        value,
+      };
+  }
+};
+
 export async function getList(params: GetListParams) {
+  const { page = 1, perPage = 10 } = params.pagination || {};
+  const querySpec = buildQuerySpec(params, filterMapping);
   const response = await httpClient(
     `/api/management/v3/contractagreements/request`,
     {
       method: "POST",
-      body: JSON.stringify({
-        "@context": {
-          "@vocab": "https://w3id.org/edc/v0.0.1/ns/",
-        },
-        "@type": "QuerySpec",
-        offset: 0,
-        limit: 20,
-        filterExpression: [],
-      }),
+      body: JSON.stringify(querySpec),
     }
   );
 
@@ -48,7 +65,10 @@ export async function getList(params: GetListParams) {
 
   return {
     data: cleanAgreements,
-    total: cleanAgreements.length,
+    pageInfo: {
+      hasNextPage: contractAgreements.length === perPage,
+      hasPreviousPage: page > 1,
+    },
   };
 }
 

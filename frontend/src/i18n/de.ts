@@ -21,6 +21,10 @@ const germanMessages: Partial<TranslationMessages> = {
         dataset: "Datensatz",
         asset: "Asset",
       },
+      filters: {
+        consumerId: "Konsumenten-ID",
+        providerId: "Anbieter-ID",
+      },
       sections: {
         policy: "Richtlinie",
       },

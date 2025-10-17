@@ -610,6 +610,10 @@ const englishMessages: Partial<TranslationMessages> = {
       dataset: "Dataset",
       asset: "Asset",
     },
+    filters: {
+      consumerId: "Consumer ID",
+      providerId: "Provider ID",
+    },
     sections: {
       policy: "Policy",
     },
