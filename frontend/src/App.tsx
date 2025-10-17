@@ -212,5 +212,6 @@ export const App = () => (
       edit={CatalogEdit}
     />
     <Resource name="datasets" show={DatasetShowRedirect} />
+    <Resource name="contractagreementnegotiation" />
   </Admin>
 );

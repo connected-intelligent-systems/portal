@@ -9,6 +9,7 @@ import * as transfer_processes from "./resources/transfer_processes";
 import * as data_address from "./resources/data_address";
 import * as terminate_transfer_process from "./resources/terminate_transfer_process";
 import * as terminate_contract_negotiation from "./resources/terminate_contract_negotiation";
+import * as contract_agreement_negotiation from "./resources/contract_agreement_negotiation";
 
 const dataProvider = {
   getList: (resource: string, params: any) => {
@@ -50,6 +51,8 @@ const dataProvider = {
       return data_address.getOne(params);
     } else if (resource === "datasets") {
       return datasets.getOne(params);
+    } else if (resource === "contractagreementnegotiation") {
+      return contract_agreement_negotiation.getOne(params);
     }
     throw new Error(`Unknown resource: ${resource}`);
   },

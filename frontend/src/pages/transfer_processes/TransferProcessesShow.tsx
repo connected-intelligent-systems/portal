@@ -21,60 +21,29 @@ import CancelIcon from "@mui/icons-material/Cancel";
 import DownloadIcon from "@mui/icons-material/Download";
 import { TransferProcess } from "../../types/transferProcess";
 
-const downloadBlob = (blob: Blob, filename: string) => {
+const downloadBlob = async (blob: Blob, filename: string) => {
+  if ("showSaveFilePicker" in window) {
+    try {
+      const handle = await window.showSaveFilePicker({
+        suggestedName: filename,
+      });
+      const writable = await handle.createWritable();
+      await writable.write(blob);
+      await writable.close();
+      return;
+    } catch (err) {
+      if (err instanceof Error && err.name !== "AbortError") {
+        console.error("Save failed:", err);
+      }
+    }
+  }
+
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
   a.download = filename;
-  document.body.appendChild(a);
   a.click();
-  document.body.removeChild(a);
   URL.revokeObjectURL(url);
-};
-
-const Asset = ({
-  transferProcess,
-  counterPartyAddress,
-}: {
-  transferProcess: TransferProcess;
-  counterPartyAddress?: string;
-}) => {
-  const translate = useTranslate();
-
-  if (transferProcess.transferDirection === "CONSUMER") {
-    if (!counterPartyAddress) {
-      return null;
-    }
-    // Create composite ID for dataset: catalogId--datasetId
-    const catalogId = btoa(counterPartyAddress);
-    const compositeId = `${catalogId}--${transferProcess.assetId}`;
-
-    return (
-      <Labeled label={translate("resources.transferprocesses.fields.dataset")}>
-        <ReferenceField
-          record={{ ...transferProcess, assetId: compositeId }}
-          reference="datasets"
-          source="assetId"
-          link="show"
-        >
-          <TextField source="originalId" />
-        </ReferenceField>
-      </Labeled>
-    );
-  } else if (transferProcess.transferDirection === "PROVIDER") {
-    return (
-      <Labeled label={translate("resources.transferprocesses.fields.asset")}>
-        <ReferenceField
-          record={transferProcess}
-          reference="assets"
-          source="assetId"
-        >
-          <TextField source="id" />
-        </ReferenceField>
-      </Labeled>
-    );
-  }
-  return null;
 };
 
 const TransferProcessesShowBar = () => {
@@ -172,6 +141,8 @@ export const TransferProcessesShow = () => {
 
   const negotiation = negotiations?.[0];
   const counterPartyAddress = negotiation?.counterPartyAddress;
+  const catalogId = btoa(counterPartyAddress);
+  const compositeId = `${catalogId}--${record?.assetId}`;
 
   return (
     <Show actions={<TransferProcessesShowBar />}>
@@ -219,11 +190,26 @@ export const TransferProcessesShow = () => {
         >
           <TextField source="id" />
         </ReferenceField>
-        {record && (
-          <Asset
-            transferProcess={record}
-            counterPartyAddress={counterPartyAddress}
-          />
+        {record?.transferDirection === "CONSUMER" && counterPartyAddress && (
+          <ReferenceField
+            label={translate("resources.transferprocesses.fields.dataset")}
+            record={{ ...record, assetId: compositeId }}
+            reference="datasets"
+            source="assetId"
+            link="show"
+          >
+            <TextField source="originalId" />
+          </ReferenceField>
+        )}
+        {record?.transferDirection === "PROVIDER" && (
+          <ReferenceField
+            label={translate("resources.transferprocesses.fields.asset")}
+            reference="assets"
+            source="assetId"
+            link="show"
+          >
+            <TextField source="id" />
+          </ReferenceField>
         )}
         {record?.transferType === "HttpData-PULL" &&
           record?.transferDirection === "CONSUMER" &&

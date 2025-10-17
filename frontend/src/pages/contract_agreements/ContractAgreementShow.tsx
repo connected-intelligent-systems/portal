@@ -10,9 +10,9 @@ import {
   useRecordContext,
   ReferenceField,
   ReferenceOneField,
-  useGetList,
   useTranslate,
   FunctionField,
+  useGetOne,
 } from "react-admin";
 import { Link } from "react-router-dom";
 import DownloadIcon from "@mui/icons-material/Download";
@@ -23,39 +23,36 @@ const ContractAgreementShowBar = () => {
   const translate = useTranslate();
   const record = useRecordContext<ContractAgreement>();
 
-  const { data: negotiations } = useGetList(
-    "contractnegotiations",
+  const { data: negotiation } = useGetOne(
+    "contractagreementnegotiation",
+    { id: record?.id || "" },
     {
-      filter: { "contractAgreement.id": record?.id },
-      pagination: { page: 1, perPage: 1 },
-    },
-    { enabled: !!record?.id }
+      enabled: !!record?.id,
+      onSuccess: () => {},
+    }
   );
 
-  const negotiation = negotiations?.[0];
   const counterPartyAddress = negotiation?.counterPartyAddress;
-
-  // TODO: Re-enable this logic when negotiation state is available
-  const enabled = true; // negotiation?.state !== "TERMINATED";
 
   return (
     <TopToolbar>
-      <Button
-        component={Link}
-        to="/transferprocesses/create"
-        state={{
-          record: {
-            counterPartyAddress: counterPartyAddress,
-            contractId: record?.id,
-            assetId: record?.assetId,
-          },
-        }}
-        disabled={!enabled || !counterPartyAddress}
-        label={translate(
-          "resources.contractagreements.actions.transferDataset"
-        )}
-        startIcon={<DownloadIcon />}
-      />
+      {negotiation?.type === "CONSUMER" && counterPartyAddress && (
+        <Button
+          component={Link}
+          to="/transferprocesses/create"
+          state={{
+            record: {
+              counterPartyAddress: counterPartyAddress,
+              contractId: record?.id,
+              assetId: record?.assetId,
+            },
+          }}
+          label={translate(
+            "resources.contractagreements.actions.transferDataset"
+          )}
+          startIcon={<DownloadIcon />}
+        />
+      )}
     </TopToolbar>
   );
 };

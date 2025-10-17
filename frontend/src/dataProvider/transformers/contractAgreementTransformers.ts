@@ -12,7 +12,7 @@ const CoreContractAgreementSchema = z.object({
   assetId: z.string(),
   contractSigningDate: z
     .number()
-    .transform((val) => new Date(val).toISOString()),
+    .transform((val) => new Date(val * 1000).toISOString()),
   policy: z.any(), // The policy is parsed by its own transformer
 });
 
