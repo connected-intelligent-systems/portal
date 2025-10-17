@@ -8,7 +8,7 @@ import {
   GetManyReferenceParams,
 } from "react-admin";
 import { httpClient } from "../httpClient";
-import { compactJsonLd, compactJsonLdArray } from "../helpers";
+import { buildQuerySpec, compactJsonLd, compactJsonLdArray } from "../helpers";
 import {
   parseContractNegotiationFromJsonLd,
   parseContractNegotiationFromJsonLdArray,
@@ -22,21 +22,66 @@ const frame = {
   "@type": "ContractNegotiation",
 };
 
+// https://raw.githubusercontent.com/eclipse-edc/Connector/refs/heads/main/spi/control-plane/contract-spi/src/main/java/org/eclipse/edc/connector/controlplane/contract/spi/types/negotiation/ContractNegotiationStates.java
+const mapContractNegotiationState = (state: string) => {
+  switch (state) {
+    case "INITIAL":
+      return 50;
+    case "REQUESTING":
+      return 100;
+    case "REQUESTED":
+      return 200;
+    case "OFFERING":
+      return 300;
+    case "OFFERED":
+      return 400;
+    case "ACCEPTING":
+      return 700;
+    case "ACCEPTED":
+      return 800;
+    case "AGREEING":
+      return 825;
+    case "AGREED":
+      return 850;
+    case "VERIFYING":
+      return 1050;
+    case "VERIFIED":
+      return 1100;
+    case "FINALIZING":
+      return 1150;
+    case "FINALIZED":
+      return 1200;
+    case "TERMINATING":
+      return 1300;
+    case "TERMINATED":
+      return 1400;
+    default:
+      return null;
+  }
+};
+
+const filterMapping = (key: string, value: any) => {
+  console.log(key, value, mapContractNegotiationState(value));
+  switch (key) {
+    case "state":
+      return {
+        field: "state",
+        operator: "=",
+        value: mapContractNegotiationState(value),
+      };
+    default:
+      return { field: key, operator: "=", value };
+  }
+};
+
 export async function getList(params: GetListParams) {
-  const { page, perPage } = params.pagination || { page: 1, perPage: 10 };
+  const { page = 1, perPage = 10 } = params.pagination || {};
+  const querySpec = buildQuerySpec(params, filterMapping);
   const response = await httpClient(
     `/api/management/v3/contractnegotiations/request`,
     {
       method: "POST",
-      body: JSON.stringify({
-        "@context": {
-          "@vocab": "https://w3id.org/edc/v0.0.1/ns/",
-        },
-        "@type": "QuerySpec",
-        offset: (page - 1) * perPage,
-        limit: perPage,
-        filterExpression: [],
-      }),
+      body: JSON.stringify(querySpec),
     }
   );
 
@@ -51,7 +96,10 @@ export async function getList(params: GetListParams) {
 
   return {
     data: cleanNegotiations,
-    total: cleanNegotiations.length,
+    pageInfo: {
+      hasNextPage: contractNegotiations.length === perPage,
+      hasPreviousPage: page > 1,
+    },
   };
 }
 

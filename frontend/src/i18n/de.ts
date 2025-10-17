@@ -630,6 +630,10 @@ const germanMessages: Partial<TranslationMessages> = {
         cannotTerminateFinalized:
           "Abgeschlossene Vertragsverhandlungen können nicht beendet werden.",
       },
+      filters: {
+        state: "Status",
+        type: "Typ",
+      },
     },
     contract_definitions: {
       name: "Vertragsdefinition |||| Vertragsdefinitionen",

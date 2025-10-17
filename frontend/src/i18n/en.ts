@@ -649,6 +649,10 @@ const englishMessages: Partial<TranslationMessages> = {
       cannotTerminateFinalized:
         "Finalized contract negotiations cannot be terminated.",
     },
+    filters: {
+      state: "Status",
+      type: "Type",
+    },
   },
   contract_definitions: {
     name: "Contract Definition |||| Contract Definitions",
