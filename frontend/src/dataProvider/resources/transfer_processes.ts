@@ -20,9 +20,88 @@ const frame = {
   "@type": "TransferProcess",
 };
 
+// https://raw.githubusercontent.com/eclipse-edc/Connector/refs/heads/main/spi/control-plane/transfer-spi/src/main/java/org/eclipse/edc/connector/controlplane/transfer/spi/types/TransferProcessStates.java
+const mapTransferProcessState = (state: string) => {
+  switch (state) {
+    case "INITIAL":
+      return 100;
+    case "PROVISIONING":
+      return 200;
+    case "PROVISIONING_REQUESTED":
+      return 250;
+    case "PROVISIONED":
+      return 300;
+    case "REQUESTING":
+      return 400;
+    case "REQUESTED":
+      return 500;
+    case "STARTING":
+      return 550;
+    case "STARTUP_REQUESTED":
+      return 570;
+    case "STARTED":
+      return 600;
+    case "SUSPENDING":
+      return 650;
+    case "SUSPENDING_REQUESTED":
+      return 675;
+    case "SUSPENDED":
+      return 700;
+    case "RESUMING":
+      return 720;
+    case "RESUMED":
+      return 725;
+    case "COMPLETING":
+      return 750;
+    case "COMPLETING_REQUESTED":
+      return 775;
+    case "COMPLETED":
+      return 800;
+    case "TERMINATING":
+      return 825;
+    case "TERMINATING_REQUESTED":
+      return 840;
+    case "TERMINATED":
+      return 850;
+    case "DEPROVISIONING":
+      return 900;
+    case "DEPROVISIONING_REQUESTED":
+      return 950;
+    case "DEPROVISIONED":
+      return 1000;
+    default:
+      return null;
+  }
+};
+
+const filterMapping = (key: string, value: any) => {
+  switch (key) {
+    case "transferDirection":
+      return {
+        field: "type",
+        operator: "=",
+        value,
+      };
+    case "transferType":
+      return {
+        field: "transferType",
+        operator: "=",
+        value,
+      };
+    case "state":
+      return {
+        field: "state",
+        operator: "=",
+        value: mapTransferProcessState(value),
+      };
+    default:
+      return { field: key, operator: "=", value };
+  }
+};
+
 export async function getList(params: GetListParams) {
   const { page = 1, perPage = 10 } = params.pagination || {};
-  const querySpec = buildQuerySpec(params);
+  const querySpec = buildQuerySpec(params, filterMapping);
   const response = await httpClient(
     `/api/management/v3/transferprocesses/request`,
     {

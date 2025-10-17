@@ -731,6 +731,11 @@ const englishMessages: Partial<TranslationMessages> = {
       accessKeyId: "Access Key ID",
       secretAccessKey: "Secret Access Key",
     },
+    filters: {
+      direction: "Direction",
+      transferType: "Transfer Type",
+      state: "State",
+    },
     actions: {
       terminate: "Terminate",
       download: "Download Data",

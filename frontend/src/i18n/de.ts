@@ -713,6 +713,11 @@ const germanMessages: Partial<TranslationMessages> = {
         accessKeyId: "Access Key ID",
         secretAccessKey: "Secret Access Key",
       },
+      filters: {
+        direction: "Richtung",
+        transferType: "Übertragungstyp",
+        state: "Status",
+      },
       actions: {
         terminate: "Beenden",
         download: "Daten herunterladen",
