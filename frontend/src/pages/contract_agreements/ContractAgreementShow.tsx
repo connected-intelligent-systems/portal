@@ -135,6 +135,7 @@ export const ContractAgreementShow = () => {
           <ReferenceOneField
             reference="contractnegotiations"
             target="contractAgreement.id"
+            label={false}
             render={() => <ContractNegotiation contractAggreement={record} />}
           />
         )}
