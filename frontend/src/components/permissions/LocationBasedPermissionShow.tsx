@@ -1,4 +1,4 @@
-import { Box, Card, CardContent, Chip, Typography } from "@mui/material";
+import { Box, Card, CardContent, Typography } from "@mui/material";
 import { LocationOn as LocationIcon } from "@mui/icons-material";
 import { useTranslate } from "react-admin";
 
@@ -40,15 +40,6 @@ export const LocationBasedPermissionShow = ({
         </Box>
 
         <InfoRow>
-          <InfoItem label={translate("resources.policies.show.action")}>
-            <Chip
-              label={permission.action || "odrl:use"}
-              color="success"
-              variant="outlined"
-              size="small"
-            />
-          </InfoItem>
-
           <InfoItem label={translate("resources.policies.show.operator")}>
             <Typography variant="body2">
               {formatOperator(constraint?.operator || "")}

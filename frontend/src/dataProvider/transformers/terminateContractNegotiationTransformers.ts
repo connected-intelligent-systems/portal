@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { TerminateContractNegotiation } from "../../types/terminateContractNegotiation";
-import { removeUndefinedValues } from "../helpers";
+import { stripUndefinedValues } from "../helpers";
 
 const CoreTerminateContractNegotiationSchema = z.object({
   "@id": z.string(),
@@ -38,7 +38,7 @@ export async function parseTerminateContractNegotiationFromJsonLd(
       state: parsed.state || "UNKNOWN",
       createdAt: parsed.createdAt || new Date().toISOString(),
     };
-    return removeUndefinedValues(termination as any);
+    return stripUndefinedValues(termination);
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
     throw new Error(`Failed to transform JSON-LD: ${errorMessage}`);

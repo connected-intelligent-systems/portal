@@ -1,8 +1,8 @@
+import { describe, expect, test } from "vitest";
 import {
   parseContractDefinitionFromJsonLd,
   serializeContractDefinitionToJsonLd,
-} from "./contractDefinitionTransformers";
-import { ContractDefinition } from "../../types/contractDefinition";
+} from "../../dataProvider/transformers/contractDefinitionTransformers";
 
 describe("contractDefinitionTransformers", () => {
   const mockJsonLdContractDefinition = {
@@ -31,7 +31,7 @@ describe("contractDefinitionTransformers", () => {
         operandRight: "asset-456",
       },
     ],
-    createdAt: 1672531200000, // Represents 2023-01-01T00:00:00Z
+    createdAt: 1672531200000,
   };
 
   test("should parse JSON-LD to clean ContractDefinition object", async () => {
@@ -41,7 +41,7 @@ describe("contractDefinitionTransformers", () => {
 
     expect(result.id).toBe("contract-def-123");
     expect(result.type).toBe("ContractDefinition");
-    expect(result.privateProperties.name).toBe("Test Contract Definition");
+    expect(result.privateProperties?.name).toBe("Test Contract Definition");
     expect(result.accessPolicyId).toBe("access-policy-123");
     expect(result.contractPolicyId).toBe("contract-policy-456");
     expect(result.assetsSelector).toEqual(["asset-123", "asset-456"]);
@@ -68,11 +68,11 @@ describe("contractDefinitionTransformers", () => {
     expect(result["@context"]).toBeDefined();
     expect(result["@type"]).toBe("ContractDefinition");
     expect(result["@id"]).toBe("contract-def-789");
-    expect(result.privateProperties.name).toBe("New Contract Definition");
+    expect(result.privateProperties?.name).toBe("New Contract Definition");
     expect(result.accessPolicyId).toBe("access-policy-789");
     expect(result.contractPolicyId).toBe("contract-policy-012");
     expect(result.assetsSelector).toHaveLength(2);
-    expect(result.assetsSelector[0]).toEqual({
+    expect(result.assetsSelector?.[0]).toEqual({
       "@type": "Criterion",
       operandLeft: "https://w3id.org/edc/v0.0.1/ns/id",
       operator: "in",
@@ -135,8 +135,8 @@ describe("contractDefinitionTransformers", () => {
 
     const result = await serializeContractDefinitionToJsonLd(flatFormData);
 
-    expect(result.privateProperties.name).toBe("From Form");
-    expect(result.privateProperties.description).toBe(
+    expect(result.privateProperties?.name).toBe("From Form");
+    expect(result.privateProperties?.description).toBe(
       "A description from a flat form structure"
     );
     expect(result.accessPolicyId).toBe("form-access-policy");

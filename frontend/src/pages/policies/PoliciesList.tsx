@@ -1,16 +1,9 @@
-import {
-  List,
-  Datagrid,
-  DateField,
-  FunctionField,
-  useTranslate,
-} from "react-admin";
+import { List, Datagrid, FunctionField, useTranslate } from "react-admin";
 import { Box, Typography, Chip, Tooltip } from "@mui/material";
 import {
   Security as SecurityIcon,
   Block as BlockIcon,
   Assignment as AssignmentIcon,
-  Warning as WarningIcon,
 } from "@mui/icons-material";
 
 export const PoliciesList = () => {

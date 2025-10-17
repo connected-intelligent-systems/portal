@@ -10,7 +10,6 @@ export const ServiceInformation: React.FC<ServiceInformationProps> = ({
   dataset,
 }) => {
   const translate = useTranslate();
-  console.log("!!!!", dataset);
   const renderMetadataSection = (fields: any[]) => {
     const availableFields = fields.filter((field) => field.value);
     if (availableFields.length === 0) return null;

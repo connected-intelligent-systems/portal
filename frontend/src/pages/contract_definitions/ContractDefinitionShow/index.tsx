@@ -26,8 +26,10 @@ export const ContractDefinitionShow = () => {
     <Show actions={<ContractDefinitionShowBar />}>
       <SimpleShowLayout>
         <TextField
+          variant="h4"
           label={translate("resources.contract_definitions.fields.name")}
           source="privateProperties.name"
+          gutterBottom
         />
         <TextField source="id" />
         <TextField

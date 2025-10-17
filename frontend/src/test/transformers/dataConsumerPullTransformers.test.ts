@@ -1,5 +1,5 @@
-import { describe, it, expect } from "vitest";
-import { parseDataConsumerPullFromJsonLd } from "./dataConsumerPullTransformers";
+import { describe, expect, it } from "vitest";
+import { parseDataConsumerPullFromJsonLd } from "../../dataProvider/transformers/dataConsumerPullTransformers";
 
 describe("dataConsumerPullTransformers", () => {
   const mockJsonLd = {
@@ -7,8 +7,8 @@ describe("dataConsumerPullTransformers", () => {
     "@type": "DataConsumerPull",
     transferProcessId: "tp-456",
     state: "COMPLETED",
-    createdAt: 1672531200000, // 2023-01-01T00:00:00.000Z
-    updatedAt: 1672531260000, // 2023-01-01T00:01:00.000Z
+    createdAt: 1672531200000,
+    updatedAt: 1672531260000,
   };
 
   it("should parse data consumer pull from JSON-LD", async () => {

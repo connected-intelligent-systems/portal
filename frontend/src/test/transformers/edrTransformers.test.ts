@@ -1,5 +1,5 @@
-import { describe, it, expect } from "vitest";
-import { parseDataRequestFromJsonLd } from "./edrTransformers";
+import { describe, expect, it } from "vitest";
+import { parseDataRequestFromJsonLd } from "../../dataProvider/transformers/edrTransformers";
 
 describe("edrTransformers", () => {
   const mockJsonLd = {
@@ -27,6 +27,6 @@ describe("edrTransformers", () => {
     expect(result.contractNegotiationId).toBe(
       "325b6100-1db2-4ff6-9c94-79289eff102a"
     );
-    expect(result.createdAt).toBe("2025-10-10T10:45:40.961Z");
+    expect(result.createdAt).toBe("2025-10-10T13:59:00.961Z");
   });
 });

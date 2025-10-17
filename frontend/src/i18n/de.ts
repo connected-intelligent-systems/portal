@@ -99,10 +99,10 @@ const germanMessages: Partial<TranslationMessages> = {
           personalDataHandling: "Verarbeitung personenbezogener Daten",
           noPersonalDataHandling:
             "Keine Verarbeitung personenbezogener Daten angegeben",
-          personalDataType: "Art personenbezogener Daten:",
-          purpose: "Zweck:",
-          legalBasis: "Rechtsgrundlage:",
-          applicableLaw: "Anwendbares Recht:",
+          personalDataType: "Art personenbezogener Daten",
+          purpose: "Zweck",
+          legalBasis: "Rechtsgrundlage",
+          applicableLaw: "Anwendbares Recht",
         },
         dataQualityTab: {
           description: "Qualitätsmessungen und Bewertungen für dieses Asset.",
@@ -110,9 +110,9 @@ const germanMessages: Partial<TranslationMessages> = {
             "Qualitätsmessungen und Bewertungen für dieses Asset.",
           qualityMeasurements: "Qualitätsmessungen",
           noQualityMeasurements: "Keine Qualitätsmessungen angegeben",
-          measurement: "Messung:",
-          value: "Wert:",
-          measurementDescription: "Beschreibung:",
+          measurement: "Messung",
+          value: "Wert",
+          measurementDescription: "Beschreibung",
         },
         dataAddressTab: {
           description:

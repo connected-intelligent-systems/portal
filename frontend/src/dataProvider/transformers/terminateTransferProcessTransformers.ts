@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { TerminateTransferProcess } from "../../types/terminateTransferProcess";
-import { removeUndefinedValues } from "../helpers";
+import { stripUndefinedValues } from "../helpers";
 
 const CoreTerminateTransferProcessSchema = z.object({
   "@id": z.string(),
@@ -37,7 +37,7 @@ export async function parseTerminateTransferProcessFromJsonLd(
       state: parsed.state || "UNKNOWN",
       createdAt: parsed.createdAt || new Date().toISOString(),
     };
-    return removeUndefinedValues(termination as any);
+    return stripUndefinedValues(termination);
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
     throw new Error(`Failed to transform JSON-LD: ${errorMessage}`);

@@ -1,14 +1,35 @@
 import {
-  Labeled,
-  TextField,
   FunctionField,
+  Labeled,
+  RecordContextProvider,
+  TextField,
   useRecordContext,
   useTranslate,
 } from "react-admin";
 import { Typography, Box } from "@mui/material";
 import { PasswordField } from "../password_field";
 
-const resolveBooleanDisplay = (value: unknown, translate: any) => {
+type TranslateFn = ReturnType<typeof useTranslate>;
+
+const getValue = (record: any, source: string) => {
+  if (!record) {
+    return undefined;
+  }
+
+  return source.split(".").reduce<unknown>((acc, segment) => {
+    if (acc === undefined || acc === null) {
+      return undefined;
+    }
+
+    if (typeof acc !== "object") {
+      return undefined;
+    }
+
+    return (acc as Record<string, unknown>)[segment];
+  }, record);
+};
+
+const formatBooleanValue = (value: unknown, translate: TranslateFn) => {
   if (value === undefined || value === null || value === "") {
     return "-";
   }
@@ -27,15 +48,43 @@ const resolveBooleanDisplay = (value: unknown, translate: any) => {
   return String(value);
 };
 
+const BooleanValueField = ({ source }: { source: string }) => {
+  const translate = useTranslate();
+
+  return (
+    <FunctionField
+      source={source}
+      render={(record: any) =>
+        formatBooleanValue(getValue(record, source), translate)
+      }
+    />
+  );
+};
+
+const MaskedValueField = ({ source }: { source: string }) => (
+  <FunctionField
+    source={source}
+    render={(record: any) => {
+      const value = getValue(record, source);
+
+      if (!value) {
+        return <Typography component="span">-</Typography>;
+      }
+
+      return (
+        <RecordContextProvider value={record}>
+          <PasswordField source={source} />
+        </RecordContextProvider>
+      );
+    }}
+  />
+);
+
 const HttpData = () => {
   const translate = useTranslate();
 
   return (
-    <Box sx={{ mt: 2 }}>
-      <Typography variant="h6" sx={{ mb: 2 }}>
-        {translate("resources.assets.tabs.dataAddressTab.httpConfiguration")}
-      </Typography>
-
+    <Box>
       <Labeled
         fullWidth
         label={translate("resources.assets.tabs.dataAddressTab.baseUrl")}
@@ -47,22 +96,14 @@ const HttpData = () => {
         fullWidth
         label={translate("resources.assets.tabs.dataAddressTab.acceptHeader")}
       >
-        <FunctionField
-          render={(record: any) =>
-            record?.dataAddress?.["header:Accept"] ?? "-"
-          }
-        />
+        <TextField source="dataAddress.header:Accept" emptyText="-" />
       </Labeled>
 
       <Labeled
         fullWidth
         label={translate("resources.assets.tabs.dataAddressTab.proxyPath")}
       >
-        <FunctionField
-          render={(record: any) =>
-            resolveBooleanDisplay(record?.dataAddress?.proxyPath, translate)
-          }
-        />
+        <BooleanValueField source="dataAddress.proxyPath" />
       </Labeled>
 
       <Labeled
@@ -71,36 +112,21 @@ const HttpData = () => {
           "resources.assets.tabs.dataAddressTab.proxyQueryParams"
         )}
       >
-        <FunctionField
-          render={(record: any) =>
-            resolveBooleanDisplay(
-              record?.dataAddress?.proxyQueryParams,
-              translate
-            )
-          }
-        />
+        <BooleanValueField source="dataAddress.proxyQueryParams" />
       </Labeled>
 
       <Labeled
         fullWidth
         label={translate("resources.assets.tabs.dataAddressTab.proxyBody")}
       >
-        <FunctionField
-          render={(record: any) =>
-            resolveBooleanDisplay(record?.dataAddress?.proxyBody, translate)
-          }
-        />
+        <BooleanValueField source="dataAddress.proxyBody" />
       </Labeled>
 
       <Labeled
         fullWidth
         label={translate("resources.assets.tabs.dataAddressTab.proxyMethod")}
       >
-        <FunctionField
-          render={(record: any) =>
-            resolveBooleanDisplay(record?.dataAddress?.proxyMethod, translate)
-          }
-        />
+        <BooleanValueField source="dataAddress.proxyMethod" />
       </Labeled>
 
       <Labeled
@@ -109,16 +135,7 @@ const HttpData = () => {
           "resources.assets.tabs.dataAddressTab.authorizationHeader"
         )}
       >
-        <FunctionField
-          source="dataAddress.authHeader"
-          render={(record: any) => {
-            return record?.dataAddress?.authHeader ? (
-              <PasswordField source="dataAddress.authHeader" />
-            ) : (
-              <Typography component="span">-</Typography>
-            );
-          }}
-        />
+        <MaskedValueField source="dataAddress.authHeader" />
       </Labeled>
     </Box>
   );
@@ -128,11 +145,7 @@ const AmazonS3 = () => {
   const translate = useTranslate();
 
   return (
-    <Box sx={{ mt: 2 }}>
-      <Typography variant="h6" sx={{ mb: 2 }}>
-        {translate("resources.assets.tabs.dataAddressTab.s3Configuration")}
-      </Typography>
-
+    <Box>
       <Labeled
         fullWidth
         label={translate("resources.assets.tabs.dataAddressTab.region")}
@@ -183,16 +196,7 @@ const AmazonS3 = () => {
           "resources.assets.tabs.dataAddressTab.secretAccessKey"
         )}
       >
-        <FunctionField
-          source="dataAddress.secretAccessKey"
-          render={(record: any) => {
-            return record?.dataAddress?.secretAccessKey ? (
-              <PasswordField source="dataAddress.secretAccessKey" />
-            ) : (
-              <TextField source="dataAddress.secretAccessKey" emptyText="-" />
-            );
-          }}
-        />
+        <MaskedValueField source="dataAddress.secretAccessKey" />
       </Labeled>
     </Box>
   );
@@ -241,7 +245,7 @@ export const DataAddress = () => {
           "resources.assets.tabs.dataAddressTab.dataAddressType"
         )}
       >
-        <TextField source="dataAddress.type" />
+        <TextField source="dataAddress.type" emptyText="-" />
       </Labeled>
 
       <FunctionField

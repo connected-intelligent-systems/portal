@@ -1,8 +1,5 @@
-import { Box, Card, CardContent, Chip, Typography } from "@mui/material";
-import {
-  AccessTime as AccessTimeIcon,
-  Schedule as ScheduleIcon,
-} from "@mui/icons-material";
+import { Box, Card, CardContent, Typography } from "@mui/material";
+import { Schedule as ScheduleIcon } from "@mui/icons-material";
 import { useTranslate } from "react-admin";
 
 import { InfoItem, InfoRow } from "./PermissionLayout";
@@ -39,15 +36,6 @@ export const TimeBasedPermissionShow = ({ permission }: PermissionProps) => {
         </Box>
 
         <InfoRow>
-          <InfoItem label={translate("resources.policies.show.action")}>
-            <Chip
-              label={permission.action || "odrl:use"}
-              color="success"
-              variant="outlined"
-              size="small"
-            />
-          </InfoItem>
-
           <InfoItem label={translate("resources.policies.show.timeCondition")}>
             <Typography variant="body2">
               {formatOperator(constraint?.operator || "")}
@@ -56,10 +44,6 @@ export const TimeBasedPermissionShow = ({ permission }: PermissionProps) => {
 
           <InfoItem label={translate("resources.policies.show.dateTime")}>
             <Box sx={{ display: "flex", alignItems: "center" }}>
-              <AccessTimeIcon
-                fontSize="small"
-                sx={{ mr: 0.5, color: "text.secondary" }}
-              />
               <Typography variant="body2">
                 {constraint?.rightOperand
                   ? new Date(constraint.rightOperand).toLocaleString()

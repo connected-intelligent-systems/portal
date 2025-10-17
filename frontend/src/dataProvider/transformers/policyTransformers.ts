@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { Policy, PolicyFormData, PolicyRule } from "../../types/policy";
-import { removeUndefinedValues } from "../helpers";
+import { removeUndefinedValues, stripUndefinedValues } from "../helpers";
 
 // --- Zod Schemas for Policy Structure ---
 
@@ -93,7 +93,7 @@ export async function parsePolicyFromJsonLd(
       privateProperties: core.privateProperties,
     };
 
-    return removeUndefinedValues(policy);
+    return stripUndefinedValues(policy);
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
     throw new Error(`Failed to transform JSON-LD policy: ${errorMessage}`);

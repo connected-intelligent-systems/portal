@@ -41,7 +41,7 @@ const DatasetsWithFilters = () => {
         .then((cats) => {
           setCategories(cats.map((cat) => ({ id: cat, name: cat })));
         })
-        .catch((error) => {
+        .catch(() => {
           setCategories([]);
         });
     }

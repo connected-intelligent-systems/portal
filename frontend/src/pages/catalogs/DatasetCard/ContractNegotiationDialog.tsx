@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   useTranslate,
@@ -18,10 +18,12 @@ import {
   Typography,
   useMediaQuery,
   useTheme,
-  RadioGroup,
-  Radio,
-  FormControlLabel,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
 } from "@mui/material";
+import type { SelectChangeEvent } from "@mui/material/Select";
 import HandshakeIcon from "@mui/icons-material/Handshake";
 import InfoIcon from "@mui/icons-material/Info";
 import HistoryIcon from "@mui/icons-material/History";
@@ -31,14 +33,15 @@ import AssessmentIcon from "@mui/icons-material/Assessment";
 import CloudIcon from "@mui/icons-material/Cloud";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { Dataset } from "../../../types/catalog";
-import { PermissionAccordion } from "./PermissionAccordion";
 import {
   BasicInformation,
   Provenance,
   DataPrivacy,
   DataQuality,
+  Versioning,
 } from "../../../components/assets";
 import { ServiceInformation } from "../../../components/datasets";
+import { PolicyRulesTabs } from "../../../components/policies/PolicyRulesTabs";
 
 interface ContractNegotiationDialogProps {
   dataset: Dataset;
@@ -50,7 +53,7 @@ interface ContractNegotiationDialogProps {
 interface PolicySelectionViewProps {
   policies: any[];
   selectedPolicy: number;
-  onSelectPolicy: (index: number) => void;
+  onSelectPolicy: (index: number) => void; // eslint-disable-line no-unused-vars, @typescript-eslint/no-unused-vars
 }
 
 const PolicySelectionView: React.FC<PolicySelectionViewProps> = ({
@@ -59,6 +62,24 @@ const PolicySelectionView: React.FC<PolicySelectionViewProps> = ({
   onSelectPolicy,
 }) => {
   const translate = useTranslate();
+
+  const options = useMemo(
+    () =>
+      policies.map((policy: any, policyIndex: number) => {
+        const baseLabel = `${translate("resources.catalog.dataset.policy")} ${
+          policyIndex + 1
+        }`;
+        const shortId =
+          typeof policy.id === "string" && policy.id.length > 0
+            ? `${policy.id.slice(0, 12)}${policy.id.length > 12 ? "…" : ""}`
+            : null;
+        return {
+          index: policyIndex,
+          label: shortId ? `${baseLabel} • ${shortId}` : baseLabel,
+        };
+      }),
+    [policies, translate]
+  );
 
   if (!policies.length) {
     return (
@@ -73,40 +94,48 @@ const PolicySelectionView: React.FC<PolicySelectionViewProps> = ({
     );
   }
 
+  const handleChange = (event: SelectChangeEvent<string>) => {
+    onSelectPolicy(Number(event.target.value));
+  };
+
   return (
     <Box sx={{ width: "100%", minWidth: 0 }}>
       <Typography variant="h6" gutterBottom>
         {translate("resources.catalog.dataset.selectPolicyForNegotiation")}
       </Typography>
 
-      <RadioGroup
-        value={selectedPolicy}
-        onChange={(e) => onSelectPolicy(Number(e.target.value))}
-      >
-        {policies.map((policy: any, index: number) => (
-          <Box key={index} sx={{ mb: 2 }}>
-            <FormControlLabel
-              value={index}
-              control={<Radio />}
-              label={
-                <Box>
-                  <Typography variant="subtitle2">
-                    {translate("resources.catalog.dataset.policy")} {index + 1}
-                  </Typography>
-                  <Typography variant="caption" color="textSecondary">
-                    {policy.id}
-                  </Typography>
-                </Box>
-              }
+      <FormControl fullWidth>
+        <InputLabel id="policy-selection-label">
+          {translate("resources.catalog.dataset.selectPolicyForNegotiation")}
+        </InputLabel>
+        <Select
+          labelId="policy-selection-label"
+          id="policy-selection"
+          value={String(selectedPolicy)}
+          label={translate(
+            "resources.catalog.dataset.selectPolicyForNegotiation"
+          )}
+          onChange={handleChange}
+        >
+          {options.map((option) => (
+            <MenuItem key={option.index} value={String(option.index)}>
+              {option.label}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+
+      {policies.map((policy: any, policyIndex: number) =>
+        selectedPolicy === policyIndex ? (
+          <Box key={policyIndex} sx={{ mt: 3 }}>
+            <PolicyRulesTabs
+              permissions={policy.permissions}
+              obligations={policy.obligations}
+              prohibitions={policy.prohibitions}
             />
-            {selectedPolicy === index && (
-              <Box sx={{ ml: 4, mt: 1 }}>
-                <PermissionAccordion record={policy} />
-              </Box>
-            )}
           </Box>
-        ))}
-      </RadioGroup>
+        ) : null
+      )}
     </Box>
   );
 };
@@ -202,7 +231,7 @@ export const ContractNegotiationDialog: React.FC<
       case 1:
         return (
           <RecordContextProvider value={dataset}>
-            <BasicInformation />
+            <Versioning />
           </RecordContextProvider>
         );
       case 2:

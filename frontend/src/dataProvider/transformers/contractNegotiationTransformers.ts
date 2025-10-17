@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { ContractNegotiation } from "../../types/contractNegotiation";
-import { removeUndefinedValues } from "../helpers";
+import { removeUndefinedValues, stripUndefinedValues } from "../helpers";
 
 const CoreContractNegotiationSchema = z.object({
   "@id": z.string(),
@@ -33,10 +33,10 @@ export async function parseContractNegotiationFromJsonLd(
       counterPartyId: parsed.counterPartyId,
       errorDetail: parsed.errorDetail,
       createdAt: parsed.createdAt,
-      updatedAt: parsed.updatedAt,
+      updatedAt: parsed.updatedAt ?? parsed.createdAt,
       contractAgreementId: parsed.contractAgreementId,
     };
-    return removeUndefinedValues(negotiation as any);
+    return stripUndefinedValues(negotiation);
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
     throw new Error(
@@ -69,9 +69,27 @@ export async function serializeContractNegotiationToJsonLd(
   if (data.policy?.obligations) {
     policy.obligation = data.policy.obligations;
   }
+
   if (data.policy?.permissions) {
-    policy.permission = data.policy.permissions;
+    policy.permission = data.policy.permissions.map((permission: any) => {
+      return {
+        action: {
+          "@id": permission.action,
+        },
+        constraint: permission.constraints.map((constraint: any) => ({
+          "@type": "odrl:Constraint",
+          leftOperand: {
+            "@id": constraint.leftOperand,
+          },
+          operator: {
+            "@id": constraint.operator,
+          },
+          rightOperand: constraint.rightOperand,
+        })),
+      };
+    });
   }
+
   if (data.policy?.prohibitions) {
     policy.prohibition = data.policy.prohibitions;
   }
@@ -79,6 +97,7 @@ export async function serializeContractNegotiationToJsonLd(
   const jsonLd = {
     "@context": {
       "@vocab": "https://w3id.org/edc/v0.0.1/ns/",
+      edc: "https://w3id.org/edc/v0.0.1/ns/",
     },
     "@type": "ContractRequest",
     counterPartyAddress: data.counterPartyAddress,

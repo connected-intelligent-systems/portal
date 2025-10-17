@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { ContractAgreement } from "../../types/contractAgreement";
-import { removeUndefinedValues } from "../helpers";
+import { stripUndefinedValues } from "../helpers";
 import { parsePolicyFromJsonLd } from "./policyTransformers";
 
 // This schema is simplified as the policy object is complex and handled by its own transformer
@@ -36,7 +36,7 @@ export async function parseContractAgreementFromJsonLd(
       contractSigningDate: parsed.contractSigningDate,
       policy: parsedPolicy,
     };
-    return removeUndefinedValues(agreement as any);
+    return stripUndefinedValues(agreement);
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
     throw new Error(

@@ -10,7 +10,7 @@ import {
   ReferenceArrayInput,
   AutocompleteArrayInput,
 } from "react-admin";
-import { Alert } from "@mui/material";
+import { Alert, Box, Typography } from "@mui/material";
 import { ContractDefinitionFormData } from "../../../types/contractDefinition";
 
 export const ContractDefinitionCreate = (props: any) => {
@@ -66,31 +66,18 @@ export const ContractDefinitionCreate = (props: any) => {
             )}
           />
         </ReferenceInput>
-        <div style={{ marginTop: 24, marginBottom: 2 }}>
-          <h3
-            style={{
-              margin: "0 0 8px 0",
-              fontSize: "1.25rem",
-              fontWeight: 500,
-              color: "rgba(0, 0, 0, 0.87)",
-            }}
-          >
+        <Box sx={{ mt: 3, mb: 1 }}>
+          <Typography variant="h6" gutterBottom>
             {translate(
               "resources.contract_definitions.create.fields.assetSelector"
             )}
-          </h3>
-          <p
-            style={{
-              margin: "0 0 16px 0",
-              fontSize: "0.875rem",
-              color: "rgba(0, 0, 0, 0.6)",
-            }}
-          >
+          </Typography>
+          <Typography variant="body2">
             {translate(
               "resources.contract_definitions.create.fields.assetSelectorDescription"
             )}
-          </p>
-        </div>
+          </Typography>
+        </Box>
         <FormDataConsumer>
           {({ formData }: { formData: ContractDefinitionFormData }) => {
             const hasSelectedAssets =

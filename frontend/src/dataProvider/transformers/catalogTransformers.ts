@@ -1,15 +1,15 @@
 import { z } from "zod";
+import { Catalog, Dataset } from "../../types/catalog";
+import { stripUndefinedValues } from "../helpers";
 import {
-  Catalog,
-  Dataset,
-  DatasetPolicy,
-  PolicyRule,
-  PolicyConstraint,
-} from "../../types/catalog";
-import { removeUndefinedValues } from "../helpers";
-import { normalizeStringArray } from "./helpers";
-
-// --- Zod Schemas for Catalog Structure ---
+  extractCreator,
+  extractDate,
+  extractPrivacySettings,
+  extractProvenance,
+  extractQualityMeasurements,
+  extractString,
+} from "./helpers";
+import type { CoreResource } from "./helpers";
 
 const ConstraintSchema = z
   .object({
@@ -90,24 +90,39 @@ const DatasetSchema = z
       .optional()
       .transform((p) => (p ? (Array.isArray(p) ? p : [p]) : [])),
   })
-  .transform((d) => ({
-    id: d["@id"],
-    title: d["dct:title"],
-    abstract: d["dct:abstract"],
-    description: d["dct:description"],
-    type: d.type,
-    contenttype: d.contenttype,
-    mediaType: d["dcat:mediaType"],
-    theme: d["dcat:theme"]
-      ? { title: d["dcat:theme"]["dct:title"], id: d["dcat:theme"]["@id"] }
-      : undefined,
-    keywords: d["dcat:keyword"]
-      ? Array.isArray(d["dcat:keyword"])
-        ? d["dcat:keyword"]
-        : [d["dcat:keyword"]]
-      : undefined,
-    policies: d["odrl:hasPolicy"],
-  }));
+  .passthrough()
+  .transform((d) => {
+    const datasetResource: CoreResource = {
+      "@id": d["@id"],
+      properties: d as Record<string, unknown>,
+    };
+
+    return {
+      id: d["@id"],
+      title: d["dct:title"],
+      abstract: d["dct:abstract"],
+      description: d["dct:description"],
+      type: d.type,
+      contenttype: d.contenttype,
+      mediaType: d["dcat:mediaType"],
+      theme: d["dcat:theme"]
+        ? { title: d["dcat:theme"]["dct:title"], id: d["dcat:theme"]["@id"] }
+        : undefined,
+      keywords: d["dcat:keyword"]
+        ? Array.isArray(d["dcat:keyword"])
+          ? d["dcat:keyword"]
+          : [d["dcat:keyword"]]
+        : undefined,
+      policies: d["odrl:hasPolicy"],
+      creator: extractCreator(datasetResource),
+      created: extractDate(datasetResource, "dct:created"),
+      modified: extractDate(datasetResource, "dct:modified"),
+      version: extractString(datasetResource, "dcat:version"),
+      provenance: extractProvenance(datasetResource),
+      qualityMeasurements: extractQualityMeasurements(datasetResource),
+      privacySettings: extractPrivacySettings(datasetResource),
+    };
+  });
 
 const CatalogSchema = z.object({
   "dct:title": z.string().optional(),
@@ -125,8 +140,8 @@ export async function parseDatasetFromJsonLd(
   jsonLdDataset: any
 ): Promise<Dataset> {
   try {
-    const parsed = DatasetSchema.parse(jsonLdDataset);
-    return removeUndefinedValues(parsed as Dataset);
+    const parsed = DatasetSchema.parse(jsonLdDataset) as Dataset;
+    return stripUndefinedValues(parsed);
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
     throw new Error(`Failed to transform JSON-LD dataset: ${errorMessage}`);
@@ -154,7 +169,10 @@ export async function parseCatalogFromJsonLd(
       participantId: parsed["dspace:participantId"],
       datasets: parsed["dcat:dataset"] || [],
     };
-    return removeUndefinedValues(catalog) as Catalog;
+    // for (const dataset of catalog.datasets) {
+    //   dataset.participantId = catalog.participantId;
+    // }
+    return stripUndefinedValues(catalog);
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
     throw new Error(`Failed to transform JSON-LD catalog: ${errorMessage}`);

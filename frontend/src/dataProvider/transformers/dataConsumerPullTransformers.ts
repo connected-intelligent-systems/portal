@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { DataConsumerPull } from "../../types/dataConsumerPull";
-import { removeUndefinedValues } from "../helpers";
+import { stripUndefinedValues } from "../helpers";
 
 const CoreDataConsumerPullSchema = z.object({
   "@id": z.string(),
@@ -24,7 +24,7 @@ export async function parseDataConsumerPullFromJsonLd(
       createdAt: parsed.createdAt,
       updatedAt: parsed.updatedAt,
     };
-    return removeUndefinedValues(pull as any);
+    return stripUndefinedValues(pull);
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
     throw new Error(

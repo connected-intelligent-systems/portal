@@ -9,7 +9,6 @@ import {
   TopToolbar,
   DeleteButton,
   EditButton,
-  useRecordContext,
 } from "react-admin";
 import { PolicyRulesTabs } from "../../../components/policies/PolicyRulesTabs";
 
@@ -24,7 +23,6 @@ export const PolicyShowBar = () => {
 
 export const PolicyShow = () => {
   const translate = useTranslate();
-  const record = useRecordContext();
 
   return (
     <Show actions={<PolicyShowBar />}>

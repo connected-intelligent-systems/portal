@@ -38,6 +38,13 @@ export function removeUndefinedValues(value: any): any {
 }
 
 /**
+ * Convenience wrapper that preserves the input type when stripping undefined entries.
+ */
+export function stripUndefinedValues<T>(value: T): T {
+  return removeUndefinedValues(value) as T;
+}
+
+/**
  * Converts react-admin params to EDC QuerySpec format
  *
  * @param params - react-admin params containing pagination, sort, and filter
@@ -64,6 +71,7 @@ export function removeUndefinedValues(value: any): any {
  * //   ]
  * // }
  */
+/* eslint-disable no-unused-vars, @typescript-eslint/no-unused-vars */
 export function buildQuerySpec(
   params: {
     pagination?: { page: number; perPage: number };
@@ -71,9 +79,9 @@ export function buildQuerySpec(
     filter?: Record<string, any>;
   },
   filterMapping?: (
-    key: string,
-    value: any
-  ) => { field: string; operator: string; value: any } | null
+    _field: string,
+    _value: any
+  ) => { field: string; operator: string; value: any } | null // eslint-disable-line no-unused-vars, @typescript-eslint/no-unused-vars
 ): any {
   const { pagination, sort, filter } = params;
 
@@ -101,14 +109,18 @@ export function buildQuerySpec(
   // Add filters
   const filterExpression: any[] = [];
   if (filter) {
-    for (const [key, value] of Object.entries(filter)) {
+    for (const [filterKey, filterValue] of Object.entries(filter)) {
       // Skip empty values
-      if (value === undefined || value === null || value === "") {
+      if (
+        filterValue === undefined ||
+        filterValue === null ||
+        filterValue === ""
+      ) {
         continue;
       }
 
       // Handle special 'q' search param (general search)
-      if (key === "q") {
+      if (filterKey === "q") {
         // Skip 'q' in filterExpression as it's typically handled server-side differently
         // or you can add multiple criteria for different fields
         continue;
@@ -116,7 +128,7 @@ export function buildQuerySpec(
 
       // Use custom mapping if provided
       if (filterMapping) {
-        const mapped = filterMapping(key, value);
+        const mapped = filterMapping(filterKey, filterValue);
         if (mapped) {
           filterExpression.push({
             operandLeft: mapped.field,
@@ -129,9 +141,9 @@ export function buildQuerySpec(
 
       // Default behavior: direct equality comparison
       filterExpression.push({
-        operandLeft: key,
+        operandLeft: filterKey,
         operator: "=",
-        operandRight: value,
+        operandRight: filterValue,
       });
     }
   }
@@ -140,3 +152,4 @@ export function buildQuerySpec(
 
   return removeUndefinedValues(querySpec);
 }
+/* eslint-enable no-unused-vars, @typescript-eslint/no-unused-vars */

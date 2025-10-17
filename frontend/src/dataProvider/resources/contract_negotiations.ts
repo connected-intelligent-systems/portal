@@ -61,7 +61,6 @@ const mapContractNegotiationState = (state: string) => {
 };
 
 const filterMapping = (key: string, value: any) => {
-  console.log(key, value, mapContractNegotiationState(value));
   switch (key) {
     case "state":
       return {

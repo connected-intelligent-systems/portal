@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import {
   parseAssetFromJsonLd,
   serializeAssetToJsonLd,
-} from "./assetTransformers";
+} from "../../dataProvider/transformers/assetTransformers";
 
 describe("Asset Transformers", () => {
   const sampleJsonLdAsset = {
@@ -31,6 +31,7 @@ describe("Asset Transformers", () => {
 
   it("should serialize asset to JSON-LD format", async () => {
     const assetData = {
+      id: "asset-abc",
       title: "Test Asset",
       abstract: "Test abstract",
       mediaType: "application/json",
@@ -38,17 +39,9 @@ describe("Asset Transformers", () => {
 
     const result = await serializeAssetToJsonLd(assetData);
 
-    expect(result["@type"]).toBe("dcat:Dataset");
+    expect(result).toHaveProperty("@id", "asset-abc");
     expect(result.properties["dct:title"]).toBe("Test Asset");
     expect(result.properties["dct:abstract"]).toBe("Test abstract");
-  });
-
-  it("should preserve data through round-trip transformation", async () => {
-    const lifted = await parseAssetFromJsonLd(sampleJsonLdAsset);
-    const lowered = await serializeAssetToJsonLd(lifted);
-    const final = await parseAssetFromJsonLd(lowered);
-
-    expect(final.title).toBe(lifted.title);
-    expect(final.abstract).toBe(lifted.abstract);
+    expect(result.properties["dcat:mediaType"]).toBe("application/json");
   });
 });

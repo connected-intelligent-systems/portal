@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { TransferProcess } from "../../types/transferProcess";
-import { removeUndefinedValues } from "../helpers";
+import { stripUndefinedValues } from "../helpers";
 
 const CoreTransferProcessSchema = z.object({
   "@id": z.string(),
@@ -44,7 +44,7 @@ export async function parseTransferProcessFromJsonLd(
       createdAt: parsed.createdAt,
       updatedAt: parsed.updatedAt,
     };
-    return removeUndefinedValues(transfer as any);
+    return stripUndefinedValues(transfer);
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
     throw new Error(

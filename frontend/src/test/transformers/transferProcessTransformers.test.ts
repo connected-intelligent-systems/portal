@@ -1,20 +1,20 @@
-import { describe, it, expect } from "vitest";
-import { parseTransferProcessFromJsonLd } from "./transferProcessTransformers";
+import { describe, expect, it } from "vitest";
+import { parseTransferProcessFromJsonLd } from "../../dataProvider/transformers/transferProcessTransformers";
 
 describe("transferProcessTransformers", () => {
   const mockJsonLd = {
     "@id": "tp-123",
     "@type": "TransferProcess",
     state: "COMPLETED",
-    stateTimestamp: 1672531260000, // 2023-01-01T00:01:00.000Z
+    stateTimestamp: 1672531260000,
     type: "PROVIDER",
     transferType: "HttpData-PULL",
     contractId: "contract-789",
     assetId: "asset-456",
     correlationId: "corr-abc",
     callbackAddresses: [{ "@id": "http://test.com" }],
-    createdAt: 1672531200000, // 2023-01-01T00:00:00.000Z
-    updatedAt: 1672531260000, // 2023-01-01T00:01:00.000Z
+    createdAt: 1672531200000,
+    updatedAt: 1672531260000,
   };
 
   it("should parse transfer process from JSON-LD", async () => {

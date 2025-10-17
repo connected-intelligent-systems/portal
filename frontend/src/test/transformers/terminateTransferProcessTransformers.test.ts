@@ -1,5 +1,5 @@
-import { describe, it, expect } from "vitest";
-import { parseTerminateTransferProcessFromJsonLd } from "./terminateTransferProcessTransformers";
+import { describe, expect, it } from "vitest";
+import { parseTerminateTransferProcessFromJsonLd } from "../../dataProvider/transformers/terminateTransferProcessTransformers";
 
 describe("terminateTransferProcessTransformers", () => {
   const mockJsonLd = {
@@ -8,7 +8,7 @@ describe("terminateTransferProcessTransformers", () => {
     transferId: "transfer-456",
     reason: "User cancelled",
     state: "COMPLETED",
-    createdAt: 1672531200000, // 2023-01-01T00:00:00.000Z
+    createdAt: 1672531200000,
   };
 
   it("should parse termination command from JSON-LD", async () => {

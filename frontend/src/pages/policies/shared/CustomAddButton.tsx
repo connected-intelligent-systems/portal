@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, type MouseEvent as ReactMouseEvent } from "react";
 import { useArrayInput, useTranslate } from "react-admin";
 import { Menu, IconButton, ListItemIcon, MenuItem } from "@mui/material";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
@@ -12,7 +12,7 @@ export const CustomAddButton = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
 
-  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+  const handleClick = (event: ReactMouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
 
@@ -20,7 +20,7 @@ export const CustomAddButton = () => {
     setAnchorEl(null);
   };
 
-  const handleAdd = (event: React.MouseEvent<HTMLElement>) => {
+  const handleAdd = (event: ReactMouseEvent<HTMLElement>) => {
     const value = (event.target as HTMLElement).getAttribute("value");
 
     context.append({

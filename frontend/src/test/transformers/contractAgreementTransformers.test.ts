@@ -1,8 +1,8 @@
 import { describe, it, expect, vi } from "vitest";
-import { parseContractAgreementFromJsonLd } from "./contractAgreementTransformers";
+import { parseContractAgreementFromJsonLd } from "../../dataProvider/transformers/contractAgreementTransformers";
 
 // Mock the policy transformer as its testing is separate
-vi.mock("./policyTransformers", () => ({
+vi.mock("../../dataProvider/transformers/policyTransformers", () => ({
   parsePolicyFromJsonLd: vi.fn((policy) =>
     Promise.resolve({ ...policy, id: "parsed-policy" })
   ),
@@ -18,7 +18,7 @@ describe("contractAgreementTransformers", () => {
       providerId: "provider-abc",
       consumerId: "consumer-xyz",
       assetId: "asset-456",
-      contractSigningDate: 1672531200000, // 2023-01-01T00:00:00.000Z
+      contractSigningDate: 1672531200, // seconds since epoch, 2023-01-01T00:00:00.000Z
       policy: { "@id": "policy-789" },
     },
     dataset: { "@id": "dataset-1" },

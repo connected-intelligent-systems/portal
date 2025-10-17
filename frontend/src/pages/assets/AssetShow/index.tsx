@@ -1,4 +1,5 @@
 import { useState } from "react";
+import type { SyntheticEvent } from "react";
 import {
   Show,
   SimpleShowLayout,
@@ -35,7 +36,7 @@ export const AssetShow = () => {
   const [activeTab, setActiveTab] = useState(0);
   const translate = useTranslate();
 
-  const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
+  const handleTabChange = (_: SyntheticEvent, newValue: number) => {
     setActiveTab(newValue);
   };
 

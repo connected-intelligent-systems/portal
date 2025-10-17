@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { EndpointDataReference } from "../../types/dataRequest";
-import { removeUndefinedValues } from "../helpers";
+import { stripUndefinedValues } from "../helpers";
 
 const EndpointDataReferenceSchema = z.object({
   "@id": z.string(),
@@ -28,7 +28,7 @@ export async function parseDataRequestFromJsonLd(
       createdAt: parsed.createdAt,
       contractNegotiationId: parsed.contractNegotiationId,
     };
-    return removeUndefinedValues(edr as any);
+    return stripUndefinedValues(edr);
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
     throw new Error(

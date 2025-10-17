@@ -1,5 +1,6 @@
-import { Labeled, FunctionField, useTranslate } from "react-admin";
+import { Datagrid, Labeled, TextField, useTranslate } from "react-admin";
 import { Typography, Box } from "@mui/material";
+import { EnsureArrayField } from "../EnsureArrayField";
 
 export const DataQuality = () => {
   const translate = useTranslate();
@@ -16,60 +17,48 @@ export const DataQuality = () => {
           "resources.assets.tabs.dataQualityTab.qualityMeasurements"
         )}
       >
-        <FunctionField
-          render={(record: any) => {
-            const measurements = record?.qualityMeasurements;
-            if (
-              !measurements ||
-              !Array.isArray(measurements) ||
-              measurements.length === 0
-            ) {
-              return translate(
-                "resources.assets.tabs.dataQualityTab.noQualityMeasurements"
-              );
-            }
-            return (
-              <div>
-                {measurements.map((item: any, index: number) => (
-                  <div
-                    key={index}
-                    style={{
-                      marginBottom: "16px",
-                      padding: "8px",
-                      border: "1px solid #ddd",
-                      borderRadius: "4px",
-                    }}
-                  >
-                    <div>
-                      <strong>
-                        {translate(
-                          "resources.assets.tabs.dataQualityTab.measurement"
-                        )}
-                      </strong>{" "}
-                      {item.measurementOf?.title || "-"}
-                    </div>
-                    <div>
-                      <strong>
-                        {translate(
-                          "resources.assets.tabs.dataQualityTab.value"
-                        )}
-                      </strong>{" "}
-                      {item.value || "-"}
-                    </div>
-                    <div>
-                      <strong>
-                        {translate(
-                          "resources.assets.tabs.dataQualityTab.measurementDescription"
-                        )}
-                      </strong>{" "}
-                      {item.description || "-"}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            );
-          }}
-        />
+        <EnsureArrayField
+          source="qualityMeasurements"
+          emptyText={translate(
+            "resources.assets.tabs.dataQualityTab.noQualityMeasurements"
+          )}
+        >
+          <Datagrid
+            bulkActionButtons={false}
+            rowClick={false}
+            size="small"
+            hover={false}
+            sx={{
+              "& .MuiTableCell-root": {
+                whiteSpace: "normal",
+                wordBreak: "break-word",
+              },
+            }}
+          >
+            <TextField
+              source="measurementOf.title"
+              label={translate(
+                "resources.assets.tabs.dataQualityTab.measurement"
+              )}
+              emptyText="-"
+              sortable={false}
+            />
+            <TextField
+              source="value"
+              label={translate("resources.assets.tabs.dataQualityTab.value")}
+              emptyText="-"
+              sortable={false}
+            />
+            <TextField
+              source="description"
+              label={translate(
+                "resources.assets.tabs.dataQualityTab.measurementDescription"
+              )}
+              emptyText="-"
+              sortable={false}
+            />
+          </Datagrid>
+        </EnsureArrayField>
       </Labeled>
     </Box>
   );

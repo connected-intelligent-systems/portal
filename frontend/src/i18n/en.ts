@@ -103,9 +103,9 @@ const englishMessages: Partial<TranslationMessages> = {
             "Quality measurements and assessments for this asset.",
           qualityMeasurements: "Quality Measurements",
           noQualityMeasurements: "No quality measurements specified",
-          measurement: "Measurement:",
-          value: "Value:",
-          measurementDescription: "Description:",
+          measurement: "Measurement",
+          value: "Value",
+          measurementDescription: "Description",
         },
         dataAddressTab: {
           description: "Configuration for accessing this asset's data.",

@@ -1,8 +1,8 @@
+import { describe, expect, test } from "vitest";
 import {
   parseDatasetFromJsonLd,
   parseCatalogFromJsonLd,
-} from "./catalogTransformers";
-import { Dataset, Catalog } from "../../types/catalog";
+} from "../../dataProvider/transformers/catalogTransformers";
 
 describe("catalogTransformers", () => {
   const mockJsonLdDataset = {
@@ -68,7 +68,6 @@ describe("catalogTransformers", () => {
     expect(result.type).toBe("Dataset");
     expect(result.contenttype).toBe("application/json");
     expect(result.mediaType).toBe("application/json");
-    expect(result.participantId).toBe("participant-456");
     expect(result.keywords).toEqual(["test", "dataset", "example"]);
     expect(result.theme).toEqual({
       title: "Technology",

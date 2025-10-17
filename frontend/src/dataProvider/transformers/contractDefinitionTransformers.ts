@@ -3,7 +3,7 @@ import {
   ContractDefinition,
   ContractDefinitionFormData,
 } from "../../types/contractDefinition";
-import { removeUndefinedValues } from "../helpers";
+import { removeUndefinedValues, stripUndefinedValues } from "../helpers";
 
 // --- Zod Schemas for Contract Definition Structure ---
 
@@ -85,7 +85,7 @@ export async function parseContractDefinitionFromJsonLd(
       modifiedAt: parsed.modifiedAt,
     };
 
-    return removeUndefinedValues(contractDefinition as any);
+    return stripUndefinedValues(contractDefinition);
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
     throw new Error(

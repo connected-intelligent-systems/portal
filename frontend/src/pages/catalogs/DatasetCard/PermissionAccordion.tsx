@@ -1,4 +1,4 @@
-import { TextField, ArrayField, Datagrid } from "react-admin";
+import { TextField, Datagrid } from "react-admin";
 import { useTranslate } from "react-admin";
 import { EnsureArrayField } from "../../../components/EnsureArrayField";
 import { DatasetPolicy } from "../../../types/catalog";

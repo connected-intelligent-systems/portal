@@ -115,21 +115,18 @@ const AssetCreateToolbar = ({
         )}
       </Box>
 
-      {/* Step 0: Basic Information - Only Next */}
       {activeStep === 0 && (
         <Button onClick={handleNext} variant="contained" disabled={!canAdvance}>
           {translate("resources.assets.create.buttons.next")}
         </Button>
       )}
 
-      {/* Step 1: Data Address - Next */}
       {activeStep === 1 && (
         <Button onClick={handleNext} variant="contained" disabled={!canAdvance}>
           {translate("resources.assets.create.buttons.next")}
         </Button>
       )}
 
-      {/* Step 2: Optional Features - Save */}
       {activeStep === 2 && (
         <SaveButton
           alwaysEnable

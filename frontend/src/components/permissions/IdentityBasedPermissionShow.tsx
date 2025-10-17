@@ -54,15 +54,6 @@ export const IdentityBasedPermissionShow = ({
         </Box>
 
         <InfoRow>
-          <InfoItem label={translate("resources.policies.show.action")}>
-            <Chip
-              label={permission.action || "odrl:use"}
-              color="success"
-              variant="outlined"
-              size="small"
-            />
-          </InfoItem>
-
           <InfoItem label={translate("resources.policies.show.operator")}>
             <Typography variant="body2">
               {formatOperator(constraint?.operator || "")}

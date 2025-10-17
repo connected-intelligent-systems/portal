@@ -6,3 +6,4 @@ export { BasicInformation } from "./BasicInformation";
 export { Provenance } from "./Provenance";
 export { DataPrivacy } from "./DataPrivacy";
 export { DataQuality } from "./DataQuality";
+export { Versioning } from "./Versioning";

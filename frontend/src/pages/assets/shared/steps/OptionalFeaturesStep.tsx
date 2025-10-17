@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, type ReactNode, type SyntheticEvent } from "react";
 import { Box, Tabs, Tab } from "@mui/material";
 import { useTranslate } from "react-admin";
 import {
@@ -10,7 +10,7 @@ import {
 } from "../tabs";
 
 interface TabPanelProps {
-  children?: React.ReactNode;
+  children?: ReactNode;
   index: number;
   value: number;
 }
@@ -32,7 +32,7 @@ export const OptionalFeaturesStep = () => {
   const [activeTab, setActiveTab] = useState(0);
   const translate = useTranslate();
 
-  const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
+  const handleTabChange = (_event: SyntheticEvent, newValue: number) => {
     setActiveTab(newValue);
   };
 

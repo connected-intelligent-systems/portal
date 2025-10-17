@@ -1,8 +1,42 @@
-import { Labeled, FunctionField, useTranslate } from "react-admin";
+import { Labeled, useRecordContext, useTranslate } from "react-admin";
 import { Box, Typography } from "@mui/material";
 
 export const BasicInformation = () => {
   const translate = useTranslate();
+  const record = useRecordContext();
+
+  if (!record) return null;
+
+  const renderKeywords = () => {
+    const keywords = record.keywords;
+    if (!keywords) {
+      return (
+        <Typography
+          variant="body2"
+          color="text.secondary"
+          sx={{ fontStyle: "italic" }}
+        >
+          {translate("resources.assets.tabs.basicInformation.noKeywords")}
+        </Typography>
+      );
+    }
+
+    const keywordsArray = Array.isArray(keywords) ? keywords : [keywords];
+
+    if (keywordsArray.length === 0) {
+      return (
+        <Typography
+          variant="body2"
+          color="text.secondary"
+          sx={{ fontStyle: "italic" }}
+        >
+          {translate("resources.assets.tabs.basicInformation.noKeywords")}
+        </Typography>
+      );
+    }
+
+    return <Typography variant="body2">{keywordsArray.join(", ")}</Typography>;
+  };
 
   return (
     <Box>
@@ -12,85 +46,36 @@ export const BasicInformation = () => {
           "resources.assets.tabs.basicInformation.shortDescription"
         )}
       >
-        <FunctionField
-          render={(record: any) => {
-            const abstract = record?.abstract;
-            if (!abstract) {
-              return (
-                <Typography variant="body2" color="text.secondary">
-                  {translate(
-                    "resources.assets.tabs.basicInformation.noShortDescription"
-                  )}
-                </Typography>
-              );
-            }
-            return <Typography variant="body2">{abstract}</Typography>;
-          }}
-        />
+        <Typography
+          variant="body2"
+          color={!record.abstract ? "text.secondary" : undefined}
+        >
+          {record.abstract ||
+            translate(
+              "resources.assets.tabs.basicInformation.noShortDescription"
+            )}
+        </Typography>
       </Labeled>
 
       <Labeled
         fullWidth
         label={translate("resources.assets.tabs.basicInformation.keywords")}
       >
-        <FunctionField
-          render={(record: any) => {
-            const keywords = record?.keywords;
-            if (!keywords) {
-              return (
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  sx={{ fontStyle: "italic" }}
-                >
-                  {translate(
-                    "resources.assets.tabs.basicInformation.noKeywords"
-                  )}
-                </Typography>
-              );
-            }
-
-            // Handle case where single keyword is returned as string instead of array
-            const keywordsArray = Array.isArray(keywords)
-              ? keywords
-              : [keywords];
-
-            if (keywordsArray.length === 0) {
-              return (
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  sx={{ fontStyle: "italic" }}
-                >
-                  {translate(
-                    "resources.assets.tabs.basicInformation.noKeywords"
-                  )}
-                </Typography>
-              );
-            }
-
-            return keywordsArray.map((keyword: string, index: number) => (
-              <span key={index} style={{ marginRight: "8px" }}>
-                {keyword}
-                {index < keywordsArray.length - 1 ? ", " : ""}
-              </span>
-            ));
-          }}
-        />
+        {renderKeywords()}
       </Labeled>
 
       <Labeled
         fullWidth
         label={translate("resources.assets.tabs.basicInformation.category")}
       >
-        <FunctionField render={(record: any) => record?.theme?.title || "-"} />
+        <Typography variant="body2">{record.theme?.title || "-"}</Typography>
       </Labeled>
 
       <Labeled
         fullWidth
         label={translate("resources.assets.tabs.basicInformation.mediaType")}
       >
-        <FunctionField render={(record: any) => record?.mediaType || "-"} />
+        <Typography variant="body2">{record.mediaType || "-"}</Typography>
       </Labeled>
     </Box>
   );

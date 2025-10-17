@@ -1,4 +1,5 @@
 import { useState } from "react";
+import type { SyntheticEvent } from "react";
 import { useTranslate } from "react-admin";
 import { Typography, Box, Tabs, Tab } from "@mui/material";
 import {
@@ -22,7 +23,7 @@ export const PolicyRulesTabs = ({
   const translate = useTranslate();
   const [activeTab, setActiveTab] = useState(0);
 
-  const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
+  const handleTabChange = (_: SyntheticEvent, newValue: number) => {
     setActiveTab(newValue);
   };
 

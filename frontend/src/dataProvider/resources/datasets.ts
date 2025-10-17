@@ -4,7 +4,24 @@ import {
   parseDatasetFromJsonLd,
 } from "../transformers/catalogTransformers";
 import { LocalCatalogService } from "../../services/localCatalogService";
-import { buildQuerySpec } from "../helpers";
+import { buildQuerySpec, compactJsonLd } from "../helpers";
+
+const frame = {
+  "@context": {
+    "@vocab": "https://w3id.org/edc/v0.0.1/ns/",
+    edc: "https://w3id.org/edc/v0.0.1/ns/",
+    dct: "http://purl.org/dc/terms/",
+    dcat: "http://www.w3.org/ns/dcat#",
+    prov: "http://www.w3.org/ns/prov#",
+    odrl: "http://www.w3.org/ns/odrl/2/",
+    dqv: "http://www.w3.org/ns/dqv#",
+    wot: "https://www.w3.org/2019/wot/td#",
+    dpv: "https://w3id.org/dpv#",
+    schema: "http://schema.org/",
+    owl: "http://www.w3.org/2002/07/owl#",
+    dspace: "https://w3id.org/dspace/v0.8/",
+  },
+};
 
 /**
  * Maps a filter key and value to a standardized filter object for querying datasets.
@@ -64,8 +81,9 @@ export async function getManyReference(params: GetManyReferenceParams) {
       );
     }
 
+    const framedCatalog = await compactJsonLd(catalogData, frame);
     const cleanCatalog = await parseCatalogFromJsonLd(
-      catalogData,
+      framedCatalog,
       catalogUrl as string
     );
 

@@ -1,13 +1,16 @@
 import { z } from "zod";
+import { Asset, AssetDataAddress, AssetFormData } from "../../types/asset";
+import { removeUndefinedValues, stripUndefinedValues } from "../helpers";
 import {
-  Asset,
-  AssetDataAddress,
-  AssetFormData,
-  AssetProvenance,
-  AssetQualityMeasurement,
-} from "../../types/asset";
-import { removeUndefinedValues } from "../helpers";
-import { extractString, normalizeStringArray } from "./helpers";
+  extractCreator,
+  extractDate,
+  extractPrivacySettings,
+  extractProvenance,
+  extractQualityMeasurements,
+  extractString,
+  normalizeStringArray,
+  serializePrivacySettings,
+} from "./helpers";
 
 // --- Zod-based Transformation (Lifting) ---
 
@@ -21,104 +24,9 @@ const CoreAssetSchema = z
 
 type CoreAsset = z.infer<typeof CoreAssetSchema>;
 
-function extractCreator(data: CoreAsset) {
-  const creator = data.properties?.["dct:creator"] as any;
-  if (!creator) return undefined;
-
-  // Handle both simple string and structured object formats
-  const name = z.string().safeParse(creator["schema:name"]);
-  const id = z.string().safeParse(creator["@id"]);
-
-  if (name.success) {
-    return {
-      name: name.data,
-      id: id.success ? id.data : undefined,
-    };
-  }
-  return undefined;
-}
-
-function extractDate(data: CoreAsset, field: string): string | undefined {
-  const dateValue = data.properties?.[field];
-  if (!dateValue) return undefined;
-
-  // Handle structured date format { "@value": "2025-01-01", "@type": "xsd:date" }
-  if (typeof dateValue === "object" && dateValue["@value"]) {
-    return dateValue["@value"];
-  }
-
-  // Handle simple string format
-  if (typeof dateValue === "string") {
-    return dateValue;
-  }
-
-  return undefined;
-}
-
-function extractProvenance(data: CoreAsset): AssetProvenance | undefined {
-  const props = data.properties;
-  if (!props) return undefined;
-
-  const wasDerivedFrom = (props["prov:wasDerivedFrom"] as any)?.["@id"];
-  const wasGeneratedBy = (props["prov:wasGeneratedBy"] as any)?.[
-    "dct:description"
-  ];
-  const wasAttributedTo = (props["prov:wasAttributedTo"] as any)?.["@id"];
-
-  if (!wasDerivedFrom && !wasGeneratedBy && !wasAttributedTo) {
-    return undefined;
-  }
-
-  const derivedId = z.string().optional().safeParse(wasDerivedFrom);
-  const generatedDesc = z.string().optional().safeParse(wasGeneratedBy);
-  const attributedId = z.string().optional().safeParse(wasAttributedTo);
-
-  return {
-    derivedFromId: derivedId.success ? derivedId.data : undefined,
-    generatedByDescription: generatedDesc.success
-      ? generatedDesc.data
-      : undefined,
-    attributedToId: attributedId.success ? attributedId.data : undefined,
-  };
-}
-
-function extractQualityMeasurements(
-  data: CoreAsset
-): AssetQualityMeasurement[] | undefined {
-  const measurements = data.properties?.["dqv:hasQualityMeasurement"];
-  if (!measurements) return undefined;
-
-  const measurementSchema = z.object({
-    "dqv:isMeasurementOf": z
-      .object({
-        "dct:title": z.string().optional(),
-      })
-      .optional(),
-    "dqv:value": z.union([z.string(), z.number()]),
-    "dqv:unit": z.string().optional(),
-  });
-
-  const measurementsArray = Array.isArray(measurements)
-    ? measurements
-    : [measurements];
-  const parsedMeasurements = z
-    .array(measurementSchema)
-    .safeParse(measurementsArray);
-
-  if (!parsedMeasurements.success) return undefined;
-
-  return parsedMeasurements.data.map((m) => ({
-    measurementOf: {
-      title: m["dqv:isMeasurementOf"]?.["dct:title"] ?? "",
-    },
-    value: m["dqv:value"],
-    unit: m["dqv:unit"],
-  }));
-}
-
 export async function parseAssetFromJsonLd(jsonLdAsset: any): Promise<Asset> {
   try {
-    const coreAsset = CoreAssetSchema.parse(jsonLdAsset);
+    const coreAsset: CoreAsset = CoreAssetSchema.parse(jsonLdAsset);
 
     const asset: Asset = {
       id: coreAsset["@id"],
@@ -137,9 +45,11 @@ export async function parseAssetFromJsonLd(jsonLdAsset: any): Promise<Asset> {
       version: extractString(coreAsset, "dcat:version"),
       provenance: extractProvenance(coreAsset),
       qualityMeasurements: extractQualityMeasurements(coreAsset),
+      // privacy settings (dpv)
+      privacySettings: extractPrivacySettings(coreAsset),
     };
 
-    return removeUndefinedValues(asset) as Asset;
+    return stripUndefinedValues(asset);
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
     throw new Error(`Failed to transform JSON-LD asset: ${errorMessage}`);
@@ -281,6 +191,12 @@ export async function serializeAssetToJsonLd(
     properties: removeUndefinedValues(properties),
     dataAddress: finalDataAddress,
   };
+
+  // attach privacy settings into properties if present
+  const privacyProps = serializePrivacySettings(asset.privacySettings);
+  if (privacyProps) {
+    jsonLd.properties = { ...jsonLd.properties, ...privacyProps };
+  }
 
   return removeUndefinedValues(jsonLd);
 }

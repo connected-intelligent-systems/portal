@@ -1,8 +1,8 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 import {
   parsePolicyFromJsonLd,
   serializePolicyToJsonLd,
-} from "./policyTransformers";
+} from "../../dataProvider/transformers/policyTransformers";
 
 describe("Policy Transformers", () => {
   const sampleJsonLdPolicy = {
