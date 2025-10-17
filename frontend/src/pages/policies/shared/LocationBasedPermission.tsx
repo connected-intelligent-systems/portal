@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import {
   useTranslate,
   useInput,
@@ -20,10 +21,17 @@ const countriesList = Object.keys(countries).map((key) => ({
 export const LocationBasedPermission = () => {
   const translate = useTranslate();
   const {
+    field: { onChange: setAction },
+  } = useInput({ source: "action", defaultValue: "odrl:use" });
+  const {
     field: { value: operatorValue },
   } = useInput({ source: "constraints[0].operator" });
   const selectMultiple =
     operatorValue === "odrl:isNoneOf" || operatorValue === "odrl:isPartOf";
+
+  useEffect(() => {
+    setAction("odrl:use");
+  }, [setAction]);
 
   const renderInput = () => {
     if (selectMultiple) {
@@ -56,15 +64,6 @@ export const LocationBasedPermission = () => {
           "resources.policies.create.permissions.locationBasedPermission"
         )}
       </Typography>
-      <TextInput
-        source="action"
-        label={translate("resources.policies.create.permissions.action")}
-        helperText={translate(
-          "resources.policies.create.permissions.actionHelper"
-        )}
-        validate={[required()]}
-        defaultValue="odrl:use"
-      />
       <TextInput
         source="constraints[0].leftOperand"
         defaultValue="edc:location"

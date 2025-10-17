@@ -1,5 +1,7 @@
+import { useEffect } from "react";
 import {
   useTranslate,
+  useInput,
   TextInput,
   SelectInput,
   DateTimeInput,
@@ -9,21 +11,19 @@ import { Typography } from "@mui/material";
 
 export const TimeBasedPermission = () => {
   const translate = useTranslate();
+  const {
+    field: { onChange: setAction },
+  } = useInput({ source: "action", defaultValue: "odrl:use" });
+
+  useEffect(() => {
+    setAction("odrl:use");
+  }, [setAction]);
 
   return (
     <>
       <Typography sx={{ mt: 2 }}>
         {translate("resources.policies.create.permissions.timeBasedPermission")}
       </Typography>
-      <TextInput
-        source="action"
-        label={translate("resources.policies.create.permissions.action")}
-        helperText={translate(
-          "resources.policies.create.permissions.actionHelper"
-        )}
-        validate={[required()]}
-        defaultValue="odrl:use"
-      />
       <SelectInput
         source="constraints[0].operator"
         label={translate("resources.policies.create.permissions.operator")}

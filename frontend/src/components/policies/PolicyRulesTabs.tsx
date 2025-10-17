@@ -6,7 +6,7 @@ import {
   Security as SecurityIcon,
   Block as BlockIcon,
 } from "@mui/icons-material";
-import { PermissionRenderer } from "./PermissionComponents";
+import { PermissionRenderer } from "../permissions";
 
 interface PolicyRulesTabsProps {
   permissions: any[];

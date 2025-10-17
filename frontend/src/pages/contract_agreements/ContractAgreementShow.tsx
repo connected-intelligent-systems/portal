@@ -17,7 +17,7 @@ import {
 import { Link } from "react-router-dom";
 import DownloadIcon from "@mui/icons-material/Download";
 import { ContractAgreement } from "../../types/contractAgreement";
-import { PolicyRulesTabs } from "../../components/PolicyRulesTabs";
+import { PolicyRulesTabs } from "../../components/policies/PolicyRulesTabs";
 
 const ContractAgreementShowBar = () => {
   const translate = useTranslate();

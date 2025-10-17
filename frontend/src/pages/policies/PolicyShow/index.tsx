@@ -6,27 +6,39 @@ import {
   useTranslate,
   Labeled,
   TextField,
+  TopToolbar,
+  DeleteButton,
+  EditButton,
+  useRecordContext,
 } from "react-admin";
-import { PolicyShowBar } from "./PolicyShowBar";
-import { PolicyRulesTabs } from "../../../components/PolicyRulesTabs";
+import { PolicyRulesTabs } from "../../../components/policies/PolicyRulesTabs";
+
+export const PolicyShowBar = () => {
+  return (
+    <TopToolbar>
+      <EditButton />
+      <DeleteButton mutationMode="pessimistic" />
+    </TopToolbar>
+  );
+};
 
 export const PolicyShow = () => {
   const translate = useTranslate();
+  const record = useRecordContext();
 
   return (
     <Show actions={<PolicyShowBar />}>
       <SimpleShowLayout>
-        <Labeled label={translate("resources.policies.fields.createdAt")}>
-          <DateField source="createdAt" showTime emptyText="-" />
+        <Labeled label={translate("resources.policies.fields.name")}>
+          <TextField source="name" emptyText="-" variant="h4" />
         </Labeled>
 
-        <Labeled label={translate("resources.policies.fields.name")}>
-          <TextField
-            source="name"
-            emptyText="-"
-            variant="h6"
-            sx={{ mt: 0.5 }}
-          />
+        <Labeled label={translate("resources.policies.fields.id")}>
+          <TextField source="id" emptyText="-" variant="caption" />
+        </Labeled>
+
+        <Labeled label={translate("resources.policies.fields.createdAt")}>
+          <DateField source="createdAt" showTime emptyText="-" />
         </Labeled>
 
         <Labeled label={translate("resources.policies.fields.description")}>

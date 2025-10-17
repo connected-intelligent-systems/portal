@@ -414,6 +414,7 @@ const englishMessages: Partial<TranslationMessages> = {
         confirmNegotiation: "Confirm and start negotiation",
       },
       noDescriptionAvailable: "No description available",
+      shortDescription: "Short Description",
       keywords: "Keywords",
       noKeywordsAvailable: "No keywords available",
       unknownCategory: "Unknown Category",
@@ -532,6 +533,7 @@ const englishMessages: Partial<TranslationMessages> = {
         description: "Description",
         descriptionHelper:
           "Provide a detailed description of this policy's purpose and scope",
+        permissions: "Permissions",
       },
       permissions: {
         permissions: "Permissions",
@@ -549,6 +551,7 @@ const englishMessages: Partial<TranslationMessages> = {
         selectCountries: "Select the countries",
         selectCountry: "Select the country",
         selectDate: "Select the date",
+        dateTime: "Date & Time",
         equals: "Equals",
         notEquals: "Not Equals",
         isNoneOf: "Is None Of",

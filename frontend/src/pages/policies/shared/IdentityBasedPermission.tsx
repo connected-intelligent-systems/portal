@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import {
   useTranslate,
   useInput,
@@ -12,10 +13,17 @@ import { Typography } from "@mui/material";
 export const IdentityBasedPermission = () => {
   const translate = useTranslate();
   const {
+    field: { onChange: setAction },
+  } = useInput({ source: "action", defaultValue: "odrl:use" });
+  const {
     field: { value: operatorValue },
   } = useInput({ source: "constraints[0].operator" });
   const selectMultiple =
     operatorValue === "odrl:isNoneOf" || operatorValue === "odrl:isPartOf";
+
+  useEffect(() => {
+    setAction("odrl:use");
+  }, [setAction]);
 
   const renderInput = () => {
     if (selectMultiple) {
@@ -50,15 +58,6 @@ export const IdentityBasedPermission = () => {
           "resources.policies.create.permissions.identityBasedPermission"
         )}
       </Typography>
-      <TextInput
-        source="action"
-        label={translate("resources.policies.create.permissions.action")}
-        helperText={translate(
-          "resources.policies.create.permissions.actionHelper"
-        )}
-        validate={[required()]}
-        defaultValue="odrl:use"
-      />
       <SelectInput
         source="constraints[0].operator"
         label={translate("resources.policies.create.permissions.operator")}

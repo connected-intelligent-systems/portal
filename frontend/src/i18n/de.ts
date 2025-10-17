@@ -419,6 +419,7 @@ const germanMessages: Partial<TranslationMessages> = {
           confirmNegotiation: "Verhandlung bestätigen und starten",
         },
         noDescriptionAvailable: "Keine Beschreibung verfügbar",
+        shortDescription: "Kurze Beschreibung",
         keywords: "Schlüsselwörter",
         noKeywordsAvailable: "Keine Schlüsselwörter verfügbar",
         unknownCategory: "Unbekannte Kategorie",
@@ -540,6 +541,7 @@ const germanMessages: Partial<TranslationMessages> = {
           description: "Beschreibung",
           descriptionHelper:
             "Geben Sie eine detaillierte Beschreibung des Zwecks und Umfangs dieser Richtlinie an",
+          permissions: "Berechtigungen",
         },
         permissions: {
           permissions: "Berechtigungen",
@@ -557,6 +559,7 @@ const germanMessages: Partial<TranslationMessages> = {
           selectCountries: "Wählen Sie die Länder aus",
           selectCountry: "Wählen Sie das Land aus",
           selectDate: "Wählen Sie das Datum aus",
+          dateTime: "Datum & Zeit",
           equals: "Gleich",
           notEquals: "Nicht gleich",
           isNoneOf: "Ist keiner von",

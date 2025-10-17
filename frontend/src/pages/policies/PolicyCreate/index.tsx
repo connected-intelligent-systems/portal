@@ -30,7 +30,11 @@ export const PolicyCreate = (props: any) => {
             "resources.policies.create.fields.descriptionHelper"
           )}
         />
-        <ArrayInput source="rules.permissions">
+        <ArrayInput
+          source="rules.permissions"
+          label={translate("resources.policies.create.fields.permissions")}
+          sx={{ mt: 2 }}
+        >
           <PermissionCreate />
         </ArrayInput>
       </SimpleForm>
