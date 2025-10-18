@@ -33,15 +33,15 @@ import AssessmentIcon from "@mui/icons-material/Assessment";
 import CloudIcon from "@mui/icons-material/Cloud";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
-import { Dataset } from "../../../../types/catalog";
+import { Dataset } from "../../../types/catalog";
 import {
   BasicInformation,
   Provenance,
   DataPrivacy,
   DataQuality,
   Versioning,
-} from "../../../../components/assets";
-import { ServiceInformation } from "../../../../components/datasets";
+} from "../../../components/assets";
+import { ServiceInformation } from "../../../components/datasets";
 import { PolicySelectionView } from "./PolicySelectionView";
 import { useNegotiationPolling } from "./useNegotiationPolling";
 

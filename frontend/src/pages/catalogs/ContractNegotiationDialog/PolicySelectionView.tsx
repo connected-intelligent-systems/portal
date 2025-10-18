@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 import type { SelectChangeEvent } from "@mui/material/Select";
 import { useTranslate } from "react-admin";
-import { PolicyRulesTabs } from "../../../../components/policies/PolicyRulesTabs";
+import { PolicyRulesTabs } from "../../../components/policies/PolicyRulesTabs";
 
 interface PolicySelectionViewProps {
   policies: any[];

@@ -12,7 +12,7 @@ import {
 import { useTranslate } from "react-admin";
 import HandshakeIcon from "@mui/icons-material/Handshake";
 import PolicyIcon from "@mui/icons-material/Policy";
-import { ContractNegotiationDialog } from "./ContractNegotiationDialog";
+import { ContractNegotiationDialog } from "../ContractNegotiationDialog";
 import { Dataset } from "../../../types/catalog";
 
 interface DatasetCardProps {
