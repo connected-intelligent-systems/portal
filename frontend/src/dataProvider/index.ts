@@ -1,15 +1,15 @@
 import * as assets from "./resources/assets";
 import * as policies from "./resources/policies";
-import * as contract_agreements from "./resources/contract_agreements";
-import * as contract_definitions from "./resources/contract_definitions";
-import * as contract_negotiations from "./resources/contract_negotiations";
+import * as contractAgreements from "./resources/contractAgreements";
+import * as contractDefinitions from "./resources/contractDefinitions";
+import * as contractNegotiations from "./resources/contractNegotiations";
 import * as catalogs from "./resources/catalogs";
 import * as datasets from "./resources/datasets";
-import * as transfer_processes from "./resources/transfer_processes";
-import * as data_address from "./resources/data_address";
-import * as terminate_transfer_process from "./resources/terminate_transfer_process";
-import * as terminate_contract_negotiation from "./resources/terminate_contract_negotiation";
-import * as contract_agreement_negotiation from "./resources/contract_agreement_negotiation";
+import * as transferProcesses from "./resources/transferProcesses";
+import * as dataAddress from "./resources/dataAddress";
+import * as terminateTransferProcess from "./resources/terminateTransferProcess";
+import * as terminateContractNegotiation from "./resources/terminateContractNegotiation";
+import * as contractAgreementNegotiation from "./resources/contractAgreementNegotiation";
 
 const dataProvider = {
   getList: (resource: string, params: any) => {
@@ -18,15 +18,15 @@ const dataProvider = {
     } else if (resource === "policies") {
       return policies.getList(params);
     } else if (resource === "contractagreements") {
-      return contract_agreements.getList(params);
+      return contractAgreements.getList(params);
     } else if (resource === "contractdefinitions") {
-      return contract_definitions.getList(params);
+      return contractDefinitions.getList(params);
     } else if (resource === "contractnegotiations") {
-      return contract_negotiations.getList(params);
+      return contractNegotiations.getList(params);
     } else if (resource === "catalogs") {
       return catalogs.getList();
     } else if (resource === "transferprocesses") {
-      return transfer_processes.getList(params);
+      return transferProcesses.getList(params);
     } else if (resource === "datarequests") {
       throw new Error("datarequests getList is not implemented");
     }
@@ -38,21 +38,21 @@ const dataProvider = {
     } else if (resource === "policies") {
       return policies.getOne(params);
     } else if (resource === "contractagreements") {
-      return contract_agreements.getOne(params);
+      return contractAgreements.getOne(params);
     } else if (resource === "contractdefinitions") {
-      return contract_definitions.getOne(params);
+      return contractDefinitions.getOne(params);
     } else if (resource === "contractnegotiations") {
-      return contract_negotiations.getOne(params);
+      return contractNegotiations.getOne(params);
     } else if (resource === "catalogs") {
       return catalogs.getOne(params);
     } else if (resource === "transferprocesses") {
-      return transfer_processes.getOne(params);
+      return transferProcesses.getOne(params);
     } else if (resource === "datarequests") {
-      return data_address.getOne(params);
+      return dataAddress.getOne(params);
     } else if (resource === "datasets") {
       return datasets.getOne(params);
     } else if (resource === "contractagreementnegotiation") {
-      return contract_agreement_negotiation.getOne(params);
+      return contractAgreementNegotiation.getOne(params);
     }
     throw new Error(`Unknown resource: ${resource}`);
   },
@@ -62,17 +62,17 @@ const dataProvider = {
     } else if (resource === "policies") {
       return policies.getMany(params);
     } else if (resource === "contractagreements") {
-      return contract_agreements.getMany(params);
+      return contractAgreements.getMany(params);
     } else if (resource === "contractdefinitions") {
-      return contract_definitions.getMany(params);
+      return contractDefinitions.getMany(params);
     } else if (resource === "contractnegotiations") {
-      return contract_negotiations.getMany(params);
+      return contractNegotiations.getMany(params);
     } else if (resource === "catalogs") {
       return catalogs.getMany();
     } else if (resource === "transferprocesses") {
-      return transfer_processes.getMany(params);
+      return transferProcesses.getMany(params);
     } else if (resource === "datarequests") {
-      return data_address.getMany(params);
+      return dataAddress.getMany(params);
     } else if (resource === "datasets") {
       return datasets.getMany(params);
     }
@@ -84,21 +84,21 @@ const dataProvider = {
     } else if (resource === "policies") {
       return policies.create(params);
     } else if (resource === "contractagreements") {
-      return contract_agreements.create(params);
+      return contractAgreements.create(params);
     } else if (resource === "contractdefinitions") {
-      return contract_definitions.create(params);
+      return contractDefinitions.create(params);
     } else if (resource === "contractnegotiations") {
-      return contract_negotiations.create(params);
+      return contractNegotiations.create(params);
     } else if (resource === "catalogs") {
       return catalogs.create(params);
     } else if (resource === "transferprocesses") {
-      return transfer_processes.create(params);
+      return transferProcesses.create(params);
     } else if (resource === "datarequests") {
       throw new Error("datarequests create is not implemented");
     } else if (resource === "terminatetransferprocess") {
-      return terminate_transfer_process.create(params);
+      return terminateTransferProcess.create(params);
     } else if (resource === "terminatecontractnegotiation") {
-      return terminate_contract_negotiation.create(params);
+      return terminateContractNegotiation.create(params);
     }
     throw new Error(`Unknown resource: ${resource}`);
   },
@@ -108,15 +108,15 @@ const dataProvider = {
     } else if (resource === "policies") {
       return policies.update(params);
     } else if (resource === "contractagreements") {
-      return contract_agreements.update(params);
+      return contractAgreements.update(params);
     } else if (resource === "contractdefinitions") {
-      return contract_definitions.update(params);
+      return contractDefinitions.update(params);
     } else if (resource === "contractnegotiations") {
-      return contract_negotiations.update(params);
+      return contractNegotiations.update(params);
     } else if (resource === "catalogs") {
       return catalogs.update(params);
     } else if (resource === "transferprocesses") {
-      return transfer_processes.update(params);
+      return transferProcesses.update(params);
     } else if (resource === "datarequests") {
       throw new Error("datarequests update is not implemented");
     }
@@ -138,7 +138,7 @@ const dataProvider = {
     } else if (resource === "contractagreements") {
       return Promise.all(
         params.ids.map((id: string) =>
-          contract_agreements.update({ ...params, id })
+          contractAgreements.update({ ...params, id })
         )
       ).then((responses) => ({
         data: responses.map((response) => response.data.id),
@@ -146,7 +146,7 @@ const dataProvider = {
     } else if (resource === "contractdefinitions") {
       return Promise.all(
         params.ids.map((id: string) =>
-          contract_definitions.update({ ...params, id })
+          contractDefinitions.update({ ...params, id })
         )
       ).then((responses) => ({
         data: responses.map((response) => response.data.id),
@@ -154,7 +154,7 @@ const dataProvider = {
     } else if (resource === "contractnegotiations") {
       return Promise.all(
         params.ids.map((id: string) =>
-          contract_negotiations.update({ ...params, id })
+          contractNegotiations.update({ ...params, id })
         )
       ).then((responses) => ({
         data: responses.map((response) => response.data.id),
@@ -162,7 +162,7 @@ const dataProvider = {
     } else if (resource === "transferprocesses") {
       return Promise.all(
         params.ids.map((id: string) =>
-          transfer_processes.update({ ...params, id })
+          transferProcesses.update({ ...params, id })
         )
       ).then((responses) => ({
         data: responses.map((response) => response.data.id),
@@ -184,7 +184,7 @@ const dataProvider = {
     } else if (resource === "catalogs") {
       return catalogs.remove(params);
     } else if (resource === "contractdefinitions") {
-      return contract_definitions.remove(params);
+      return contractDefinitions.remove(params);
     }
     throw new Error(`Unknown resource: ${resource}`);
   },
@@ -203,25 +203,25 @@ const dataProvider = {
       }));
     } else if (resource === "contractagreements") {
       return Promise.all(
-        params.ids.map((id: string) => contract_agreements.remove({ id }))
+        params.ids.map((id: string) => contractAgreements.remove({ id }))
       ).then((responses) => ({
         data: responses.map((response) => response.data.id),
       }));
     } else if (resource === "contractdefinitions") {
       return Promise.all(
-        params.ids.map((id: string) => contract_definitions.remove({ id }))
+        params.ids.map((id: string) => contractDefinitions.remove({ id }))
       ).then((responses) => ({
         data: responses.map((response) => response.data.id),
       }));
     } else if (resource === "contractnegotiations") {
       return Promise.all(
-        params.ids.map((id: string) => contract_negotiations.remove({ id }))
+        params.ids.map((id: string) => contractNegotiations.remove({ id }))
       ).then((responses) => ({
         data: responses.map((response) => response.data.id),
       }));
     } else if (resource === "transferprocesses") {
       return Promise.all(
-        params.ids.map((id: string) => transfer_processes.remove({ id }))
+        params.ids.map((id: string) => transferProcesses.remove({ id }))
       ).then((responses) => ({
         data: responses.map((response) => response.data.id),
       }));
@@ -238,7 +238,7 @@ const dataProvider = {
     if (resource === "datasets") {
       return datasets.getManyReference(params);
     } else if (resource === "contractnegotiations") {
-      return contract_negotiations.getManyReference(params);
+      return contractNegotiations.getManyReference(params);
     }
     throw new Error(`Unknown resource: ${resource}`);
   },

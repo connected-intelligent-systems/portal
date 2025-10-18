@@ -32,16 +32,16 @@ import {
   ContractDefinitionShow,
   ContractDefinitionsList,
   ContractDefinitionEdit,
-} from "./pages/contract_definitions";
+} from "./pages/contractDefinitions";
 import {
   CatalogList,
   CatalogShow,
   CatalogCreate,
   CatalogEdit,
 } from "./pages/catalogs";
-import contractnegotiations from "./pages/contract_negotiations";
-import contractagreements from "./pages/contract_agreements";
-import transferprocesses from "./pages/transfer_processes";
+import contractnegotiations from "./pages/contractNegotiations";
+import contractagreements from "./pages/contractAgreements";
+import transferprocesses from "./pages/transferProcesses";
 import { DataRequestShow } from "./pages/datarequests";
 import { DatasetShow } from "./pages/datasets";
 import { darkTheme, getThemeLogo, theme } from "./theme";
