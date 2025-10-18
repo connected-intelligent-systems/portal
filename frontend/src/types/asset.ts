@@ -56,6 +56,9 @@ export interface Asset {
   privacySettings?: {
     [key: string]: any;
   };
+
+  // W3C Thing Description
+  thingDescription?: string;
 }
 
 // Form data interface for create/edit operations

@@ -1,6 +1,5 @@
 var config = {
-    // Development features
-    showQuery: false,
+    publicEdcEndpoint: "http://localhost:8080/api/v1/dsp",
     title: "Portal - Consumer",
     theme: {
         light: {

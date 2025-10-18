@@ -7,6 +7,7 @@ import {
   ProvenanceTab,
   DataPrivacyTab,
   DataQualityTab,
+  ThingDescriptionTab,
 } from "../tabs";
 
 interface TabPanelProps {
@@ -55,6 +56,9 @@ export const OptionalFeaturesStep = () => {
           <Tab label={translate("resources.assets.create.tabs.provenance")} />
           <Tab label={translate("resources.assets.create.tabs.dataPrivacy")} />
           <Tab label={translate("resources.assets.create.tabs.dataQuality")} />
+          <Tab
+            label={translate("resources.assets.create.tabs.thingDescription")}
+          />
         </Tabs>
       </Box>
 
@@ -72,6 +76,9 @@ export const OptionalFeaturesStep = () => {
       </TabPanel>
       <TabPanel value={activeTab} index={4}>
         <DataQualityTab />
+      </TabPanel>
+      <TabPanel value={activeTab} index={5}>
+        <ThingDescriptionTab />
       </TabPanel>
     </Box>
   );

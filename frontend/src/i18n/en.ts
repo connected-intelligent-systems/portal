@@ -48,6 +48,10 @@ const englishMessages: Partial<TranslationMessages> = {
         dataPrivacy: "Data Privacy",
         dataQuality: "Data Quality",
         dataAddress: "Data Address",
+        thingDescription: "Thing Description",
+        thingDescriptionTab: {
+          noDescription: "No Thing Description available",
+        },
         basicInformation: {
           shortDescription: "Short Description",
           noShortDescription: "No short description available",
@@ -165,6 +169,7 @@ const englishMessages: Partial<TranslationMessages> = {
           provenance: "Provenance",
           dataPrivacy: "Data Privacy",
           dataQuality: "Data Quality",
+          thingDescription: "Thing Description",
         },
         buttons: {
           back: "Back",
@@ -369,6 +374,16 @@ const englishMessages: Partial<TranslationMessages> = {
             valueHelper: "The value of the quality measurement.",
             description: "Description",
             descriptionHelper: "A description of the quality measurement.",
+          },
+        },
+        thingDescription: {
+          title: "W3C Thing Description",
+          description:
+            "Upload a W3C Thing Description JSON file. All href values will be automatically replaced with the public EDC endpoint before saving.",
+          uploadButton: "Upload JSON File",
+          viewDescription: "View Thing Description",
+          errors: {
+            invalidJson: "Invalid JSON format. Please check your input.",
           },
         },
       },

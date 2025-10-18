@@ -27,6 +27,7 @@ declare global {
     config: {
       title: string;
       theme?: ThemeConfig;
+      publicEdcEndpoint?: string;
     };
   }
 }

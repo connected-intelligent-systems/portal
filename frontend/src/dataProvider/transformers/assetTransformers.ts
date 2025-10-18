@@ -11,6 +11,7 @@ import {
   normalizeStringArray,
   serializePrivacySettings,
 } from "./helpers";
+import { replaceThingDescriptionHrefs } from "../../utils/thingDescriptionUtils";
 
 // --- Zod-based Transformation (Lifting) ---
 
@@ -47,6 +48,8 @@ export async function parseAssetFromJsonLd(jsonLdAsset: any): Promise<Asset> {
       qualityMeasurements: extractQualityMeasurements(coreAsset),
       // privacy settings (dpv)
       privacySettings: extractPrivacySettings(coreAsset),
+      // W3C Thing Description
+      thingDescription: extractString(coreAsset, "wot:hasThingDescription"),
     };
 
     return stripUndefinedValues(asset);
@@ -196,6 +199,20 @@ export async function serializeAssetToJsonLd(
   const privacyProps = serializePrivacySettings(asset.privacySettings);
   if (privacyProps) {
     jsonLd.properties = { ...jsonLd.properties, ...privacyProps };
+  }
+
+  // Process and attach W3C Thing Description if present
+  if (asset.thingDescription) {
+    const publicEdcEndpoint =
+      window.config?.publicEdcEndpoint || "http://localhost:8080/api/v1/dsp";
+    const processedThingDescription = replaceThingDescriptionHrefs(
+      asset.thingDescription,
+      publicEdcEndpoint
+    );
+    jsonLd.properties = {
+      ...jsonLd.properties,
+      "wot:hasThingDescription": processedThingDescription,
+    };
   }
 
   return removeUndefinedValues(jsonLd);

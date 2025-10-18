@@ -15,6 +15,7 @@ import AccountTreeIcon from "@mui/icons-material/AccountTree";
 import SecurityIcon from "@mui/icons-material/Security";
 import AssessmentIcon from "@mui/icons-material/Assessment";
 import CloudIcon from "@mui/icons-material/Cloud";
+import DevicesIcon from "@mui/icons-material/Devices";
 import { MarkdownField } from "../../../components/markdown";
 import {
   Provenance,
@@ -240,6 +241,11 @@ export const AssetShow = () => {
                 label={translate("resources.assets.tabs.dataAddress")}
                 aria-controls="asset-address"
               />
+              <Tab
+                icon={<DevicesIcon />}
+                label={translate("resources.assets.tabs.thingDescription")}
+                aria-controls="asset-thing-description"
+              />
             </Tabs>
           </Box>
 
@@ -288,6 +294,40 @@ export const AssetShow = () => {
             {activeTab === 4 && (
               <div id="asset-address">
                 <DataAddress />
+              </div>
+            )}
+
+            {activeTab === 5 && (
+              <div id="asset-thing-description">
+                <FunctionField
+                  render={(record: any) => {
+                    const thingDescription = record?.thingDescription;
+                    if (!thingDescription) {
+                      return (
+                        <Typography variant="body2" color="text.secondary">
+                          {translate(
+                            "resources.assets.tabs.thingDescriptionTab.noDescription"
+                          )}
+                        </Typography>
+                      );
+                    }
+                    return (
+                      <Box
+                        component="pre"
+                        sx={{
+                          bgcolor: "grey.100",
+                          p: 2,
+                          borderRadius: 1,
+                          overflow: "auto",
+                          fontSize: "0.875rem",
+                          fontFamily: "monospace",
+                        }}
+                      >
+                        {JSON.stringify(JSON.parse(thingDescription), null, 2)}
+                      </Box>
+                    );
+                  }}
+                />
               </div>
             )}
           </Box>
