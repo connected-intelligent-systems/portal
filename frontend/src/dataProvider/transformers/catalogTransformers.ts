@@ -42,7 +42,7 @@ const PolicyRuleSchema = z
     constraints: r["odrl:constraint"],
   }));
 
-const PolicySchema = z
+export const PolicySchema = z
   .object({
     "@id": z.string(),
     "@type": z.string(),
@@ -169,9 +169,6 @@ export async function parseCatalogFromJsonLd(
       participantId: parsed["dspace:participantId"],
       datasets: parsed["dcat:dataset"] || [],
     };
-    // for (const dataset of catalog.datasets) {
-    //   dataset.participantId = catalog.participantId;
-    // }
     return stripUndefinedValues(catalog);
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);

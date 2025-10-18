@@ -16,6 +16,7 @@ import {
 const frame = {
   "@context": {
     "@vocab": "https://w3id.org/edc/v0.0.1/ns/",
+    odrl: "http://www.w3.org/ns/odrl/2/",
   },
   "@type": "ContractAgreement",
 };

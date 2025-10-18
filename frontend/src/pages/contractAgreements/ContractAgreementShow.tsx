@@ -167,9 +167,9 @@ export const ContractAgreementShow = () => {
         >
           <FunctionField
             render={(record: any) => {
-              const permissions = record?.policy?.rules?.permissions || [];
-              const obligations = record?.policy?.rules?.obligations || [];
-              const prohibitions = record?.policy?.rules?.prohibitions || [];
+              const permissions = record?.policy?.permissions || [];
+              const obligations = record?.policy?.obligations || [];
+              const prohibitions = record?.policy?.prohibitions || [];
 
               return (
                 <PolicyRulesTabs

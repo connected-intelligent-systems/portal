@@ -1,4 +1,4 @@
-import { Policy } from "./policy";
+import { DatasetPolicy } from "./catalog";
 
 export interface ContractAgreement {
   id: string;
@@ -7,7 +7,7 @@ export interface ContractAgreement {
   consumerId: string;
   assetId: string;
   contractSigningDate: string;
-  policy: Policy;
+  policy: DatasetPolicy;
 }
 
 export interface ContractAgreementFormData extends Partial<ContractAgreement> {

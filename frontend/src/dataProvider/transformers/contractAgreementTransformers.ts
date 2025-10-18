@@ -1,9 +1,9 @@
 import { z } from "zod";
+import * as jsonld from "jsonld";
 import { ContractAgreement } from "../../types/contractAgreement";
 import { stripUndefinedValues } from "../helpers";
-import { parsePolicyFromJsonLd } from "./policyTransformers";
+import { PolicySchema } from "./catalogTransformers";
 
-// This schema is simplified as the policy object is complex and handled by its own transformer
 const CoreContractAgreementSchema = z.object({
   "@id": z.string(),
   "@type": z.string(),
@@ -13,19 +13,45 @@ const CoreContractAgreementSchema = z.object({
   contractSigningDate: z
     .number()
     .transform((val) => new Date(val * 1000).toISOString()),
-  policy: z.any(), // The policy is parsed by its own transformer
+  policy: PolicySchema,
 });
+
+async function compactPolicy(policy: any): Promise<any> {
+  try {
+    const context = {
+      edc: "https://w3id.org/edc/v0.0.1/ns/",
+      odrl: "http://www.w3.org/ns/odrl/2/",
+    };
+
+    const compacted = await jsonld.compact(
+      {
+        "@context": {
+          odrl: "http://www.w3.org/ns/odrl/2/",
+        },
+        ...policy,
+      },
+      context
+    );
+
+    return compacted;
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    throw new Error(`Failed to compact JSON-LD policy: ${errorMessage}`);
+  }
+}
 
 export async function parseContractAgreementFromJsonLd(
   jsonLd: any
 ): Promise<ContractAgreement> {
   try {
-    // The API returns a nested structure, so we target the inner contractAgreement object
     const agreementData = jsonLd.contractAgreement || jsonLd;
-
-    const parsed = CoreContractAgreementSchema.parse(agreementData);
-
-    const parsedPolicy = await parsePolicyFromJsonLd(parsed.policy);
+    const compactedPolicy = await compactPolicy(
+      agreementData.policy || jsonLd.policy
+    );
+    const parsed = CoreContractAgreementSchema.parse({
+      ...agreementData,
+      policy: compactedPolicy,
+    });
 
     const agreement: ContractAgreement = {
       id: parsed["@id"],
@@ -34,7 +60,7 @@ export async function parseContractAgreementFromJsonLd(
       consumerId: parsed.consumerId,
       assetId: parsed.assetId,
       contractSigningDate: parsed.contractSigningDate,
-      policy: parsedPolicy,
+      policy: parsed.policy,
     };
     return stripUndefinedValues(agreement);
   } catch (error) {
