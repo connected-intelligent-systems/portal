@@ -1,9 +1,16 @@
-import React, { useMemo, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useNavigate } from "react-router-dom";
 import {
   useTranslate,
   useCreate,
   useNotify,
+  useDataProvider,
   RecordContextProvider,
 } from "react-admin";
 import {
@@ -12,6 +19,7 @@ import {
   DialogContent,
   DialogActions,
   Button,
+  ButtonGroup,
   Tabs,
   Tab,
   Box,
@@ -20,8 +28,10 @@ import {
   useTheme,
   FormControl,
   InputLabel,
+  Menu,
   MenuItem,
   Select,
+  CircularProgress,
 } from "@mui/material";
 import type { SelectChangeEvent } from "@mui/material/Select";
 import HandshakeIcon from "@mui/icons-material/Handshake";
@@ -32,6 +42,7 @@ import SecurityIcon from "@mui/icons-material/Security";
 import AssessmentIcon from "@mui/icons-material/Assessment";
 import CloudIcon from "@mui/icons-material/Cloud";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import { Dataset } from "../../../types/catalog";
 import {
   BasicInformation,
@@ -146,16 +157,43 @@ export const ContractNegotiationDialog: React.FC<
   const navigate = useNavigate();
   const notify = useNotify();
   const [create, { isPending: isCreating }] = useCreate();
+  const dataProvider = useDataProvider();
   const [activeTab, setActiveTab] = useState(0);
   const [step, setStep] = useState<"view" | "policySelection">("view");
   const [selectedPolicy, setSelectedPolicy] = useState(0);
+  const [confirmMenuAnchor, setConfirmMenuAnchor] =
+    useState<null | HTMLElement>(null);
+  const [isWaitingForFinalization, setIsWaitingForFinalization] =
+    useState(false);
+  const [pendingNegotiationId, setPendingNegotiationId] = useState<
+    string | null
+  >(null);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const translate = useTranslate();
+  const pollingIntervalRef = useRef<number | null>(null);
+  const pollingAttemptsRef = useRef(0);
 
-  const policies = dataset?.policies || [];
+  const policies = useMemo(() => dataset?.policies ?? [], [dataset?.policies]);
   const datasetId = dataset?.id;
   const participantId = dataset?.participantId;
+
+  const POLLING_INTERVAL_MS = 5000;
+  const MAX_POLLING_ATTEMPTS = 30;
+
+  const closeConfirmMenu = useCallback(() => {
+    setConfirmMenuAnchor(null);
+  }, []);
+
+  const stopPolling = useCallback(() => {
+    if (pollingIntervalRef.current !== null) {
+      window.clearInterval(pollingIntervalRef.current);
+      pollingIntervalRef.current = null;
+    }
+    pollingAttemptsRef.current = 0;
+    setIsWaitingForFinalization(false);
+    setPendingNegotiationId(null);
+  }, []);
 
   const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
     setActiveTab(newValue);
@@ -170,53 +208,179 @@ export const ContractNegotiationDialog: React.FC<
     setStep("view");
   };
 
-  const handleConfirmNegotiation = () => {
-    const negotiationData = {
-      policy: {
-        type: policies[selectedPolicy]?.type,
-        id: policies[selectedPolicy]?.id,
-        assigner: participantId,
-        obligations: policies[selectedPolicy]?.obligations,
-        permissions: policies[selectedPolicy]?.permissions,
-        prohibitions: policies[selectedPolicy]?.prohibitions,
-        target: datasetId,
-      },
-      counterPartyAddress,
-      protocol: "dataspace-protocol-http",
-    };
+  const handleClose = useCallback(() => {
+    stopPolling();
+    setStep("view");
+    setSelectedPolicy(0);
+    closeConfirmMenu();
+    onClose();
+  }, [closeConfirmMenu, onClose, stopPolling]);
 
-    create(
-      "contractnegotiations",
-      { data: negotiationData },
-      {
-        onSuccess: (data) => {
+  const handleConfirmNegotiation = useCallback(
+    (waitForFinalization: boolean) => {
+      if (isCreating || isWaitingForFinalization) {
+        return;
+      }
+
+      const policy = policies[selectedPolicy];
+      if (!policy) {
+        return;
+      }
+
+      const negotiationData = {
+        policy: {
+          type: policy?.type,
+          id: policy?.id,
+          assigner: participantId,
+          obligations: policy?.obligations,
+          permissions: policy?.permissions,
+          prohibitions: policy?.prohibitions,
+          target: datasetId,
+        },
+        counterPartyAddress,
+        protocol: "dataspace-protocol-http",
+      };
+
+      closeConfirmMenu();
+
+      create(
+        "contractnegotiations",
+        { data: negotiationData },
+        {
+          onSuccess: (data) => {
+            const negotiationId = data?.id;
+
+            if (waitForFinalization && negotiationId) {
+              notify(
+                translate(
+                  "resources.contractnegotiations.messages.negotiationMonitoring"
+                ),
+                { type: "info" }
+              );
+              setPendingNegotiationId(negotiationId);
+              setIsWaitingForFinalization(true);
+              return;
+            }
+
+            notify(
+              translate(
+                "resources.contractnegotiations.messages.negotiationStarted"
+              ),
+              { type: "success" }
+            );
+            handleClose();
+            if (negotiationId) {
+              navigate(`/contractnegotiations/${negotiationId}/show`);
+            }
+          },
+          onError: (error: any) => {
+            notify(
+              error?.message ||
+                translate(
+                  "resources.contractnegotiations.messages.negotiationFailed"
+                ),
+              { type: "error" }
+            );
+          },
+        }
+      );
+    },
+    [
+      closeConfirmMenu,
+      create,
+      counterPartyAddress,
+      datasetId,
+      handleClose,
+      isCreating,
+      isWaitingForFinalization,
+      navigate,
+      notify,
+      participantId,
+      policies,
+      selectedPolicy,
+      translate,
+    ]
+  );
+
+  useEffect(() => {
+    if (!isWaitingForFinalization || !pendingNegotiationId) {
+      return;
+    }
+
+    pollingAttemptsRef.current = 0;
+
+    const pollNegotiation = async () => {
+      try {
+        const { data } = await dataProvider.getOne("contractnegotiations", {
+          id: pendingNegotiationId,
+        });
+
+        pollingAttemptsRef.current += 1;
+
+        if (data?.contractAgreementId) {
           notify(
             translate(
-              "resources.contractnegotiations.messages.negotiationStarted"
+              "resources.contractnegotiations.messages.negotiationFinalized"
             ),
             { type: "success" }
           );
+          const agreementId = data.contractAgreementId;
+          stopPolling();
           handleClose();
-          navigate(`/contractnegotiations/${data.id}/show`);
-        },
-        onError: (error: any) => {
-          notify(
-            error?.message ||
-              translate(
-                "resources.contractnegotiations.messages.negotiationFailed"
-              ),
-            { type: "error" }
-          );
-        },
-      }
-    );
-  };
+          navigate(`/contractagreements/${agreementId}/show`);
+          return;
+        }
 
-  const handleClose = () => {
-    setStep("view");
-    setSelectedPolicy(0);
-    onClose();
-  };
+        if (pollingAttemptsRef.current >= MAX_POLLING_ATTEMPTS) {
+          stopPolling();
+          notify(
+            translate(
+              "resources.contractnegotiations.messages.negotiationFinalizationTimeout"
+            ),
+            { type: "warning" }
+          );
+          handleClose();
+          navigate(`/contractnegotiations/${pendingNegotiationId}/show`);
+        }
+      } catch (error) {
+        // Best effort: stop polling on persistent errors
+        console.error("Failed to poll negotiation status", error);
+        stopPolling();
+        notify(
+          translate(
+            "resources.contractnegotiations.messages.negotiationPollingFailed"
+          ),
+          { type: "warning" }
+        );
+        handleClose();
+        navigate(`/contractnegotiations/${pendingNegotiationId}/show`);
+      }
+    };
+
+    pollNegotiation();
+    pollingIntervalRef.current = window.setInterval(
+      pollNegotiation,
+      POLLING_INTERVAL_MS
+    );
+
+    return () => {
+      if (pollingIntervalRef.current !== null) {
+        window.clearInterval(pollingIntervalRef.current);
+        pollingIntervalRef.current = null;
+      }
+    };
+  }, [
+    dataProvider,
+    handleClose,
+    isWaitingForFinalization,
+    navigate,
+    notify,
+    pendingNegotiationId,
+    stopPolling,
+    translate,
+    MAX_POLLING_ATTEMPTS,
+    POLLING_INTERVAL_MS,
+  ]);
 
   const renderTabContent = () => {
     const tabProps = { dataset };
@@ -346,40 +510,93 @@ export const ContractNegotiationDialog: React.FC<
         </Box>
       </DialogContent>
 
-      <DialogActions>
-        <Button
-          onClick={handleClose}
-          aria-label={translate("resources.catalog.dataset.aria.closeDialog")}
-        >
-          {translate("resources.catalog.dataset.close")}
-        </Button>
-        {step === "view" && policies.length > 0 && (
-          <Button
-            variant="contained"
-            startIcon={<HandshakeIcon />}
-            onClick={handleStartNegotiation}
-            aria-label={translate(
-              "resources.catalog.dataset.aria.startNegotiation"
-            )}
-          >
-            {translate("resources.catalog.dataset.startNegotiation")}
-          </Button>
+      <DialogActions
+        sx={{
+          justifyContent: "space-between",
+          alignItems: "center",
+          flexWrap: "wrap",
+          gap: 2,
+        }}
+      >
+        {isWaitingForFinalization ? (
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            <CircularProgress size={18} />
+            <Typography variant="body2" color="text.secondary">
+              {translate("resources.catalog.dataset.waitingForNegotiation")}
+            </Typography>
+          </Box>
+        ) : (
+          <Box />
         )}
-        {step === "policySelection" && (
+        <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
           <Button
-            variant="contained"
-            startIcon={<HandshakeIcon />}
-            onClick={handleConfirmNegotiation}
-            disabled={isCreating}
-            aria-label={translate(
-              "resources.catalog.dataset.aria.confirmNegotiation"
-            )}
+            onClick={handleClose}
+            aria-label={translate("resources.catalog.dataset.aria.closeDialog")}
+            disabled={isWaitingForFinalization}
           >
-            {isCreating
-              ? translate("resources.catalog.dataset.creatingNegotiation")
-              : translate("resources.catalog.dataset.confirmNegotiation")}
+            {translate("resources.catalog.dataset.close")}
           </Button>
-        )}
+          {step === "view" && policies.length > 0 && (
+            <Button
+              variant="contained"
+              startIcon={<HandshakeIcon />}
+              onClick={handleStartNegotiation}
+              aria-label={translate(
+                "resources.catalog.dataset.aria.startNegotiation"
+              )}
+            >
+              {translate("resources.catalog.dataset.startNegotiation")}
+            </Button>
+          )}
+          {step === "policySelection" && (
+            <>
+              <ButtonGroup variant="contained">
+                <Button
+                  startIcon={<HandshakeIcon />}
+                  onClick={() => handleConfirmNegotiation(false)}
+                  disabled={isCreating || isWaitingForFinalization}
+                  aria-label={translate(
+                    "resources.catalog.dataset.aria.confirmNegotiation"
+                  )}
+                >
+                  {isCreating && !isWaitingForFinalization
+                    ? translate("resources.catalog.dataset.creatingNegotiation")
+                    : translate("resources.catalog.dataset.confirmNegotiation")}
+                </Button>
+                <Button
+                  size="small"
+                  onClick={(event) => {
+                    if (isCreating || isWaitingForFinalization) {
+                      return;
+                    }
+                    setConfirmMenuAnchor(event.currentTarget);
+                  }}
+                  aria-label={translate(
+                    "resources.catalog.dataset.aria.openConfirmMenu"
+                  )}
+                  disabled={isCreating || isWaitingForFinalization}
+                >
+                  <ArrowDropDownIcon />
+                </Button>
+              </ButtonGroup>
+              <Menu
+                anchorEl={confirmMenuAnchor}
+                open={Boolean(confirmMenuAnchor)}
+                onClose={closeConfirmMenu}
+                keepMounted
+              >
+                <MenuItem
+                  onClick={() => handleConfirmNegotiation(true)}
+                  disabled={isCreating || isWaitingForFinalization}
+                >
+                  {translate(
+                    "resources.catalog.dataset.confirmNegotiationAndWait"
+                  )}
+                </MenuItem>
+              </Menu>
+            </>
+          )}
+        </Box>
       </DialogActions>
     </Dialog>
   );

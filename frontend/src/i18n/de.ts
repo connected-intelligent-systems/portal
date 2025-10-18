@@ -417,6 +417,7 @@ const germanMessages: Partial<TranslationMessages> = {
           closeDialog: "Dialog schließen",
           startNegotiation: "Vertragsverhandlung starten",
           confirmNegotiation: "Verhandlung bestätigen und starten",
+          openConfirmMenu: "Verhandlungsoptionen öffnen",
         },
         noDescriptionAvailable: "Keine Beschreibung verfügbar",
         shortDescription: "Kurze Beschreibung",
@@ -431,7 +432,10 @@ const germanMessages: Partial<TranslationMessages> = {
         startNegotiation: "Verhandlung starten",
         selectPolicy: "Richtlinie auswählen",
         confirmNegotiation: "Verhandlung bestätigen",
+        confirmNegotiationAndWait: "Verhandlung bestätigen & warten",
         creatingNegotiation: "Verhandlung wird erstellt...",
+        waitingForNegotiation:
+          "Warte auf Abschluss der Vertragsvereinbarung...",
         noPolicies: "Keine Richtlinien verfügbar",
         noPoliciesDescription:
           "Dieser Datensatz hat keine Richtlinien für die Verhandlung verfügbar.",
@@ -629,6 +633,14 @@ const germanMessages: Partial<TranslationMessages> = {
       messages: {
         negotiationStarted: "Vertragsverhandlung erfolgreich gestartet",
         negotiationFailed: "Fehler beim Starten der Vertragsverhandlung",
+        negotiationMonitoring:
+          "Vertragsverhandlung gestartet. Wir leiten weiter, sobald die Vereinbarung vorliegt.",
+        negotiationFinalized:
+          "Vertragsvereinbarung abgeschlossen. Weiterleitung zur Vereinbarung...",
+        negotiationFinalizationTimeout:
+          "Die Verhandlung dauert länger als erwartet. Bitte prüfen Sie sie manuell.",
+        negotiationPollingFailed:
+          "Die Verhandlung konnte nicht automatisch überwacht werden. Bitte prüfen Sie sie manuell.",
         loading: "Wird geladen...",
         cannotTerminateFinalized:
           "Abgeschlossene Vertragsverhandlungen können nicht beendet werden.",

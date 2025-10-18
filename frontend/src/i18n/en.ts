@@ -412,6 +412,7 @@ const englishMessages: Partial<TranslationMessages> = {
         closeDialog: "Close dialog",
         startNegotiation: "Start contract negotiation",
         confirmNegotiation: "Confirm and start negotiation",
+        openConfirmMenu: "Open negotiation confirmation options",
       },
       noDescriptionAvailable: "No description available",
       shortDescription: "Short Description",
@@ -426,7 +427,9 @@ const englishMessages: Partial<TranslationMessages> = {
       startNegotiation: "Start Negotiation",
       selectPolicy: "Select Policy",
       confirmNegotiation: "Confirm Negotiation",
+      confirmNegotiationAndWait: "Confirm & Wait for Agreement",
       creatingNegotiation: "Creating Negotiation...",
+      waitingForNegotiation: "Waiting for the agreement to be issued...",
       noPolicies: "No Policies Available",
       noPoliciesDescription:
         "This dataset has no policies available for negotiation.",
@@ -648,6 +651,14 @@ const englishMessages: Partial<TranslationMessages> = {
     messages: {
       negotiationStarted: "Contract negotiation started successfully",
       negotiationFailed: "Failed to start contract negotiation",
+      negotiationMonitoring:
+        "Contract negotiation started. We will redirect as soon as the agreement is ready.",
+      negotiationFinalized:
+        "Contract agreement finalized. Redirecting to the agreement...",
+      negotiationFinalizationTimeout:
+        "The negotiation is taking longer than expected. Please review it manually.",
+      negotiationPollingFailed:
+        "Unable to monitor the negotiation status automatically. Please check the negotiation manually.",
       loading: "Loading...",
       cannotTerminateFinalized:
         "Finalized contract negotiations cannot be terminated.",
