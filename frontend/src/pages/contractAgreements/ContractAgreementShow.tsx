@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import {
   Labeled,
   Show,
@@ -13,15 +14,18 @@ import {
   useTranslate,
   FunctionField,
   useGetOne,
+  useRefresh,
 } from "react-admin";
-import { Link } from "react-router-dom";
 import DownloadIcon from "@mui/icons-material/Download";
+import { useState } from "react";
 import { ContractAgreement } from "../../types/contractAgreement";
 import { PolicyRulesTabs } from "../../components/policies/PolicyRulesTabs";
+import TransferProcessDialog from "../../components/transferprocesses/TransferProcessDialog";
 
 const ContractAgreementShowBar = () => {
   const translate = useTranslate();
   const record = useRecordContext<ContractAgreement>();
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const { data: negotiation } = useGetOne(
     "contractagreementnegotiation",
@@ -33,27 +37,35 @@ const ContractAgreementShowBar = () => {
   );
 
   const counterPartyAddress = negotiation?.counterPartyAddress;
+  const canInitiateTransfer =
+    negotiation?.type === "CONSUMER" && !!counterPartyAddress && !!record;
+  const defaultValues = {
+    counterPartyAddress,
+    contractId: record?.id,
+    assetId: record?.assetId,
+  };
 
   return (
-    <TopToolbar>
-      {negotiation?.type === "CONSUMER" && counterPartyAddress && (
-        <Button
-          component={Link}
-          to="/transferprocesses/create"
-          state={{
-            record: {
-              counterPartyAddress: counterPartyAddress,
-              contractId: record?.id,
-              assetId: record?.assetId,
-            },
-          }}
-          label={translate(
-            "resources.contractagreements.actions.transferDataset"
-          )}
-          startIcon={<DownloadIcon />}
+    <>
+      <TopToolbar>
+        {canInitiateTransfer && (
+          <Button
+            label={translate(
+              "resources.contractagreements.actions.transferDataset"
+            )}
+            startIcon={<DownloadIcon />}
+            onClick={() => setIsDialogOpen(true)}
+          />
+        )}
+      </TopToolbar>
+      {canInitiateTransfer && (
+        <TransferProcessDialog
+          open={isDialogOpen}
+          onClose={() => setIsDialogOpen(false)}
+          defaultValues={defaultValues}
         />
       )}
-    </TopToolbar>
+    </>
   );
 };
 
@@ -98,6 +110,16 @@ const ContractNegotiation = ({
 
 export const ContractAgreementShow = () => {
   const translate = useTranslate();
+  const refresh = useRefresh();
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      refresh();
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [refresh]);
+
   const { isPending, record } = useShowController<ContractAgreement>();
   if (isPending) {
     return (

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Show,
   SimpleShowLayout,
@@ -14,6 +14,7 @@ import {
   useNotify,
   useTranslate,
   useGetList,
+  useRefresh,
 } from "react-admin";
 import Alert from "@mui/material/Alert";
 import { Link } from "react-router-dom";
@@ -129,6 +130,15 @@ const TransferProcessesShowBar = () => {
 export const TransferProcessesShow = () => {
   const translate = useTranslate();
   const { record } = useShowController<TransferProcess>();
+  const refresh = useRefresh();
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      refresh();
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [refresh]);
 
   const { data: negotiations } = useGetList(
     "contractnegotiations",

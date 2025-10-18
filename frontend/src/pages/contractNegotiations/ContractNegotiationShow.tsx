@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import {
   Show,
   SimpleShowLayout,
@@ -11,6 +12,7 @@ import {
   TopToolbar,
   useRecordContext,
   useTranslate,
+  useRefresh,
 } from "react-admin";
 import Alert from "@mui/material/Alert";
 import { Link } from "react-router-dom";
@@ -41,6 +43,15 @@ const ContractNegotiationShowBar = () => {
 export const ContractNegotiationShow = () => {
   const { error, isLoading, record } = useShowController<ContractNegotiation>();
   const translate = useTranslate();
+  const refresh = useRefresh();
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      refresh();
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [refresh]);
 
   if (isLoading) {
     return <LinearProgress />;
