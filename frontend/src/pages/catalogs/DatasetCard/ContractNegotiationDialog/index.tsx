@@ -1,10 +1,4 @@
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   useTranslate,
@@ -26,14 +20,10 @@ import {
   Typography,
   useMediaQuery,
   useTheme,
-  FormControl,
-  InputLabel,
   Menu,
   MenuItem,
-  Select,
   CircularProgress,
 } from "@mui/material";
-import type { SelectChangeEvent } from "@mui/material/Select";
 import HandshakeIcon from "@mui/icons-material/Handshake";
 import InfoIcon from "@mui/icons-material/Info";
 import HistoryIcon from "@mui/icons-material/History";
@@ -43,16 +33,17 @@ import AssessmentIcon from "@mui/icons-material/Assessment";
 import CloudIcon from "@mui/icons-material/Cloud";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
-import { Dataset } from "../../../types/catalog";
+import { Dataset } from "../../../../types/catalog";
 import {
   BasicInformation,
   Provenance,
   DataPrivacy,
   DataQuality,
   Versioning,
-} from "../../../components/assets";
-import { ServiceInformation } from "../../../components/datasets";
-import { PolicyRulesTabs } from "../../../components/policies/PolicyRulesTabs";
+} from "../../../../components/assets";
+import { ServiceInformation } from "../../../../components/datasets";
+import { PolicySelectionView } from "./PolicySelectionView";
+import { useNegotiationPolling } from "./useNegotiationPolling";
 
 interface ContractNegotiationDialogProps {
   dataset: Dataset;
@@ -61,95 +52,73 @@ interface ContractNegotiationDialogProps {
   onClose: () => void;
 }
 
-interface PolicySelectionViewProps {
-  policies: any[];
-  selectedPolicy: number;
-  onSelectPolicy: (index: number) => void; // eslint-disable-line no-unused-vars, @typescript-eslint/no-unused-vars
+type DialogStep = "view" | "policySelection";
+
+interface DatasetTabDefinition {
+  icon: React.ReactElement;
+  labelTranslationKey: string;
+  ariaControls: string;
+  render: (dataset: Dataset) => React.ReactNode;
 }
 
-const PolicySelectionView: React.FC<PolicySelectionViewProps> = ({
-  policies,
-  selectedPolicy,
-  onSelectPolicy,
-}) => {
-  const translate = useTranslate();
-
-  const options = useMemo(
-    () =>
-      policies.map((policy: any, policyIndex: number) => {
-        const baseLabel = `${translate("resources.catalog.dataset.policy")} ${
-          policyIndex + 1
-        }`;
-        const shortId =
-          typeof policy.id === "string" && policy.id.length > 0
-            ? `${policy.id.slice(0, 12)}${policy.id.length > 12 ? "…" : ""}`
-            : null;
-        return {
-          index: policyIndex,
-          label: shortId ? `${baseLabel} • ${shortId}` : baseLabel,
-        };
-      }),
-    [policies, translate]
-  );
-
-  if (!policies.length) {
-    return (
-      <Box sx={{ textAlign: "center", py: 4 }}>
-        <Typography variant="h6" color="textSecondary" gutterBottom>
-          {translate("resources.catalog.dataset.noPolicies")}
-        </Typography>
-        <Typography color="textSecondary">
-          {translate("resources.catalog.dataset.noPoliciesDescription")}
-        </Typography>
-      </Box>
-    );
-  }
-
-  const handleChange = (event: SelectChangeEvent<string>) => {
-    onSelectPolicy(Number(event.target.value));
-  };
-
-  return (
-    <Box sx={{ width: "100%", minWidth: 0 }}>
-      <Typography variant="h6" gutterBottom>
-        {translate("resources.catalog.dataset.selectPolicyForNegotiation")}
-      </Typography>
-
-      <FormControl fullWidth>
-        <InputLabel id="policy-selection-label">
-          {translate("resources.catalog.dataset.selectPolicyForNegotiation")}
-        </InputLabel>
-        <Select
-          labelId="policy-selection-label"
-          id="policy-selection"
-          value={String(selectedPolicy)}
-          label={translate(
-            "resources.catalog.dataset.selectPolicyForNegotiation"
-          )}
-          onChange={handleChange}
-        >
-          {options.map((option) => (
-            <MenuItem key={option.index} value={String(option.index)}>
-              {option.label}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
-
-      {policies.map((policy: any, policyIndex: number) =>
-        selectedPolicy === policyIndex ? (
-          <Box key={policyIndex} sx={{ mt: 3 }}>
-            <PolicyRulesTabs
-              permissions={policy.permissions}
-              obligations={policy.obligations}
-              prohibitions={policy.prohibitions}
-            />
-          </Box>
-        ) : null
-      )}
-    </Box>
-  );
-};
+const DATASET_TABS: DatasetTabDefinition[] = [
+  {
+    icon: <InfoIcon />,
+    labelTranslationKey: "resources.catalog.dataset.tabs.overview",
+    ariaControls: "dataset-overview-tab",
+    render: (dataset) => (
+      <RecordContextProvider value={dataset}>
+        <BasicInformation />
+      </RecordContextProvider>
+    ),
+  },
+  {
+    icon: <HistoryIcon />,
+    labelTranslationKey: "resources.catalog.dataset.tabs.versioning",
+    ariaControls: "dataset-versioning-tab",
+    render: (dataset) => (
+      <RecordContextProvider value={dataset}>
+        <Versioning />
+      </RecordContextProvider>
+    ),
+  },
+  {
+    icon: <AccountTreeIcon />,
+    labelTranslationKey: "resources.catalog.dataset.tabs.provenance",
+    ariaControls: "dataset-provenance-tab",
+    render: (dataset) => (
+      <RecordContextProvider value={dataset}>
+        <Provenance />
+      </RecordContextProvider>
+    ),
+  },
+  {
+    icon: <SecurityIcon />,
+    labelTranslationKey: "resources.catalog.dataset.tabs.dataPrivacy",
+    ariaControls: "dataset-privacy-tab",
+    render: (dataset) => (
+      <RecordContextProvider value={dataset}>
+        <DataPrivacy />
+      </RecordContextProvider>
+    ),
+  },
+  {
+    icon: <AssessmentIcon />,
+    labelTranslationKey: "resources.catalog.dataset.tabs.dataQuality",
+    ariaControls: "dataset-quality-tab",
+    render: (dataset) => (
+      <RecordContextProvider value={dataset}>
+        <DataQuality />
+      </RecordContextProvider>
+    ),
+  },
+  {
+    icon: <CloudIcon />,
+    labelTranslationKey: "resources.catalog.dataset.tabs.serviceInfo",
+    ariaControls: "dataset-service-tab",
+    render: (dataset) => <ServiceInformation dataset={dataset} />,
+  },
+];
 
 export const ContractNegotiationDialog: React.FC<
   ContractNegotiationDialogProps
@@ -159,41 +128,62 @@ export const ContractNegotiationDialog: React.FC<
   const [create, { isPending: isCreating }] = useCreate();
   const dataProvider = useDataProvider();
   const [activeTab, setActiveTab] = useState(0);
-  const [step, setStep] = useState<"view" | "policySelection">("view");
+  const [step, setStep] = useState<DialogStep>("view");
   const [selectedPolicy, setSelectedPolicy] = useState(0);
   const [confirmMenuAnchor, setConfirmMenuAnchor] =
     useState<null | HTMLElement>(null);
-  const [isWaitingForFinalization, setIsWaitingForFinalization] =
-    useState(false);
-  const [pendingNegotiationId, setPendingNegotiationId] = useState<
-    string | null
-  >(null);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const translate = useTranslate();
-  const pollingIntervalRef = useRef<number | null>(null);
-  const pollingAttemptsRef = useRef(0);
 
   const policies = useMemo(() => dataset?.policies ?? [], [dataset?.policies]);
   const datasetId = dataset?.id;
   const participantId = dataset?.participantId;
 
-  const POLLING_INTERVAL_MS = 5000;
-  const MAX_POLLING_ATTEMPTS = 30;
-
   const closeConfirmMenu = useCallback(() => {
     setConfirmMenuAnchor(null);
   }, []);
 
-  const stopPolling = useCallback(() => {
-    if (pollingIntervalRef.current !== null) {
-      window.clearInterval(pollingIntervalRef.current);
-      pollingIntervalRef.current = null;
-    }
-    pollingAttemptsRef.current = 0;
-    setIsWaitingForFinalization(false);
-    setPendingNegotiationId(null);
-  }, []);
+  const {
+    isPolling: isWaitingForFinalization,
+    startPolling,
+    stopPolling,
+  } = useNegotiationPolling({
+    dataProvider,
+    onFinalized: (agreementId) => {
+      notify(
+        translate(
+          "resources.contractnegotiations.messages.negotiationFinalized"
+        ),
+        { type: "success" }
+      );
+      handleClose();
+      navigate(`/contractagreements/${agreementId}/show`);
+    },
+    onTimeout: (negotiationId) => {
+      notify(
+        translate(
+          "resources.contractnegotiations.messages.negotiationFinalizationTimeout"
+        ),
+        { type: "warning" }
+      );
+      handleClose();
+      navigate(`/contractnegotiations/${negotiationId}/show`);
+    },
+    onError: (negotiationId, error) => {
+      console.error("Failed to poll negotiation status", error);
+      notify(
+        translate(
+          "resources.contractnegotiations.messages.negotiationPollingFailed"
+        ),
+        { type: "warning" }
+      );
+      handleClose();
+      if (negotiationId) {
+        navigate(`/contractnegotiations/${negotiationId}/show`);
+      }
+    },
+  });
 
   const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
     setActiveTab(newValue);
@@ -257,8 +247,7 @@ export const ContractNegotiationDialog: React.FC<
                 ),
                 { type: "info" }
               );
-              setPendingNegotiationId(negotiationId);
-              setIsWaitingForFinalization(true);
+              startPolling(negotiationId);
               return;
             }
 
@@ -298,130 +287,12 @@ export const ContractNegotiationDialog: React.FC<
       participantId,
       policies,
       selectedPolicy,
+      startPolling,
       translate,
     ]
   );
 
-  useEffect(() => {
-    if (!isWaitingForFinalization || !pendingNegotiationId) {
-      return;
-    }
-
-    pollingAttemptsRef.current = 0;
-
-    const pollNegotiation = async () => {
-      try {
-        const { data } = await dataProvider.getOne("contractnegotiations", {
-          id: pendingNegotiationId,
-        });
-
-        pollingAttemptsRef.current += 1;
-
-        if (data?.contractAgreementId) {
-          notify(
-            translate(
-              "resources.contractnegotiations.messages.negotiationFinalized"
-            ),
-            { type: "success" }
-          );
-          const agreementId = data.contractAgreementId;
-          stopPolling();
-          handleClose();
-          navigate(`/contractagreements/${agreementId}/show`);
-          return;
-        }
-
-        if (pollingAttemptsRef.current >= MAX_POLLING_ATTEMPTS) {
-          stopPolling();
-          notify(
-            translate(
-              "resources.contractnegotiations.messages.negotiationFinalizationTimeout"
-            ),
-            { type: "warning" }
-          );
-          handleClose();
-          navigate(`/contractnegotiations/${pendingNegotiationId}/show`);
-        }
-      } catch (error) {
-        // Best effort: stop polling on persistent errors
-        console.error("Failed to poll negotiation status", error);
-        stopPolling();
-        notify(
-          translate(
-            "resources.contractnegotiations.messages.negotiationPollingFailed"
-          ),
-          { type: "warning" }
-        );
-        handleClose();
-        navigate(`/contractnegotiations/${pendingNegotiationId}/show`);
-      }
-    };
-
-    pollNegotiation();
-    pollingIntervalRef.current = window.setInterval(
-      pollNegotiation,
-      POLLING_INTERVAL_MS
-    );
-
-    return () => {
-      if (pollingIntervalRef.current !== null) {
-        window.clearInterval(pollingIntervalRef.current);
-        pollingIntervalRef.current = null;
-      }
-    };
-  }, [
-    dataProvider,
-    handleClose,
-    isWaitingForFinalization,
-    navigate,
-    notify,
-    pendingNegotiationId,
-    stopPolling,
-    translate,
-    MAX_POLLING_ATTEMPTS,
-    POLLING_INTERVAL_MS,
-  ]);
-
-  const renderTabContent = () => {
-    const tabProps = { dataset };
-
-    switch (activeTab) {
-      case 0:
-        return (
-          <RecordContextProvider value={dataset}>
-            <BasicInformation />
-          </RecordContextProvider>
-        );
-      case 1:
-        return (
-          <RecordContextProvider value={dataset}>
-            <Versioning />
-          </RecordContextProvider>
-        );
-      case 2:
-        return (
-          <RecordContextProvider value={dataset}>
-            <Provenance />
-          </RecordContextProvider>
-        );
-      case 3:
-        return (
-          <RecordContextProvider value={dataset}>
-            <DataPrivacy />
-          </RecordContextProvider>
-        );
-      case 4:
-        return (
-          <RecordContextProvider value={dataset}>
-            <DataQuality />
-          </RecordContextProvider>
-        );
-      case 5:
-        return <ServiceInformation {...tabProps} />;
-      default:
-        return null;
-    }
-  };
+  const selectedTab = DATASET_TABS[activeTab];
 
   return (
     <Dialog
@@ -462,36 +333,15 @@ export const ContractNegotiationDialog: React.FC<
             variant={isMobile ? "scrollable" : "standard"}
             scrollButtons="auto"
           >
-            <Tab
-              icon={<InfoIcon />}
-              label={translate("resources.catalog.dataset.tabs.overview")}
-              aria-controls="dataset-overview-tab"
-            />
-            <Tab
-              icon={<HistoryIcon />}
-              label={translate("resources.catalog.dataset.tabs.versioning")}
-              aria-controls="dataset-versioning-tab"
-            />
-            <Tab
-              icon={<AccountTreeIcon />}
-              label={translate("resources.catalog.dataset.tabs.provenance")}
-              aria-controls="dataset-provenance-tab"
-            />
-            <Tab
-              icon={<SecurityIcon />}
-              label={translate("resources.catalog.dataset.tabs.dataPrivacy")}
-              aria-controls="dataset-privacy-tab"
-            />
-            <Tab
-              icon={<AssessmentIcon />}
-              label={translate("resources.catalog.dataset.tabs.dataQuality")}
-              aria-controls="dataset-quality-tab"
-            />
-            <Tab
-              icon={<CloudIcon />}
-              label={translate("resources.catalog.dataset.tabs.serviceInfo")}
-              aria-controls="dataset-service-tab"
-            />
+            {DATASET_TABS.map((tab, index) => (
+              <Tab
+                key={tab.ariaControls}
+                icon={tab.icon}
+                label={translate(tab.labelTranslationKey)}
+                aria-controls={tab.ariaControls}
+                id={`dataset-tab-${index}`}
+              />
+            ))}
           </Tabs>
         </Box>
       )}
@@ -499,7 +349,7 @@ export const ContractNegotiationDialog: React.FC<
       <DialogContent sx={{ p: 0 }} id="dataset-dialog-description">
         <Box sx={{ p: 3 }}>
           {step === "view" ? (
-            renderTabContent()
+            selectedTab?.render(dataset)
           ) : (
             <PolicySelectionView
               policies={policies}
