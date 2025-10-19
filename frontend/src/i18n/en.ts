@@ -54,6 +54,16 @@ const englishMessages: Partial<TranslationMessages> = {
         thingDescriptionTab: {
           noDescription: "No Thing Description available",
         },
+        serviceInformationTab: {
+          description:
+            "Technical service information and endpoint details for accessing this dataset.",
+          format: "Format",
+          endpointUrl: "Endpoint URL",
+          serviceType: "Service Type",
+          endpointDescription: "Endpoint Description",
+          distribution: "Distribution",
+          noDistributionInformation: "No distribution information available",
+        },
         basicInformation: {
           shortDescription: "Short Description",
           noShortDescription: "No short description available",

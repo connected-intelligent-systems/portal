@@ -68,6 +68,41 @@ export const PolicySchema = z
     obligations: p["odrl:obligation"],
   }));
 
+const DistributionSchema = z
+  .object({
+    "@type": z.string().optional(),
+    "dct:format": z
+      .object({
+        "@id": z.string().optional(),
+      })
+      .optional(),
+    "dcat:accessService": z
+      .object({
+        "@id": z.string().optional(),
+        "@type": z.string().optional(),
+        "dcat:endpointDescription": z.string().optional(),
+        "dcat:endpointUrl": z.string().optional(),
+        "dcat:endpointURL": z.string().optional(),
+      })
+      .optional(),
+  })
+  .passthrough()
+  .transform((dist) => ({
+    type: dist["@type"],
+    format: dist["dct:format"]?.["@id"],
+    accessService: dist["dcat:accessService"]
+      ? {
+          id: dist["dcat:accessService"]["@id"],
+          type: dist["dcat:accessService"]["@type"],
+          endpointDescription:
+            dist["dcat:accessService"]["dcat:endpointDescription"],
+          endpointUrl:
+            dist["dcat:accessService"]["dcat:endpointUrl"] ||
+            dist["dcat:accessService"]["dcat:endpointURL"],
+        }
+      : undefined,
+  }));
+
 const DatasetSchema = z
   .object({
     "@id": z
@@ -90,6 +125,10 @@ const DatasetSchema = z
       .union([PolicySchema, z.array(PolicySchema)])
       .optional()
       .transform((p) => (p ? (Array.isArray(p) ? p : [p]) : [])),
+    "dcat:distribution": z
+      .union([DistributionSchema, z.array(DistributionSchema)])
+      .optional()
+      .transform((d) => (d ? (Array.isArray(d) ? d : [d]) : [])),
   })
   .passthrough()
   .transform((d) => {
@@ -115,6 +154,7 @@ const DatasetSchema = z
           : [d["dcat:keyword"]]
         : undefined,
       policies: d["odrl:hasPolicy"],
+      distributions: d["dcat:distribution"],
       creator: extractCreator(datasetResource),
       created: extractDate(datasetResource, "dct:created"),
       modified: extractDate(datasetResource, "dct:modified"),
