@@ -1,11 +1,15 @@
 import { useInput, useFieldValue } from "react-admin";
+import { useTheme } from "@mui/material";
 import MDEditor from "@uiw/react-md-editor";
 import PropTypes from "prop-types";
 
 export const MarkdownInput = ({ source }) => {
   const { id, field } = useInput({ source });
+  const theme = useTheme();
+  const colorMode = theme.palette.mode === "dark" ? "dark" : "light";
+
   return (
-    <div id={id} data-color-mode="light" style={{ width: "100%" }}>
+    <div id={id} data-color-mode={colorMode} style={{ width: "100%" }}>
       <div className="wmde-markdown-var"> </div>
       <MDEditor {...field} height={500} />
     </div>
@@ -18,13 +22,16 @@ MarkdownInput.propTypes = {
 
 export const MarkdownField = ({ source, record }) => {
   const contextValue = useFieldValue({ source });
+  const theme = useTheme();
+  const colorMode = theme.palette.mode === "dark" ? "dark" : "light";
   const value = record ? record[source] : contextValue;
+
   if (!value) {
     return <span>-</span>;
   }
 
   return (
-    <div data-color-mode="light" style={{ width: "100%" }}>
+    <div data-color-mode={colorMode} style={{ width: "100%" }}>
       <MDEditor.Markdown source={value} />
     </div>
   );

@@ -8,6 +8,7 @@ import {
   AccordionSummary,
   AccordionDetails,
   CircularProgress,
+  useTheme,
 } from "@mui/material";
 import { useTranslate, useInput } from "react-admin";
 import UploadFileIcon from "@mui/icons-material/UploadFile";
@@ -15,6 +16,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import CodeMirror from "@uiw/react-codemirror";
 import { json } from "@codemirror/lang-json";
 import { EditorState } from "@codemirror/state";
+import { githubLight, githubDark } from "@uiw/codemirror-theme-github";
 import {
   replaceThingDescriptionContext,
   replaceThingDescriptionHrefs,
@@ -23,6 +25,7 @@ import { validateThingDescription } from "../../../../utils/thingDescriptionVali
 
 export const ThingDescriptionTab = () => {
   const translate = useTranslate();
+  const theme = useTheme();
   const { field } = useInput({ source: "thingDescription" });
   const [error, setError] = useState<string | null>(null);
   const [validationErrors, setValidationErrors] = useState<any[]>([]);
@@ -156,6 +159,7 @@ export const ThingDescriptionTab = () => {
             <CodeMirror
               value={JSON.stringify(field.value, null, 2)}
               extensions={[json(), EditorState.readOnly.of(true)]}
+              theme={theme.palette.mode === "dark" ? githubDark : githubLight}
               basicSetup={{
                 lineNumbers: true,
                 foldGutter: true,
