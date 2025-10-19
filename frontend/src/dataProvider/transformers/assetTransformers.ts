@@ -14,7 +14,6 @@ import {
 import {
   compactThingDescription,
   expandThingDescription,
-  replaceThingDescriptionHrefs,
 } from "../../utils/thingDescriptionUtils";
 
 const CoreAssetSchema = z
@@ -28,6 +27,7 @@ const CoreAssetSchema = z
 type CoreAsset = z.infer<typeof CoreAssetSchema>;
 
 async function extractThingDescription(thingDescription: any): Promise<any> {
+  // the edc returns the expanded form, we want the compacted one
   return compactThingDescription(thingDescription);
 }
 
@@ -207,16 +207,10 @@ export async function serializeAssetToJsonLd(
 
   // Process and attach W3C Thing Description if present
   if (asset.thingDescription) {
-    const publicEdcEndpoint =
-      window.config?.publicEdcEndpoint || "http://localhost:8080/api/v1/dsp";
-    const processedThingDescription = replaceThingDescriptionHrefs(
-      asset.thingDescription,
-      publicEdcEndpoint
-    );
     jsonLd.properties = {
       ...jsonLd.properties,
       "td:hasThingDescription": await expandThingDescription(
-        processedThingDescription
+        asset.thingDescription
       ),
     };
   }
