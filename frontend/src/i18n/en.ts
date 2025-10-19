@@ -808,6 +808,12 @@ const englishMessages: Partial<TranslationMessages> = {
       },
     },
   },
+  datasets: {
+    openapi: {
+      conversionError:
+        "Failed to convert Thing Description to OpenAPI specification",
+    },
+  },
 };
 
 const resources = englishMessages.resources as Record<string, any> | undefined;
@@ -832,6 +838,9 @@ if (resources) {
     | Record<string, any>
     | undefined;
   resources.transferprocesses = englishMessages.transferprocesses as
+    | Record<string, any>
+    | undefined;
+  resources.datasets = englishMessages.datasets as
     | Record<string, any>
     | undefined;
 }

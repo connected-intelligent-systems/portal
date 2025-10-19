@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import {
   Show,
   SimpleShowLayout,
@@ -15,12 +15,31 @@ import {
   useTranslate,
   useGetList,
   useRefresh,
+  RecordContextProvider,
+  Loading,
+  useGetOne,
 } from "react-admin";
-import Alert from "@mui/material/Alert";
+import { Alert, Typography, Box, Tabs, Tab } from "@mui/material";
 import { Link } from "react-router-dom";
 import CancelIcon from "@mui/icons-material/Cancel";
 import DownloadIcon from "@mui/icons-material/Download";
+import InfoIcon from "@mui/icons-material/Info";
+import AccountTreeIcon from "@mui/icons-material/AccountTree";
+import SecurityIcon from "@mui/icons-material/Security";
+import AssessmentIcon from "@mui/icons-material/Assessment";
+import DevicesIcon from "@mui/icons-material/Devices";
+import CloudIcon from "@mui/icons-material/Cloud";
+import ApiIcon from "@mui/icons-material/Api";
 import { TransferProcess } from "../../types/transferProcess";
+import { Dataset } from "../../types/catalog";
+import {
+  BasicInformation,
+  Provenance,
+  DataPrivacy,
+  DataQuality,
+  ThingDescription,
+} from "../../components/assets";
+import { ServiceInformation, OpenAPIViewer } from "../../components/datasets";
 
 const downloadBlob = async (blob: Blob, filename: string) => {
   if ("showSaveFilePicker" in window) {
@@ -131,6 +150,7 @@ export const TransferProcessesShow = () => {
   const translate = useTranslate();
   const { record } = useShowController<TransferProcess>();
   const refresh = useRefresh();
+  const [activeTab, setActiveTab] = useState(0);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -153,6 +173,31 @@ export const TransferProcessesShow = () => {
   const counterPartyAddress = negotiation?.counterPartyAddress;
   const catalogId = btoa(counterPartyAddress);
   const compositeId = `${catalogId}--${record?.assetId}`;
+
+  const isConsumer = record?.transferDirection === "CONSUMER";
+  const isHttpDataPull = record?.transferType === "HttpData-PULL";
+
+  const { data: dataset } = useGetOne<Dataset>(
+    "datasets",
+    { id: compositeId },
+    { enabled: isConsumer && !!compositeId }
+  );
+
+  const { data: dataRequest } = useGetOne(
+    "datarequests",
+    { id: record?.id || "" },
+    {
+      enabled:
+        isConsumer &&
+        isHttpDataPull &&
+        !!record?.id &&
+        record?.state !== "TERMINATED",
+    }
+  );
+
+  const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
+    setActiveTab(newValue);
+  };
 
   return (
     <Show actions={<TransferProcessesShowBar />}>
@@ -235,6 +280,86 @@ export const TransferProcessesShow = () => {
               <TextField source="id" />
             </ReferenceField>
           )}
+
+        {isConsumer && dataset && (
+          <Box sx={{ mt: 3 }}>
+            <Typography variant="h6" gutterBottom>
+              {translate("resources.transferprocesses.fields.dataset")} Details
+            </Typography>
+            <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+              <Tabs
+                value={activeTab}
+                onChange={handleTabChange}
+                aria-label="dataset information tabs"
+                variant="scrollable"
+                scrollButtons="auto"
+                allowScrollButtonsMobile
+              >
+                <Tab
+                  icon={<InfoIcon />}
+                  label={translate("resources.catalog.dataset.tabs.overview")}
+                  aria-controls="dataset-overview-tab"
+                />
+                <Tab
+                  icon={<AccountTreeIcon />}
+                  label={translate("resources.catalog.dataset.tabs.provenance")}
+                  aria-controls="dataset-provenance-tab"
+                />
+                <Tab
+                  icon={<SecurityIcon />}
+                  label={translate(
+                    "resources.catalog.dataset.tabs.dataPrivacy"
+                  )}
+                  aria-controls="dataset-privacy-tab"
+                />
+                <Tab
+                  icon={<AssessmentIcon />}
+                  label={translate(
+                    "resources.catalog.dataset.tabs.dataQuality"
+                  )}
+                  aria-controls="dataset-quality-tab"
+                />
+                <Tab
+                  icon={<DevicesIcon />}
+                  label={translate("resources.assets.tabs.thingDescription")}
+                  aria-controls="dataset-thing-description"
+                />
+                {isHttpDataPull && (
+                  <Tab
+                    icon={<ApiIcon />}
+                    label="OpenAPI"
+                    aria-controls="dataset-openapi"
+                  />
+                )}
+                <Tab
+                  icon={<CloudIcon />}
+                  label={translate(
+                    "resources.catalog.dataset.tabs.serviceInfo"
+                  )}
+                  aria-controls="dataset-service-tab"
+                />
+              </Tabs>
+            </Box>
+
+            <Box sx={{ mt: 3 }}>
+              <Suspense fallback={<Loading />}>
+                <RecordContextProvider value={dataset}>
+                  {activeTab === 0 && <BasicInformation />}
+                  {activeTab === 1 && <Provenance />}
+                  {activeTab === 2 && <DataPrivacy />}
+                  {activeTab === 3 && <DataQuality />}
+                  {activeTab === 4 && <ThingDescription />}
+                  {isHttpDataPull && activeTab === 5 && (
+                    <OpenAPIViewer authToken={dataRequest?.authorization} />
+                  )}
+                  {activeTab === (isHttpDataPull ? 6 : 5) && (
+                    <ServiceInformation dataset={dataset} />
+                  )}
+                </RecordContextProvider>
+              </Suspense>
+            </Box>
+          </Box>
+        )}
       </SimpleShowLayout>
     </Show>
   );

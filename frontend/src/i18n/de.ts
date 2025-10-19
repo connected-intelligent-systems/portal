@@ -793,6 +793,12 @@ const germanMessages: Partial<TranslationMessages> = {
       },
     },
   },
+  datasets: {
+    openapi: {
+      conversionError:
+        "Fehler beim Konvertieren der Thing Description in OpenAPI-Spezifikation",
+    },
+  },
 };
 
 export default germanMessages;

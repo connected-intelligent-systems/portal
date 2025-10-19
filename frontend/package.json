@@ -18,6 +18,7 @@
     "@codemirror/lang-json": "^6.0.1",
     "@fontsource/roboto": "^5.0.8",
     "@haleos/ra-language-german": "^1.0.0",
+    "@thingweb/open-api-converter": "^1.0.0",
     "@triply/yasgui": "^4.2.28",
     "@uiw/codemirror-theme-github": "^4.23.5",
     "@uiw/react-codemirror": "^4.21.18",
@@ -31,6 +32,7 @@
     "lodash": "^4.17.21",
     "lz-string": "^1.5.0",
     "npm": "^10.2.0",
+    "process": "^0.11.10",
     "ra-i18n-polyglot": "^5.11.1",
     "ra-language-german": "^3.13.5",
     "react": "^18.2.0",
@@ -66,6 +68,7 @@
     "prettier": "^2.8.8",
     "typescript": "^5.1.6",
     "vite": "^7.1.10",
+    "vite-plugin-node-polyfills": "^0.24.0",
     "vitest": "^3.2.4"
   }
 }
