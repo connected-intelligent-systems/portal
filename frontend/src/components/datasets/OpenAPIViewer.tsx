@@ -34,7 +34,6 @@ export const OpenAPIViewer = ({ authToken }: OpenAPIViewerProps) => {
         setLoading(false);
       })
       .catch((err) => {
-        console.error("Failed to convert Thing Description to OpenAPI:", err);
         setError(err instanceof Error ? err.message : String(err));
         setLoading(false);
       });

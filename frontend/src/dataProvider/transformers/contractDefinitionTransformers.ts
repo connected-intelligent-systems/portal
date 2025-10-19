@@ -5,20 +5,20 @@ import {
 } from "../../types/contractDefinition";
 import { removeUndefinedValues, stripUndefinedValues } from "../helpers";
 
-// --- Zod Schemas for Contract Definition Structure ---
-
 const AssetSelectorCriterionSchema = z
   .object({
     "@type": z.literal("Criterion"),
     operandLeft: z.string(),
     operator: z.string(),
-    operandRight: z.string(),
+    operandRight: z.union([z.string(), z.array(z.string())]),
   })
   .transform((c) => ({
     type: c["@type"],
     operandLeft: c.operandLeft,
     operator: c.operator,
-    operandRight: c.operandRight,
+    operandRight: Array.isArray(c.operandRight)
+      ? c.operandRight
+      : [c.operandRight],
   }));
 
 const CoreContractDefinitionSchema = z.object({
@@ -65,8 +65,6 @@ const CoreContractDefinitionSchema = z.object({
     ),
 });
 
-// --- Main Transformation Functions ---
-
 export async function parseContractDefinitionFromJsonLd(
   jsonLd: any
 ): Promise<ContractDefinition> {
@@ -79,7 +77,10 @@ export async function parseContractDefinitionFromJsonLd(
       privateProperties: parsed.privateProperties || { name: "Untitled" },
       accessPolicyId: parsed.accessPolicyId || "",
       contractPolicyId: parsed.contractPolicyId || "",
-      assetsSelector: parsed.assetsSelector.map((c) => c.operandRight),
+      assetsSelector:
+        parsed.assetsSelector.length > 0
+          ? parsed.assetsSelector[0].operandRight
+          : [],
       assetsSelectorCriteria: parsed.assetsSelector,
       createdAt: parsed.createdAt,
       modifiedAt: parsed.modifiedAt,
@@ -105,13 +106,14 @@ export async function parseContractDefinitionFromJsonLdArray(
 export async function serializeContractDefinitionToJsonLd(
   contractDefinition: ContractDefinitionFormData
 ): Promise<any> {
-  const assetsSelector =
-    contractDefinition.assetsSelector?.map((assetId) => ({
+  const assetsSelector = [
+    {
       "@type": "Criterion",
       operandLeft: "https://w3id.org/edc/v0.0.1/ns/id",
       operator: "in",
-      operandRight: assetId,
-    })) || [];
+      operandRight: contractDefinition.assetsSelector || [],
+    },
+  ];
 
   const privateProperties = contractDefinition.privateProperties
     ? contractDefinition.privateProperties

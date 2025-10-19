@@ -54,7 +54,7 @@ const downloadBlob = async (blob: Blob, filename: string) => {
       return;
     } catch (err) {
       if (err instanceof Error && err.name !== "AbortError") {
-        console.error("Save failed:", err);
+        console.error("Error saving file:", err);
       }
     }
   }

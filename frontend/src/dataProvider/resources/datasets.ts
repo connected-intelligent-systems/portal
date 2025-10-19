@@ -94,8 +94,6 @@ export async function getManyReference(params: GetManyReferenceParams) {
       participantId: cleanCatalog.participantId,
     }));
 
-    console.log(datasets);
-
     return {
       data: datasets,
       total: datasets.length,

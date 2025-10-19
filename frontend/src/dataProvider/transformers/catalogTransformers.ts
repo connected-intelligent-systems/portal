@@ -144,7 +144,9 @@ export async function parseDatasetFromJsonLd(
   try {
     const parsed = DatasetSchema.parse(jsonLdDataset) as any;
     const { _rawThingDescription, ...rest } = parsed;
-    const thingDescription = await extractThingDescription(_rawThingDescription);
+    const thingDescription = await extractThingDescription(
+      _rawThingDescription
+    );
 
     const dataset: Dataset = {
       ...rest,
@@ -176,7 +178,9 @@ export async function parseCatalogFromJsonLd(
     const datasetsWithThingDescriptions = await Promise.all(
       (parsed["dcat:dataset"] || []).map(async (dataset: any) => {
         const { _rawThingDescription, ...rest } = dataset;
-        const thingDescription = await extractThingDescription(_rawThingDescription);
+        const thingDescription = await extractThingDescription(
+          _rawThingDescription
+        );
         return {
           ...rest,
           thingDescription,

@@ -5,13 +5,11 @@ import {
   ReferenceInput,
   AutocompleteInput,
   required,
-  FormDataConsumer,
   useTranslate,
   ReferenceArrayInput,
   AutocompleteArrayInput,
 } from "react-admin";
-import { Alert, Box, Typography } from "@mui/material";
-import { ContractDefinitionFormData } from "../../../types/contractDefinition";
+import { Box, Typography } from "@mui/material";
 
 export const ContractDefinitionCreate = (props: any) => {
   const translate = useTranslate();
@@ -78,21 +76,6 @@ export const ContractDefinitionCreate = (props: any) => {
             )}
           </Typography>
         </Box>
-        <FormDataConsumer>
-          {({ formData }: { formData: ContractDefinitionFormData }) => {
-            const hasSelectedAssets =
-              Array.isArray(formData?.assetsSelector) &&
-              formData.assetsSelector.length > 0;
-
-            return !hasSelectedAssets ? (
-              <Alert severity="warning" sx={{ mb: 2 }}>
-                {translate(
-                  "resources.contract_definitions.create.warnings.noAssetsSelected"
-                )}
-              </Alert>
-            ) : null;
-          }}
-        </FormDataConsumer>
         <ReferenceArrayInput source="assetsSelector" reference="assets">
           <AutocompleteArrayInput
             optionText="title"
