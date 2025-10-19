@@ -379,11 +379,15 @@ const englishMessages: Partial<TranslationMessages> = {
         thingDescription: {
           title: "W3C Thing Description",
           description:
-            "Upload a W3C Thing Description JSON file. All href values will be automatically replaced with the public EDC endpoint before saving.",
+            "Upload a W3C Thing Description JSON file. The file will be validated against the W3C TD schema, and all href values will be automatically replaced with the public EDC endpoint before saving.",
           uploadButton: "Upload JSON File",
+          validating: "Validating...",
           viewDescription: "View Thing Description",
           errors: {
             invalidJson: "Invalid JSON format. Please check your input.",
+            validationFailed:
+              "Thing Description validation failed. Please fix the errors below:",
+            details: "Validation Errors:",
           },
         },
       },

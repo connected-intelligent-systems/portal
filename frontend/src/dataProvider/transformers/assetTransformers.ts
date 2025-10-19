@@ -11,9 +11,7 @@ import {
   normalizeStringArray,
   serializePrivacySettings,
 } from "./helpers";
-import { replaceThingDescriptionHrefs } from "../../utils/thingDescriptionUtils";
-
-// --- Zod-based Transformation (Lifting) ---
+import { compactThingDescription, expandThingDescription, replaceThingDescriptionHrefs } from "../../utils/thingDescriptionUtils";
 
 const CoreAssetSchema = z
   .object({
@@ -24,6 +22,10 @@ const CoreAssetSchema = z
   .passthrough();
 
 type CoreAsset = z.infer<typeof CoreAssetSchema>;
+
+async function extractThingDescription(thingDescription: any): Promise<any> {
+  return compactThingDescription(thingDescription);
+}
 
 export async function parseAssetFromJsonLd(jsonLdAsset: any): Promise<Asset> {
   try {
@@ -46,10 +48,8 @@ export async function parseAssetFromJsonLd(jsonLdAsset: any): Promise<Asset> {
       version: extractString(coreAsset, "dcat:version"),
       provenance: extractProvenance(coreAsset),
       qualityMeasurements: extractQualityMeasurements(coreAsset),
-      // privacy settings (dpv)
       privacySettings: extractPrivacySettings(coreAsset),
-      // W3C Thing Description
-      thingDescription: extractString(coreAsset, "wot:hasThingDescription"),
+      thingDescription: await extractThingDescription(coreAsset.properties?.["td:hasThingDescription"]),
     };
 
     return stripUndefinedValues(asset);
@@ -58,8 +58,6 @@ export async function parseAssetFromJsonLd(jsonLdAsset: any): Promise<Asset> {
     throw new Error(`Failed to transform JSON-LD asset: ${errorMessage}`);
   }
 }
-
-// --- TypeScript-based Transformation (Lowering) ---
 
 export async function serializeAssetToJsonLd(
   asset: AssetFormData
@@ -182,7 +180,7 @@ export async function serializeAssetToJsonLd(
       prov: "http://www.w3.org/ns/prov#",
       odrl: "http://www.w3.org/ns/odrl/2/",
       dqv: "http://www.w3.org/ns/dqv#",
-      wot: "https://www.w3.org/2019/wot/td#",
+      td: "https://www.w3.org/2019/wot/td#",
       dpv: "https://w3id.org/dpv#",
       schema: "http://schema.org/",
       owl: "http://www.w3.org/2002/07/owl#",
@@ -211,7 +209,7 @@ export async function serializeAssetToJsonLd(
     );
     jsonLd.properties = {
       ...jsonLd.properties,
-      "wot:hasThingDescription": processedThingDescription,
+      "td:hasThingDescription": await expandThingDescription(processedThingDescription),
     };
   }
 

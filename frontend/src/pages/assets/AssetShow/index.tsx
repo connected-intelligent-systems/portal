@@ -323,7 +323,7 @@ export const AssetShow = () => {
                           fontFamily: "monospace",
                         }}
                       >
-                        {JSON.stringify(JSON.parse(thingDescription), null, 2)}
+                        {JSON.stringify(thingDescription, null, 2)}
                       </Box>
                     );
                   }}

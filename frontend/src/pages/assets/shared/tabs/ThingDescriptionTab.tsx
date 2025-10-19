@@ -7,16 +7,20 @@ import {
   Accordion,
   AccordionSummary,
   AccordionDetails,
+  CircularProgress,
 } from "@mui/material";
 import { useTranslate, useInput } from "react-admin";
 import UploadFileIcon from "@mui/icons-material/UploadFile";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { replaceThingDescriptionHrefs } from "../../../../utils/thingDescriptionUtils";
+import { replaceThingDescriptionContext, replaceThingDescriptionHrefs } from "../../../../utils/thingDescriptionUtils";
+import { validateThingDescription } from "../../../../utils/thingDescriptionValidator";
 
 export const ThingDescriptionTab = () => {
   const translate = useTranslate();
   const { field } = useInput({ source: "thingDescription" });
   const [error, setError] = useState<string | null>(null);
+  const [validationErrors, setValidationErrors] = useState<any[]>([]);
+  const [validating, setValidating] = useState(false);
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -27,19 +31,42 @@ export const ThingDescriptionTab = () => {
       try {
         const content = e.target?.result as string;
         // Validate that it's valid JSON
-        JSON.parse(content);
+        const parsedTd = JSON.parse(content);
+
+        // Validate against W3C TD schema
+        setValidating(true);
+        setError(null);
+        setValidationErrors([]);
+
+        const validationResult = validateThingDescription(parsedTd);
+
+        setValidating(false);
+
+        if (!validationResult.valid) {
+          setValidationErrors(validationResult.errors || []);
+          setError(
+            translate(
+              "resources.assets.create.thingDescription.errors.validationFailed"
+            )
+          );
+          return;
+        }
+
+        // const processedTd = replaceThingDescriptionContext(parsedTd);
 
         // Replace hrefs with public EDC endpoint
         const publicEdcEndpoint =
           window.config?.publicEdcEndpoint || "http://localhost:8080/api/v1/dsp";
         const processedContent = replaceThingDescriptionHrefs(
-          content,
+          parsedTd,
           publicEdcEndpoint
         );
 
         field.onChange(processedContent);
         setError(null);
+        setValidationErrors([]);
       } catch (err) {
+        setValidating(false);
         setError(
           translate("resources.assets.create.thingDescription.errors.invalidJson")
         );
@@ -62,13 +89,24 @@ export const ThingDescriptionTab = () => {
           variant="outlined"
           component="label"
           startIcon={<UploadFileIcon />}
+          disabled={validating}
         >
-          {translate("resources.assets.create.thingDescription.uploadButton")}
+          {validating ? (
+            <>
+              <CircularProgress size={16} sx={{ mr: 1 }} />
+              {translate(
+                "resources.assets.create.thingDescription.validating"
+              )}
+            </>
+          ) : (
+            translate("resources.assets.create.thingDescription.uploadButton")
+          )}
           <input
             type="file"
             hidden
             accept=".json,application/json"
             onChange={handleFileUpload}
+            disabled={validating}
           />
         </Button>
       </Box>
@@ -76,6 +114,25 @@ export const ThingDescriptionTab = () => {
       {error && (
         <Alert severity="error" sx={{ mb: 2 }}>
           {error}
+          {validationErrors.length > 0 && (
+            <Box sx={{ mt: 1 }}>
+              <Typography variant="caption" component="div" sx={{ mb: 1 }}>
+                {translate(
+                  "resources.assets.create.thingDescription.errors.details"
+                )}
+              </Typography>
+              <Box
+                component="pre"
+                sx={{
+                  fontSize: "0.75rem",
+                  overflow: "auto",
+                  maxHeight: "200px",
+                }}
+              >
+                {JSON.stringify(validationErrors, null, 2)}
+              </Box>
+            </Box>
+          )}
         </Alert>
       )}
 
@@ -100,7 +157,7 @@ export const ThingDescriptionTab = () => {
                 fontFamily: "monospace",
               }}
             >
-              {JSON.stringify(JSON.parse(field.value), null, 2)}
+              {JSON.stringify(field.value, null, 2)}
             </Box>
           </AccordionDetails>
         </Accordion>

@@ -1,15 +1,16 @@
+import context from "./td-context-1.1.json";
+import * as jsonld from "jsonld";
+
 /**
  * Replace all base URLs in href fields with the public EDC endpoint
  * Also replaces security definitions and security references with bearer token
  * Recursively traverses the JSON object and replaces href values
  */
 export function replaceThingDescriptionHrefs(
-  thingDescriptionStr: string,
+  thingDescription: any,
   publicEdcEndpoint: string
 ): string {
   try {
-    const td = JSON.parse(thingDescriptionStr);
-
     const replaceSecurityInObject = (obj: any): any => {
       if (Array.isArray(obj)) {
         return obj.map(replaceSecurityInObject);
@@ -54,7 +55,7 @@ export function replaceThingDescriptionHrefs(
       return obj;
     };
 
-    const processedTd = replaceSecurityInObject(td);
+    const processedTd = replaceSecurityInObject(thingDescription);
 
     // Replace securityDefinitions at root level
     processedTd.securityDefinitions = {
@@ -67,10 +68,49 @@ export function replaceThingDescriptionHrefs(
     // Ensure root level has security set to bearer_sc
     processedTd.security = "bearer_sc";
 
-    return JSON.stringify(processedTd);
+    return processedTd
   } catch (error) {
     // If parsing fails, return original string
     console.error("Failed to process thing description:", error);
-    return thingDescriptionStr;
+    return thingDescription;
   }
+}
+
+export function replaceThingDescriptionContext(
+  thingDescription: any
+): any {
+  if (thingDescription["@context"]) {
+    thingDescription["@context"] = context["@context"];
+  }
+  return thingDescription;
+}
+
+export async function compactThingDescription(
+  thingDescription: any
+): Promise<any> {
+  // the context when returning from the edc is removed, so we need to add it twice (and compact)
+  const compactedTd = await jsonld.compact({
+    ...thingDescription,
+    "@context": context["@context"],
+  }, {
+    "@context": context["@context"],
+  });
+
+  // after compaction, ensure the context is set to the standard W3C TD context
+  return {
+    ...compactedTd,
+    "@context": "https://www.w3.org/2022/wot/td/v1.1"
+  }
+}
+
+export async function expandThingDescription(
+  thingDescription: any
+): Promise<any> {
+  // the context when returning from the edc is removed, so we need to add it twice (and expand)
+  const expandedTd = await jsonld.expand({
+    ...thingDescription,
+    "@context": context["@context"],
+  });
+
+  return expandedTd;
 }

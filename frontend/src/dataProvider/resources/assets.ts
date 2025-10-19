@@ -21,7 +21,7 @@ const frame = {
     prov: "http://www.w3.org/ns/prov#",
     odrl: "http://www.w3.org/ns/odrl/2/",
     dqv: "http://www.w3.org/ns/dqv#",
-    wot: "https://www.w3.org/2019/wot/td#",
+    td: "https://www.w3.org/2019/wot/td#",
     dpv: "https://w3id.org/dpv#",
     schema: "http://schema.org/",
     owl: "http://www.w3.org/2002/07/owl#",
