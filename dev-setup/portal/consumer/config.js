@@ -1,5 +1,5 @@
 var config = {
-    publicEdcEndpoint: "http://localhost:8080/api/v1/dsp",
+    publicEdcEndpoint: "http://localhost:19291/public",
     title: "Portal - Consumer",
     theme: {
         light: {
