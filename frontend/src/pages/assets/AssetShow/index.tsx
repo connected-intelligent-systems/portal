@@ -22,6 +22,7 @@ import {
   DataPrivacy,
   DataQuality,
   DataAddress,
+  ThingDescription,
 } from "../../../components/assets";
 
 const AssetShowBar = () => {
@@ -299,35 +300,7 @@ export const AssetShow = () => {
 
             {activeTab === 5 && (
               <div id="asset-thing-description">
-                <FunctionField
-                  render={(record: any) => {
-                    const thingDescription = record?.thingDescription;
-                    if (!thingDescription) {
-                      return (
-                        <Typography variant="body2" color="text.secondary">
-                          {translate(
-                            "resources.assets.tabs.thingDescriptionTab.noDescription"
-                          )}
-                        </Typography>
-                      );
-                    }
-                    return (
-                      <Box
-                        component="pre"
-                        sx={{
-                          bgcolor: "grey.100",
-                          p: 2,
-                          borderRadius: 1,
-                          overflow: "auto",
-                          fontSize: "0.875rem",
-                          fontFamily: "monospace",
-                        }}
-                      >
-                        {JSON.stringify(thingDescription, null, 2)}
-                      </Box>
-                    );
-                  }}
-                />
+                <ThingDescription />
               </div>
             )}
           </Box>

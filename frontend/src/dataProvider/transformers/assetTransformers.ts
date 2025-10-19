@@ -11,7 +11,11 @@ import {
   normalizeStringArray,
   serializePrivacySettings,
 } from "./helpers";
-import { compactThingDescription, expandThingDescription, replaceThingDescriptionHrefs } from "../../utils/thingDescriptionUtils";
+import {
+  compactThingDescription,
+  expandThingDescription,
+  replaceThingDescriptionHrefs,
+} from "../../utils/thingDescriptionUtils";
 
 const CoreAssetSchema = z
   .object({
@@ -49,7 +53,9 @@ export async function parseAssetFromJsonLd(jsonLdAsset: any): Promise<Asset> {
       provenance: extractProvenance(coreAsset),
       qualityMeasurements: extractQualityMeasurements(coreAsset),
       privacySettings: extractPrivacySettings(coreAsset),
-      thingDescription: await extractThingDescription(coreAsset.properties?.["td:hasThingDescription"]),
+      thingDescription: await extractThingDescription(
+        coreAsset.properties?.["td:hasThingDescription"]
+      ),
     };
 
     return stripUndefinedValues(asset);
@@ -209,7 +215,9 @@ export async function serializeAssetToJsonLd(
     );
     jsonLd.properties = {
       ...jsonLd.properties,
-      "td:hasThingDescription": await expandThingDescription(processedThingDescription),
+      "td:hasThingDescription": await expandThingDescription(
+        processedThingDescription
+      ),
     };
   }
 

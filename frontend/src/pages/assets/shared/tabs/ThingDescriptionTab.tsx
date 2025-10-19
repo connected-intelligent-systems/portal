@@ -12,7 +12,13 @@ import {
 import { useTranslate, useInput } from "react-admin";
 import UploadFileIcon from "@mui/icons-material/UploadFile";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { replaceThingDescriptionContext, replaceThingDescriptionHrefs } from "../../../../utils/thingDescriptionUtils";
+import CodeMirror from "@uiw/react-codemirror";
+import { json } from "@codemirror/lang-json";
+import { EditorState } from "@codemirror/state";
+import {
+  replaceThingDescriptionContext,
+  replaceThingDescriptionHrefs,
+} from "../../../../utils/thingDescriptionUtils";
 import { validateThingDescription } from "../../../../utils/thingDescriptionValidator";
 
 export const ThingDescriptionTab = () => {
@@ -56,7 +62,8 @@ export const ThingDescriptionTab = () => {
 
         // Replace hrefs with public EDC endpoint
         const publicEdcEndpoint =
-          window.config?.publicEdcEndpoint || "http://localhost:8080/api/v1/dsp";
+          window.config?.publicEdcEndpoint ||
+          "http://localhost:8080/api/v1/dsp";
         const processedContent = replaceThingDescriptionHrefs(
           parsedTd,
           publicEdcEndpoint
@@ -68,7 +75,9 @@ export const ThingDescriptionTab = () => {
       } catch (err) {
         setValidating(false);
         setError(
-          translate("resources.assets.create.thingDescription.errors.invalidJson")
+          translate(
+            "resources.assets.create.thingDescription.errors.invalidJson"
+          )
         );
       }
     };
@@ -94,9 +103,7 @@ export const ThingDescriptionTab = () => {
           {validating ? (
             <>
               <CircularProgress size={16} sx={{ mr: 1 }} />
-              {translate(
-                "resources.assets.create.thingDescription.validating"
-              )}
+              {translate("resources.assets.create.thingDescription.validating")}
             </>
           ) : (
             translate("resources.assets.create.thingDescription.uploadButton")
@@ -146,19 +153,14 @@ export const ThingDescriptionTab = () => {
             </Typography>
           </AccordionSummary>
           <AccordionDetails>
-            <Box
-              component="pre"
-              sx={{
-                bgcolor: "grey.100",
-                p: 2,
-                borderRadius: 1,
-                overflow: "auto",
-                fontSize: "0.875rem",
-                fontFamily: "monospace",
+            <CodeMirror
+              value={JSON.stringify(field.value, null, 2)}
+              extensions={[json(), EditorState.readOnly.of(true)]}
+              basicSetup={{
+                lineNumbers: true,
+                foldGutter: true,
               }}
-            >
-              {JSON.stringify(field.value, null, 2)}
-            </Box>
+            />
           </AccordionDetails>
         </Accordion>
       )}

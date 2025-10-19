@@ -1,0 +1,30 @@
+import { useRecordContext, useTranslate } from "react-admin";
+import { Typography } from "@mui/material";
+import CodeMirror from "@uiw/react-codemirror";
+import { json } from "@codemirror/lang-json";
+import { EditorState } from "@codemirror/state";
+
+export const ThingDescription = () => {
+  const record = useRecordContext();
+  const translate = useTranslate();
+  const thingDescription = record?.thingDescription;
+
+  if (!thingDescription) {
+    return (
+      <Typography variant="body2" color="text.secondary">
+        {translate("resources.assets.tabs.thingDescriptionTab.noDescription")}
+      </Typography>
+    );
+  }
+
+  return (
+    <CodeMirror
+      value={JSON.stringify(thingDescription, null, 2)}
+      extensions={[json(), EditorState.readOnly.of(true)]}
+      basicSetup={{
+        lineNumbers: true,
+        foldGutter: true,
+      }}
+    />
+  );
+};

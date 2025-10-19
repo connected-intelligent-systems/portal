@@ -68,7 +68,7 @@ export function replaceThingDescriptionHrefs(
     // Ensure root level has security set to bearer_sc
     processedTd.security = "bearer_sc";
 
-    return processedTd
+    return processedTd;
   } catch (error) {
     // If parsing fails, return original string
     console.error("Failed to process thing description:", error);
@@ -76,9 +76,7 @@ export function replaceThingDescriptionHrefs(
   }
 }
 
-export function replaceThingDescriptionContext(
-  thingDescription: any
-): any {
+export function replaceThingDescriptionContext(thingDescription: any): any {
   if (thingDescription["@context"]) {
     thingDescription["@context"] = context["@context"];
   }
@@ -89,18 +87,21 @@ export async function compactThingDescription(
   thingDescription: any
 ): Promise<any> {
   // the context when returning from the edc is removed, so we need to add it twice (and compact)
-  const compactedTd = await jsonld.compact({
-    ...thingDescription,
-    "@context": context["@context"],
-  }, {
-    "@context": context["@context"],
-  });
+  const compactedTd = await jsonld.compact(
+    {
+      ...thingDescription,
+      "@context": context["@context"],
+    },
+    {
+      "@context": context["@context"],
+    }
+  );
 
   // after compaction, ensure the context is set to the standard W3C TD context
   return {
     ...compactedTd,
-    "@context": "https://www.w3.org/2022/wot/td/v1.1"
-  }
+    "@context": "https://www.w3.org/2022/wot/td/v1.1",
+  };
 }
 
 export async function expandThingDescription(
