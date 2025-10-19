@@ -5,14 +5,14 @@ interface UseNegotiationPollingParams {
   dataProvider: DataProvider;
   pollInterval?: number;
   maxAttempts?: number;
-  onFinalized: (contractAgreementId: string) => void;
-  onTimeout: (negotiationId: string) => void;
-  onError: (negotiationId: string, error: unknown) => void;
+  onFinalized: (_contractAgreementId: string) => void;
+  onTimeout: (_negotiationId: string) => void;
+  onError: (_negotiationId: string, _error?: unknown) => void;
 }
 
 interface UseNegotiationPollingResult {
   isPolling: boolean;
-  startPolling: (negotiationId: string) => void;
+  startPolling: (_negotiationId: string) => void;
   stopPolling: () => void;
   negotiationId: string | null;
 }

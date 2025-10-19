@@ -143,13 +143,11 @@ export async function parseDatasetFromJsonLd(
 ): Promise<Dataset> {
   try {
     const parsed = DatasetSchema.parse(jsonLdDataset) as any;
-    const thingDescription = await extractThingDescription(
-      parsed._rawThingDescription
-    );
-    delete parsed._rawThingDescription;
+    const { _rawThingDescription, ...rest } = parsed;
+    const thingDescription = await extractThingDescription(_rawThingDescription);
 
     const dataset: Dataset = {
-      ...parsed,
+      ...rest,
       thingDescription,
     };
 
@@ -177,10 +175,8 @@ export async function parseCatalogFromJsonLd(
 
     const datasetsWithThingDescriptions = await Promise.all(
       (parsed["dcat:dataset"] || []).map(async (dataset: any) => {
-        const thingDescription = await extractThingDescription(
-          dataset._rawThingDescription
-        );
         const { _rawThingDescription, ...rest } = dataset;
+        const thingDescription = await extractThingDescription(_rawThingDescription);
         return {
           ...rest,
           thingDescription,

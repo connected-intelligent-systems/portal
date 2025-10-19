@@ -1,4 +1,5 @@
 import { useState } from "react";
+import type React from "react";
 import {
   Typography,
   Button,
@@ -17,10 +18,7 @@ import CodeMirror from "@uiw/react-codemirror";
 import { json } from "@codemirror/lang-json";
 import { EditorState } from "@codemirror/state";
 import { githubLight, githubDark } from "@uiw/codemirror-theme-github";
-import {
-  replaceThingDescriptionContext,
-  replaceThingDescriptionHrefs,
-} from "../../../../utils/thingDescriptionUtils";
+import { replaceThingDescriptionHrefs } from "../../../../utils/thingDescriptionUtils";
 import { validateThingDescription } from "../../../../utils/thingDescriptionValidator";
 
 export const ThingDescriptionTab = () => {

@@ -1,4 +1,5 @@
 import { useState, useEffect, Suspense } from "react";
+import type React from "react";
 import {
   Show,
   SimpleShowLayout,
@@ -195,7 +196,7 @@ export const TransferProcessesShow = () => {
     }
   );
 
-  const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
+  const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
     setActiveTab(newValue);
   };
 

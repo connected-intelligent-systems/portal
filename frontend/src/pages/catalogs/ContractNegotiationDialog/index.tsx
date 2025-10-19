@@ -60,7 +60,7 @@ interface DatasetTabDefinition {
   icon: React.ReactElement;
   labelTranslationKey: string;
   ariaControls: string;
-  render: (dataset: Dataset) => React.ReactNode;
+  render: (_dataset: Dataset) => React.ReactNode;
 }
 
 const DATASET_TABS: DatasetTabDefinition[] = [
@@ -182,7 +182,7 @@ export const ContractNegotiationDialog: React.FC<
       handleClose();
       navigate(`/contractnegotiations/${negotiationId}/show`);
     },
-    onError: (negotiationId, error) => {
+    onError: (negotiationId) => {
       notify(
         translate(
           "resources.contractnegotiations.messages.negotiationPollingFailed"
