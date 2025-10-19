@@ -10,11 +10,9 @@ import {
   extractString,
   normalizeStringArray,
   serializePrivacySettings,
+  extractThingDescription,
 } from "./helpers";
-import {
-  compactThingDescription,
-  expandThingDescription,
-} from "../../utils/thingDescriptionUtils";
+import { expandThingDescription } from "../../utils/thingDescriptionUtils";
 
 const CoreAssetSchema = z
   .object({
@@ -25,11 +23,6 @@ const CoreAssetSchema = z
   .passthrough();
 
 type CoreAsset = z.infer<typeof CoreAssetSchema>;
-
-async function extractThingDescription(thingDescription: any): Promise<any> {
-  // the edc returns the expanded form, we want the compacted one
-  return compactThingDescription(thingDescription);
-}
 
 export async function parseAssetFromJsonLd(jsonLdAsset: any): Promise<Asset> {
   try {

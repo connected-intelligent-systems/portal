@@ -31,6 +31,7 @@ import AccountTreeIcon from "@mui/icons-material/AccountTree";
 import SecurityIcon from "@mui/icons-material/Security";
 import AssessmentIcon from "@mui/icons-material/Assessment";
 import CloudIcon from "@mui/icons-material/Cloud";
+import DevicesIcon from "@mui/icons-material/Devices";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import { Dataset } from "../../../types/catalog";
@@ -40,6 +41,7 @@ import {
   DataPrivacy,
   DataQuality,
   Versioning,
+  ThingDescription,
 } from "../../../components/assets";
 import { ServiceInformation } from "../../../components/datasets";
 import { PolicySelectionView } from "./PolicySelectionView";
@@ -113,6 +115,16 @@ const DATASET_TABS: DatasetTabDefinition[] = [
     ),
   },
   {
+    icon: <DevicesIcon />,
+    labelTranslationKey: "resources.assets.tabs.thingDescription",
+    ariaControls: "dataset-thing-description-tab",
+    render: (dataset) => (
+      <RecordContextProvider value={dataset}>
+        <ThingDescription />
+      </RecordContextProvider>
+    ),
+  },
+  {
     icon: <CloudIcon />,
     labelTranslationKey: "resources.catalog.dataset.tabs.serviceInfo",
     ariaControls: "dataset-service-tab",
@@ -171,7 +183,6 @@ export const ContractNegotiationDialog: React.FC<
       navigate(`/contractnegotiations/${negotiationId}/show`);
     },
     onError: (negotiationId, error) => {
-      console.error("Failed to poll negotiation status", error);
       notify(
         translate(
           "resources.contractnegotiations.messages.negotiationPollingFailed"

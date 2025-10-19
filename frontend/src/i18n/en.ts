@@ -19,6 +19,8 @@ const englishMessages: Partial<TranslationMessages> = {
         dataAddressType: "Data Address Type",
         description: "Description",
         version: "Version",
+        versioning: "Versioning",
+        creator: "Creator",
         serviceInformationTab: {
           description:
             "Technical service information and endpoint details for accessing this dataset.",

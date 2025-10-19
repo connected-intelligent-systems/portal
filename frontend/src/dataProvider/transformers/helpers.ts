@@ -231,3 +231,14 @@ export function serializePrivacySettings(
 
   return { "dpv:hasPersonalDataHandling": mapped };
 }
+
+export async function extractThingDescription(
+  thingDescription: any
+): Promise<any> {
+  if (!thingDescription) return undefined;
+
+  const { compactThingDescription } = await import(
+    "../../utils/thingDescriptionUtils"
+  );
+  return compactThingDescription(thingDescription);
+}

@@ -94,6 +94,8 @@ export async function getManyReference(params: GetManyReferenceParams) {
       participantId: cleanCatalog.participantId,
     }));
 
+    console.log(datasets);
+
     return {
       data: datasets,
       total: datasets.length,
@@ -189,7 +191,8 @@ export async function getOne(params: any) {
     }
 
     const datasetData = await response.json();
-    const cleanDataset = await parseDatasetFromJsonLd(datasetData);
+    const framedDataset = await compactJsonLd(datasetData, frame);
+    const cleanDataset = await parseDatasetFromJsonLd(framedDataset);
 
     // Add catalog metadata
     cleanDataset.catalogUrl = catalogUrl;
@@ -249,7 +252,8 @@ export async function getMany(params: any) {
         }
 
         const datasetData = await response.json();
-        const cleanDataset = await parseDatasetFromJsonLd(datasetData);
+        const framedDataset = await compactJsonLd(datasetData, frame);
+        const cleanDataset = await parseDatasetFromJsonLd(framedDataset);
 
         // Add catalog metadata
         cleanDataset.catalogUrl = catalogUrl;

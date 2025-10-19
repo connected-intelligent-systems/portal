@@ -12,12 +12,14 @@ import AccountTreeIcon from "@mui/icons-material/AccountTree";
 import SecurityIcon from "@mui/icons-material/Security";
 import AssessmentIcon from "@mui/icons-material/Assessment";
 import CloudIcon from "@mui/icons-material/Cloud";
+import DevicesIcon from "@mui/icons-material/Devices";
 import { Dataset } from "../../../types/catalog";
 import {
   BasicInformation,
   Provenance,
   DataPrivacy,
   DataQuality,
+  ThingDescription,
 } from "../../../components/assets";
 import { ServiceInformation } from "../../../components/datasets";
 
@@ -122,6 +124,11 @@ export const DatasetShow = () => {
                 label={translate("resources.catalog.dataset.tabs.serviceInfo")}
                 aria-controls="dataset-service-tab"
               />
+              <Tab
+                icon={<DevicesIcon />}
+                label={translate("resources.assets.tabs.thingDescription")}
+                aria-controls="dataset-thing-description"
+              />
             </Tabs>
           </Box>
 
@@ -134,6 +141,7 @@ export const DatasetShow = () => {
                 {activeTab === 2 && <DataPrivacy />}
                 {activeTab === 3 && <DataQuality />}
                 {activeTab === 4 && <ServiceInformation dataset={dataset} />}
+                {activeTab === 5 && <ThingDescription />}
               </RecordContextProvider>
             </Suspense>
           </Box>

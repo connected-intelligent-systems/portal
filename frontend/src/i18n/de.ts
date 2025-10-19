@@ -46,6 +46,8 @@ const germanMessages: Partial<TranslationMessages> = {
         dataAddressType: "Datenadressentyp",
         description: "Beschreibung",
         version: "Version",
+        versioning: "Versionierung",
+        creator: "Ersteller",
         created: "Erstellt",
         modified: "Geändert",
         contentType: "Inhaltstyp",
@@ -59,6 +61,10 @@ const germanMessages: Partial<TranslationMessages> = {
         dataPrivacy: "Datenschutz",
         dataQuality: "Datenqualität",
         dataAddress: "Datenadresse",
+        thingDescription: "Thing Description",
+        thingDescriptionTab: {
+          noDescription: "Keine Thing Description verfügbar",
+        },
         basicInformation: {
           shortDescription: "Kurzbeschreibung",
           noShortDescription: "Keine Kurzbeschreibung verfügbar",
@@ -164,6 +170,7 @@ const germanMessages: Partial<TranslationMessages> = {
           provenance: "Herkunft",
           dataPrivacy: "Datenschutz",
           dataQuality: "Datenqualität",
+          thingDescription: "Thing Description",
         },
         buttons: {
           back: "Zurück",
@@ -375,6 +382,21 @@ const germanMessages: Partial<TranslationMessages> = {
             valueHelper: "Der Wert der Qualitätsmessung.",
             description: "Beschreibung",
             descriptionHelper: "Eine Beschreibung der Qualitätsmessung.",
+          },
+        },
+        thingDescription: {
+          title: "W3C Thing Description",
+          description:
+            "Laden Sie eine W3C Thing Description JSON-Datei hoch. Die Datei wird gegen das W3C TD-Schema validiert, und alle href-Werte werden automatisch durch den öffentlichen EDC-Endpunkt ersetzt, bevor sie gespeichert werden.",
+          uploadButton: "JSON-Datei hochladen",
+          validating: "Validierung läuft...",
+          viewDescription: "Thing Description anzeigen",
+          errors: {
+            invalidJson:
+              "Ungültiges JSON-Format. Bitte überprüfen Sie Ihre Eingabe.",
+            validationFailed:
+              "Thing Description-Validierung fehlgeschlagen. Bitte beheben Sie die unten aufgeführten Fehler:",
+            details: "Validierungsfehler:",
           },
         },
       },

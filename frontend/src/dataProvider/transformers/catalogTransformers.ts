@@ -8,6 +8,7 @@ import {
   extractProvenance,
   extractQualityMeasurements,
   extractString,
+  extractThingDescription,
 } from "./helpers";
 import type { CoreResource } from "./helpers";
 
@@ -121,6 +122,7 @@ const DatasetSchema = z
       provenance: extractProvenance(datasetResource),
       qualityMeasurements: extractQualityMeasurements(datasetResource),
       privacySettings: extractPrivacySettings(datasetResource),
+      _rawThingDescription: d["td:hasThingDescription"],
     };
   });
 
@@ -140,8 +142,18 @@ export async function parseDatasetFromJsonLd(
   jsonLdDataset: any
 ): Promise<Dataset> {
   try {
-    const parsed = DatasetSchema.parse(jsonLdDataset) as Dataset;
-    return stripUndefinedValues(parsed);
+    const parsed = DatasetSchema.parse(jsonLdDataset) as any;
+    const thingDescription = await extractThingDescription(
+      parsed._rawThingDescription
+    );
+    delete parsed._rawThingDescription;
+
+    const dataset: Dataset = {
+      ...parsed,
+      thingDescription,
+    };
+
+    return stripUndefinedValues(dataset);
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
     throw new Error(`Failed to transform JSON-LD dataset: ${errorMessage}`);
@@ -162,12 +174,26 @@ export async function parseCatalogFromJsonLd(
 ): Promise<Catalog> {
   try {
     const parsed = CatalogSchema.parse(jsonLdCatalog);
+
+    const datasetsWithThingDescriptions = await Promise.all(
+      (parsed["dcat:dataset"] || []).map(async (dataset: any) => {
+        const thingDescription = await extractThingDescription(
+          dataset._rawThingDescription
+        );
+        const { _rawThingDescription, ...rest } = dataset;
+        return {
+          ...rest,
+          thingDescription,
+        };
+      })
+    );
+
     const catalog: Catalog = {
       id: catalogId,
       title: parsed["dct:title"],
       description: parsed["dct:description"],
       participantId: parsed["dspace:participantId"],
-      datasets: parsed["dcat:dataset"] || [],
+      datasets: datasetsWithThingDescriptions,
     };
     return stripUndefinedValues(catalog);
   } catch (error) {

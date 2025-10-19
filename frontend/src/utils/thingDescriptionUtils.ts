@@ -53,7 +53,6 @@ export function replaceThingDescriptionHrefs(
 
     return processedTd;
   } catch (error) {
-    console.error("Failed to process thing description:", error);
     return thingDescription;
   }
 }
