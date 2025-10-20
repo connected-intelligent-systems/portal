@@ -12,7 +12,10 @@ ENV REACT_APP_ENV=production
 RUN npm run build
 
 FROM nginx:alpine
+ENV EDC_MANAGEMENT_API_URL=http://edc-provider:19193 \
+    EDC_PROTOCOL_API_URL=http://edc-provider:19291 \
+    EDC_API_KEY=supersecret
 COPY --from=frontend /app/dist /usr/share/nginx/html
-COPY nginx.conf /etc/nginx/nginx.conf
+COPY nginx.conf /etc/nginx/nginx.conf.template
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]

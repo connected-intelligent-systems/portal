@@ -50,13 +50,6 @@ export default defineConfig({
                         proxyReq.setHeader('x-api-key', process.env.VITE_EDC_API_KEY || 'supersecret');
                     });
                 }
-            },
-            // Federated Catalog API
-            '/api/catalog': {
-                target: 'http://edc-provider:19199',
-                changeOrigin: true,
-                secure: false,
-                rewrite: (path) => path.replace(/^\/api\/catalog/, '/catalog')
             }
         }
     },
