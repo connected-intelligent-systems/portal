@@ -1,4 +1,5 @@
 import { TranslationMessages } from "ra-core";
+import { getCategoryTranslations } from "../utils/categories";
 
 const englishMessages: Partial<TranslationMessages> = {
   resources: {
@@ -214,15 +215,7 @@ const englishMessages: Partial<TranslationMessages> = {
             mediaType: "Media Type",
             mediaTypeHelper: "The media type of the dataset distribution.",
           },
-          categories: {
-            file: "File",
-            service: "Service",
-            timeSeries: "Time Series",
-            geospatial: "Geospatial",
-            text: "Text",
-            tabular: "Tabular",
-            scientific: "Scientific",
-          },
+          categories: getCategoryTranslations("en"),
           mediaTypes: {
             csv: "CSV",
             json: "JSON",

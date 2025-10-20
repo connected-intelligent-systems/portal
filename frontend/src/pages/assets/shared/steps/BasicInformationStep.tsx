@@ -7,54 +7,17 @@ import {
   useTranslate,
 } from "react-admin";
 import { Typography } from "@mui/material";
+import { getCategoryIds } from "../../../../utils/categories";
 
 export const BasicInformationStep = () => {
   const translate = useTranslate();
 
-  const categoryChoices = [
-    {
-      id: "File",
-      name: translate(
-        "resources.assets.create.basicInformation.categories.file"
-      ),
-    },
-    {
-      id: "Service",
-      name: translate(
-        "resources.assets.create.basicInformation.categories.service"
-      ),
-    },
-    {
-      id: "TimeSeries",
-      name: translate(
-        "resources.assets.create.basicInformation.categories.timeSeries"
-      ),
-    },
-    {
-      id: "Geospatial",
-      name: translate(
-        "resources.assets.create.basicInformation.categories.geospatial"
-      ),
-    },
-    {
-      id: "Text",
-      name: translate(
-        "resources.assets.create.basicInformation.categories.text"
-      ),
-    },
-    {
-      id: "Tabular",
-      name: translate(
-        "resources.assets.create.basicInformation.categories.tabular"
-      ),
-    },
-    {
-      id: "Scientific",
-      name: translate(
-        "resources.assets.create.basicInformation.categories.scientific"
-      ),
-    },
-  ];
+  const categoryChoices = getCategoryIds().map((id) => ({
+    id,
+    name: translate(
+      `resources.assets.create.basicInformation.categories.${id.toLowerCase()}`
+    ),
+  }));
 
   const mediaTypeChoices = [
     {

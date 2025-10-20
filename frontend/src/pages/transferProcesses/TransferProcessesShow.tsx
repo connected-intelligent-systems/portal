@@ -20,7 +20,7 @@ import {
   Loading,
   useGetOne,
 } from "react-admin";
-import { Alert, Typography, Box, Tabs, Tab } from "@mui/material";
+import { Alert, Box, Tabs, Tab } from "@mui/material";
 import { Link } from "react-router-dom";
 import CancelIcon from "@mui/icons-material/Cancel";
 import DownloadIcon from "@mui/icons-material/Download";
@@ -283,10 +283,7 @@ export const TransferProcessesShow = () => {
           )}
 
         {isConsumer && dataset && (
-          <Box sx={{ mt: 3 }}>
-            <Typography variant="h6" gutterBottom>
-              {translate("resources.transferprocesses.fields.dataset")} Details
-            </Typography>
+          <Box>
             <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
               <Tabs
                 value={activeTab}

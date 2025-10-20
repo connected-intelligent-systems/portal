@@ -59,8 +59,6 @@ export const ThingDescriptionTab = () => {
           return;
         }
 
-        // const processedTd = replaceThingDescriptionContext(parsedTd);
-
         // Replace hrefs with public EDC endpoint
         const publicEdcEndpoint =
           window.config?.publicEdcEndpoint ||

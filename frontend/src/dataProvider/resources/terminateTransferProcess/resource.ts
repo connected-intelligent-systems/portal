@@ -10,7 +10,7 @@ export async function create(params: CreateParams) {
     reason: params.data.reason,
   };
 
-  const response = await httpClient(
+  await httpClient(
     `/api/management/v3/transferprocesses/${params.data.id}/terminate`,
     {
       method: "POST",

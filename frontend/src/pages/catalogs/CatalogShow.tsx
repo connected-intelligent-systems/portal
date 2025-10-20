@@ -13,12 +13,12 @@ import {
   TextInput,
   useListContext,
   useTranslate,
+  useLocale,
 } from "react-admin";
 import { Box, Grid } from "@mui/material";
-import { useState, useEffect } from "react";
-import { getCategories } from "../../dataProvider/resources/dataset";
 import { DatasetCard } from "./DatasetCard";
 import { Dataset } from "../../types/catalog";
+import { getCategoryChoices } from "../../utils/categories";
 
 const CatalogShowActions = () => (
   <TopToolbar>
@@ -31,21 +31,9 @@ const DatasetsWithFilters = () => {
   const catalogUrl = catalogRecord?.url;
   const { data } = useListContext();
   const translate = useTranslate();
-  const [categories, setCategories] = useState<{ id: string; name: string }[]>(
-    []
-  );
+  const locale = useLocale();
 
-  useEffect(() => {
-    if (catalogUrl) {
-      getCategories(catalogUrl)
-        .then((cats) => {
-          setCategories(cats.map((cat) => ({ id: cat, name: cat })));
-        })
-        .catch(() => {
-          setCategories([]);
-        });
-    }
-  }, [catalogUrl]);
+  const categoryChoices = getCategoryChoices(locale);
 
   const filters = [
     <TextInput
@@ -59,7 +47,7 @@ const DatasetsWithFilters = () => {
       key="category"
       source="category"
       label={translate("resources.catalog.filters.category")}
-      choices={categories}
+      choices={categoryChoices}
       alwaysOn
     />,
   ];

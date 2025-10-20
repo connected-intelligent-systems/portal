@@ -104,42 +104,6 @@ export async function getManyReference(params: GetManyReferenceParams) {
   }
 }
 
-export async function getCategories(catalogUrl: string): Promise<string[]> {
-  try {
-    const response = await fetch(`/api/management/v3/catalog/request`, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-      method: "POST",
-      body: JSON.stringify({
-        "@context": {
-          "@vocab": "https://w3id.org/edc/v0.0.1/ns/",
-        },
-        counterPartyAddress: catalogUrl,
-        protocol: "dataspace-protocol-http",
-      }),
-    });
-
-    const catalogData = await response.json();
-    const cleanCatalog = await parseCatalogFromJsonLd(catalogData, catalogUrl);
-
-    LocalCatalogService.updateLastConnected(catalogUrl);
-
-    const datasets = cleanCatalog.datasets || [];
-
-    const categories = new Set<string>();
-    datasets.forEach((dataset: any) => {
-      if (dataset.theme?.title) {
-        categories.add(dataset.theme.title);
-      }
-    });
-
-    return Array.from(categories).sort();
-  } catch (error) {
-    return [];
-  }
-}
-
 export async function getList() {
   return {
     data: [],
