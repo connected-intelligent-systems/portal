@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import {
   parseAssetFromJsonLd,
   serializeAssetToJsonLd,
-} from "../../dataProvider/transformers/assetTransformers";
+} from "../../dataProvider/resources/asset";
 
 describe("Asset Transformers", () => {
   const sampleJsonLdAsset = {

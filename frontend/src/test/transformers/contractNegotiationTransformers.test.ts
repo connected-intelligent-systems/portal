@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { parseContractNegotiationFromJsonLd } from "../../dataProvider/transformers/contractNegotiationTransformers";
+import { parseContractNegotiationFromJsonLd } from "../../dataProvider/resources/contractNegotiation";
 
 describe("contractNegotiationTransformers", () => {
   const mockJsonLdNegotiation = {

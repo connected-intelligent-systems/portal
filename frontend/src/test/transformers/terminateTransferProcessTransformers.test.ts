@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { parseTerminateTransferProcessFromJsonLd } from "../../dataProvider/transformers/terminateTransferProcessTransformers";
+import { parseTerminateTransferProcessFromJsonLd } from "../../dataProvider/resources/terminateTransferProcess";
 
 describe("terminateTransferProcessTransformers", () => {
   const mockJsonLd = {

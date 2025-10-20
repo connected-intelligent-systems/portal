@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { parseDataRequestFromJsonLd } from "../../dataProvider/transformers/edrTransformers";
+import { parseDataRequestFromJsonLd } from "../../dataProvider/shared/edrTransformers";
 
 describe("edrTransformers", () => {
   const mockJsonLd = {

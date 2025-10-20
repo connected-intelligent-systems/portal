@@ -2,7 +2,7 @@ import { describe, expect, test } from "vitest";
 import {
   parseDatasetFromJsonLd,
   parseCatalogFromJsonLd,
-} from "../../dataProvider/transformers/catalogTransformers";
+} from "../../dataProvider/resources/catalog";
 
 describe("catalogTransformers", () => {
   const mockJsonLdDataset = {

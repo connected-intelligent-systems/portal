@@ -2,7 +2,7 @@ import { describe, expect, test } from "vitest";
 import {
   parseContractDefinitionFromJsonLd,
   serializeContractDefinitionToJsonLd,
-} from "../../dataProvider/transformers/contractDefinitionTransformers";
+} from "../../dataProvider/resources/contractDefinition";
 
 describe("contractDefinitionTransformers", () => {
   const mockJsonLdContractDefinition = {

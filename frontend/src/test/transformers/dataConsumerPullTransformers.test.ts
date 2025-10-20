@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { parseDataConsumerPullFromJsonLd } from "../../dataProvider/transformers/dataConsumerPullTransformers";
+import { parseDataConsumerPullFromJsonLd } from "../../dataProvider/shared/dataConsumerPullTransformers";
 
 describe("dataConsumerPullTransformers", () => {
   const mockJsonLd = {

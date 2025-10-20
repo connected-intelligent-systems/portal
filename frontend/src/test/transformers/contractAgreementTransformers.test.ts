@@ -1,8 +1,8 @@
 import { describe, it, expect, vi } from "vitest";
-import { parseContractAgreementFromJsonLd } from "../../dataProvider/transformers/contractAgreementTransformers";
+import { parseContractAgreementFromJsonLd } from "../../dataProvider/resources/contractAgreement";
 
 // Mock the policy transformer as its testing is separate
-vi.mock("../../dataProvider/transformers/policyTransformers", () => ({
+vi.mock("../../dataProvider/resources/policy", () => ({
   parsePolicyFromJsonLd: vi.fn((policy) =>
     Promise.resolve({ ...policy, id: "parsed-policy" })
   ),

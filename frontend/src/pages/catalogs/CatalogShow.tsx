@@ -16,7 +16,7 @@ import {
 } from "react-admin";
 import { Box, Grid } from "@mui/material";
 import { useState, useEffect } from "react";
-import { getCategories } from "../../dataProvider/resources/datasets";
+import { getCategories } from "../../dataProvider/resources/dataset";
 import { DatasetCard } from "./DatasetCard";
 import { Dataset } from "../../types/catalog";
 
