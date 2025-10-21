@@ -1,5 +1,6 @@
 import { TranslationMessages } from "ra-core";
 import { getCategoryTranslations } from "../utils/categories";
+import { getMediaTypeTranslations } from "../utils/mediaTypes";
 
 const englishMessages: Partial<TranslationMessages> = {
   resources: {
@@ -216,16 +217,7 @@ const englishMessages: Partial<TranslationMessages> = {
             mediaTypeHelper: "The media type of the dataset distribution.",
           },
           categories: getCategoryTranslations("en"),
-          mediaTypes: {
-            csv: "CSV",
-            json: "JSON",
-            xml: "XML",
-            yaml: "YAML",
-            parquet: "Parquet",
-            hdf5: "HDF5",
-            avro: "Avro",
-            orc: "ORC",
-          },
+          mediaTypes: getMediaTypeTranslations("en"),
         },
         dataAddress: {
           title: "Data Address",

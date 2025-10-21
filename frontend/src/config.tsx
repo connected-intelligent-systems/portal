@@ -31,11 +31,17 @@ export type CategoryConfig = {
   translations: CategoryTranslations;
 };
 
+export type MediaTypeConfig = {
+  id: string;
+  translations: CategoryTranslations;
+};
+
 export type AppConfig = {
   title: string;
   theme?: ThemeConfig;
   publicEdcEndpoint?: string;
   categories?: CategoryConfig[];
+  mediaTypes?: MediaTypeConfig[];
 };
 
 declare global {
@@ -100,6 +106,93 @@ export const DEFAULT_CATEGORIES: CategoryConfig[] = [
     translations: {
       en: "Analytics & Insights",
       de: "Analysen & Auswertungen",
+    },
+  },
+];
+
+export const DEFAULT_MEDIA_TYPES: MediaTypeConfig[] = [
+  {
+    id: "application/json",
+    translations: {
+      en: "JSON",
+      de: "JSON",
+    },
+  },
+  {
+    id: "text/csv",
+    translations: {
+      en: "CSV",
+      de: "CSV",
+    },
+  },
+  {
+    id: "application/xml",
+    translations: {
+      en: "XML",
+      de: "XML",
+    },
+  },
+  {
+    id: "application/parquet",
+    translations: {
+      en: "Parquet",
+      de: "Parquet",
+    },
+  },
+  {
+    id: "application/avro",
+    translations: {
+      en: "Avro",
+      de: "Avro",
+    },
+  },
+  {
+    id: "application/octet-stream",
+    translations: {
+      en: "Binary Data",
+      de: "Binärdaten",
+    },
+  },
+  {
+    id: "text/plain",
+    translations: {
+      en: "Plain Text",
+      de: "Klartext",
+    },
+  },
+  {
+    id: "application/pdf",
+    translations: {
+      en: "PDF",
+      de: "PDF",
+    },
+  },
+  {
+    id: "image/jpeg",
+    translations: {
+      en: "JPEG Image",
+      de: "JPEG-Bild",
+    },
+  },
+  {
+    id: "image/png",
+    translations: {
+      en: "PNG Image",
+      de: "PNG-Bild",
+    },
+  },
+  {
+    id: "application/zip",
+    translations: {
+      en: "ZIP Archive",
+      de: "ZIP-Archiv",
+    },
+  },
+  {
+    id: "application/protobuf",
+    translations: {
+      en: "Protocol Buffers",
+      de: "Protocol Buffers",
     },
   },
 ];

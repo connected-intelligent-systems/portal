@@ -5,12 +5,15 @@ import {
   AutocompleteInput,
   required,
   useTranslate,
+  useLocale,
 } from "react-admin";
 import { Typography } from "@mui/material";
 import { getCategoryIds } from "../../../../utils/categories";
+import { getMediaTypeChoices } from "../../../../utils/mediaTypes";
 
 export const BasicInformationStep = () => {
   const translate = useTranslate();
+  const locale = useLocale();
 
   const categoryChoices = getCategoryIds().map((id) => ({
     id,
@@ -19,56 +22,7 @@ export const BasicInformationStep = () => {
     ),
   }));
 
-  const mediaTypeChoices = [
-    {
-      id: "text/csv",
-      name: translate(
-        "resources.assets.create.basicInformation.mediaTypes.csv"
-      ),
-    },
-    {
-      id: "application/json",
-      name: translate(
-        "resources.assets.create.basicInformation.mediaTypes.json"
-      ),
-    },
-    {
-      id: "application/xml",
-      name: translate(
-        "resources.assets.create.basicInformation.mediaTypes.xml"
-      ),
-    },
-    {
-      id: "application/yaml",
-      name: translate(
-        "resources.assets.create.basicInformation.mediaTypes.yaml"
-      ),
-    },
-    {
-      id: "application/vnd.apache.parquet",
-      name: translate(
-        "resources.assets.create.basicInformation.mediaTypes.parquet"
-      ),
-    },
-    {
-      id: "application/x-hdf5",
-      name: translate(
-        "resources.assets.create.basicInformation.mediaTypes.hdf5"
-      ),
-    },
-    {
-      id: "application/avro",
-      name: translate(
-        "resources.assets.create.basicInformation.mediaTypes.avro"
-      ),
-    },
-    {
-      id: "application/orc",
-      name: translate(
-        "resources.assets.create.basicInformation.mediaTypes.orc"
-      ),
-    },
-  ];
+  const mediaTypeChoices = getMediaTypeChoices(locale);
   return (
     <>
       <Typography variant="h6" gutterBottom>

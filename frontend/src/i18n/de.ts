@@ -1,5 +1,6 @@
 import { TranslationMessages } from "ra-core";
 import { getCategoryTranslations } from "../utils/categories";
+import { getMediaTypeTranslations } from "../utils/mediaTypes";
 
 const germanMessages: Partial<TranslationMessages> = {
   resources: {
@@ -216,16 +217,7 @@ const germanMessages: Partial<TranslationMessages> = {
             mediaTypeHelper: "Der Medientyp der Datensatzverteilung.",
           },
           categories: getCategoryTranslations("de"),
-          mediaTypes: {
-            csv: "CSV",
-            json: "JSON",
-            xml: "XML",
-            yaml: "YAML",
-            parquet: "Parquet",
-            hdf5: "HDF5",
-            avro: "Avro",
-            orc: "ORC",
-          },
+          mediaTypes: getMediaTypeTranslations("de"),
         },
         dataAddress: {
           title: "Datenadresse",
