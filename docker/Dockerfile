@@ -22,8 +22,8 @@ RUN npm run build
 
 # Production stage with nginx
 FROM nginx:alpine AS production
-ENV EDC_MANAGEMENT_API_URL=http://edc-provider:19193 \
-    EDC_PROTOCOL_API_URL=http://edc-provider:19291 \
+ENV EDC_MANAGEMENT_API_URL=http://edc-provider:19193/management \
+    EDC_PROTOCOL_API_URL=http://edc-provider:19291/protocol \
     EDC_API_KEY=supersecret
 COPY --from=builder /app/dist /usr/share/nginx/html
 COPY docker/nginx.conf /etc/nginx/templates/default.conf.template
