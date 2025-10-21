@@ -4,8 +4,9 @@ services:
 
   portal-provider:
     build:
-      context: .
-      dockerfile: Dockerfile_dev
+      context: ../
+      dockerfile: docker/Dockerfile
+      target: development
     ports:
       - 5173:5173
     volumes:
@@ -122,8 +123,9 @@ services:
 
   portal-consumer:
     build:
-      context: ../frontend
-      dockerfile: Dockerfile_dev
+      context: ../
+      dockerfile: docker/Dockerfile
+      target: development
     ports:
       - 5174:5173
     volumes:

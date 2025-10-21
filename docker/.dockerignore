@@ -1,0 +1,15 @@
+node_modules
+.git
+.github
+.gitlab-ci.yml
+*.md
+.vscode
+.claude
+dev-setup
+dist
+.env
+.env.local
+.dockerignore
+Dockerfile
+Dockerfile_dev
+docker-compose*.yml

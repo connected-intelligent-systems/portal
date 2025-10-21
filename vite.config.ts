@@ -33,12 +33,10 @@ export default defineConfig({
                 rewrite: (path) => path.replace(/^\/api\/management/, '/management'),
                 configure: (proxy, options) => {
                     proxy.on('proxyReq', (proxyReq, req, res) => {
-                        // Add EDC API key header to all management API requests
                         proxyReq.setHeader('x-api-key', process.env.VITE_EDC_API_KEY || 'supersecret');
                     });
                 }
             },
-            // EDC Protocol API (if needed for direct DSP communication)
             '/api/protocol': {
                 target: process.env.VITE_EDC_PROTOCOL_API_URL || 'http://edc-provider:19291',
                 changeOrigin: true,
@@ -46,7 +44,6 @@ export default defineConfig({
                 rewrite: (path) => path.replace(/^\/api\/protocol/, '/protocol'),
                 configure: (proxy, options) => {
                     proxy.on('proxyReq', (proxyReq, req, res) => {
-                        // Add EDC API key header to all protocol API requests
                         proxyReq.setHeader('x-api-key', process.env.VITE_EDC_API_KEY || 'supersecret');
                     });
                 }
