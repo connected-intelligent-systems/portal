@@ -4,15 +4,15 @@ services:
 
   portal-provider:
     build:
-      context: ../frontend
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: Dockerfile_dev
     ports:
       - 5173:5173
     volumes:
-      - ../frontend/src:/app/src
-      - ../frontend/vite.config.ts:/app/vite.config.ts
-      - ../frontend/package.json:/app/package.json
-      - ../frontend/index.html:/app/index.html
+      - ../src:/app/src
+      - ../vite.config.ts:/app/vite.config.ts
+      - ../package.json:/app/package.json
+      - ../index.html:/app/index.html
       - ./portal/provider/config.js:/app/public/config.js
       - ./portal/borlabs-cookie-icon-dynamic.svg:/app/public/borlabs-cookie-icon-dynamic.svg
     depends_on:
@@ -123,14 +123,14 @@ services:
   portal-consumer:
     build:
       context: ../frontend
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile_dev
     ports:
       - 5174:5173
     volumes:
-      - ../frontend/src:/app/src
-      - ../frontend/vite.config.ts:/app/vite.config.ts
-      - ../frontend/package.json:/app/package.json
-      - ../frontend/index.html:/app/index.html
+      - ../src:/app/src
+      - ../vite.config.ts:/app/vite.config.ts
+      - ../package.json:/app/package.json
+      - ../index.html:/app/index.html
       - ./portal/consumer/config.js:/app/public/config.js
       - ./portal/borlabs-cookie-icon-dynamic.svg:/app/public/borlabs-cookie-icon-dynamic.svg
     environment:
