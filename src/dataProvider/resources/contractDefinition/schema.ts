@@ -21,7 +21,7 @@ export const CoreContractDefinitionSchema = z.object({
   "@type": z.string().default("ContractDefinition"),
   privateProperties: z
     .object({
-      name: z.string(),
+      name: z.string().optional(),
       description: z.string().optional(),
     })
     .passthrough()

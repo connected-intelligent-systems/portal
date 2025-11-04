@@ -806,6 +806,7 @@ const englishMessages: Partial<TranslationMessages> = {
     },
   },
   datasets: {
+    unnamedDataset: "Unnamed Dataset",
     openapi: {
       conversionError:
         "Failed to convert Thing Description to OpenAPI specification",

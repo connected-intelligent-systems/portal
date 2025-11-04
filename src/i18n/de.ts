@@ -792,6 +792,7 @@ const germanMessages: Partial<TranslationMessages> = {
     },
   },
   datasets: {
+    unnamedDataset: "Unbenannter Datensatz",
     openapi: {
       conversionError:
         "Fehler beim Konvertieren der Thing Description in OpenAPI-Spezifikation",

@@ -230,11 +230,6 @@ export async function getMany(params: any) {
       })
     );
 
-    console.log({
-      hasNextPage: datasets.length === perPage,
-      hasPreviousPage: page > 1,
-    });
-
     return {
       data: datasets,
       pageInfo: {

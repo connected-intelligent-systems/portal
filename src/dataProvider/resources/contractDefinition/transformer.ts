@@ -17,7 +17,12 @@ export async function parseContractDefinitionFromJsonLd(
     const contractDefinition: ContractDefinition = {
       id: parsed["@id"],
       type: parsed["@type"],
-      privateProperties: parsed.privateProperties || { name: "Untitled" },
+      privateProperties: parsed.privateProperties
+        ? {
+            ...parsed.privateProperties,
+            name: parsed.privateProperties.name || "Untitled",
+          }
+        : { name: "Untitled" },
       accessPolicyId: parsed.accessPolicyId || "",
       contractPolicyId: parsed.contractPolicyId || "",
       assetsSelector:
