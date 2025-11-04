@@ -1,5 +1,5 @@
-import { useState } from "react";
-import type { SyntheticEvent } from "react";
+import { useState, useMemo } from "react";
+import type { SyntheticEvent, ReactNode, ReactElement } from "react";
 import {
   Show,
   SimpleShowLayout,
@@ -8,6 +8,7 @@ import {
   FunctionField,
   useTranslate,
   EditButton,
+  useRecordContext,
 } from "react-admin";
 import { Typography, Box, Tabs, Tab } from "@mui/material";
 import InfoIcon from "@mui/icons-material/Info";
@@ -36,14 +37,211 @@ const AssetShowBar = () => {
   );
 };
 
-export const AssetShow = () => {
+const hasBasicInformation = (record: any) => {
+  return !!(
+    record?.theme?.title ||
+    record?.mediaType ||
+    (record?.keywords && record.keywords.length > 0) ||
+    record?.version ||
+    record?.creator?.name ||
+    record?.created ||
+    record?.modified ||
+    record?.abstract
+  );
+};
+
+const hasDescription = (record: any) => {
+  return !!record?.description;
+};
+
+const hasProvenance = (record: any) => {
+  return !!(
+    record?.provenance?.derivedFromId ||
+    record?.provenance?.generatedByDescription ||
+    record?.provenance?.attributedToId
+  );
+};
+
+const hasDataPrivacy = (record: any) => {
+  return !!(
+    record?.privacySettings?.personalDataHandling &&
+    Array.isArray(record.privacySettings.personalDataHandling) &&
+    record.privacySettings.personalDataHandling.length > 0
+  );
+};
+
+const hasDataQuality = (record: any) => {
+  return !!(
+    record?.qualityMeasurements &&
+    Array.isArray(record.qualityMeasurements) &&
+    record.qualityMeasurements.length > 0
+  );
+};
+
+const hasDataAddress = (record: any) => {
+  return !!record?.dataAddress?.type;
+};
+
+const hasThingDescription = (record: any) => {
+  return !!record?.thingDescription;
+};
+
+interface TabConfig {
+  id: string;
+  icon: ReactElement;
+  label: string;
+  ariaControls: string;
+  component: ReactNode;
+}
+
+const AssetTabs = () => {
   const [activeTab, setActiveTab] = useState(0);
   const translate = useTranslate();
+  const record = useRecordContext();
+
+  const tabs: TabConfig[] = useMemo(() => {
+    const allTabs: TabConfig[] = [];
+
+    if (hasBasicInformation(record)) {
+      allTabs.push({
+        id: "basic-info",
+        icon: <InfoIcon />,
+        label: translate("resources.assets.tabs.basicInformation.title"),
+        ariaControls: "asset-basic-info",
+        component: <BasicInformation />,
+      });
+    }
+
+    if (hasDescription(record)) {
+      allTabs.push({
+        id: "description",
+        icon: <DescriptionIcon />,
+        label: translate("resources.assets.tabs.detailedDescription"),
+        ariaControls: "asset-description",
+        component: (
+          <FunctionField
+            render={(record: any) => {
+              const description = record?.description;
+              if (!description) {
+                return (
+                  <Typography variant="body2" color="text.secondary">
+                    {translate("resources.assets.messages.noDescription")}
+                  </Typography>
+                );
+              }
+              return (
+                <MarkdownField source="description" record={{ description }} />
+              );
+            }}
+          />
+        ),
+      });
+    }
+
+    if (hasProvenance(record)) {
+      allTabs.push({
+        id: "provenance",
+        icon: <AccountTreeIcon />,
+        label: translate("resources.assets.tabs.provenance"),
+        ariaControls: "asset-provenance",
+        component: <Provenance />,
+      });
+    }
+
+    if (hasDataPrivacy(record)) {
+      allTabs.push({
+        id: "privacy",
+        icon: <SecurityIcon />,
+        label: translate("resources.assets.tabs.dataPrivacy"),
+        ariaControls: "asset-privacy",
+        component: <DataPrivacy />,
+      });
+    }
+
+    if (hasDataQuality(record)) {
+      allTabs.push({
+        id: "quality",
+        icon: <AssessmentIcon />,
+        label: translate("resources.assets.tabs.dataQuality"),
+        ariaControls: "asset-quality",
+        component: <DataQuality />,
+      });
+    }
+
+    if (hasDataAddress(record)) {
+      allTabs.push({
+        id: "address",
+        icon: <CloudIcon />,
+        label: translate("resources.assets.tabs.dataAddress"),
+        ariaControls: "asset-address",
+        component: <DataAddress />,
+      });
+    }
+
+    if (hasThingDescription(record)) {
+      allTabs.push({
+        id: "thing-description",
+        icon: <DevicesIcon />,
+        label: translate("resources.assets.tabs.thingDescription"),
+        ariaControls: "asset-thing-description",
+        component: <ThingDescription />,
+      });
+    }
+
+    return allTabs;
+  }, [record, translate]);
 
   const handleTabChange = (_: SyntheticEvent, newValue: number) => {
     setActiveTab(newValue);
   };
 
+  if (tabs.length === 0) {
+    return (
+      <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
+        No additional information available
+      </Typography>
+    );
+  }
+
+  return (
+    <Box>
+      <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+        <Tabs
+          value={activeTab}
+          onChange={handleTabChange}
+          aria-label="asset information tabs"
+          variant="scrollable"
+          scrollButtons="auto"
+          allowScrollButtonsMobile
+        >
+          {tabs.map((tab) => (
+            <Tab
+              key={tab.id}
+              icon={tab.icon}
+              label={tab.label}
+              aria-controls={tab.ariaControls}
+            />
+          ))}
+        </Tabs>
+      </Box>
+
+      <Box sx={{ mt: 3 }}>
+        {tabs.map((tab, index) => (
+          <div
+            key={tab.id}
+            id={tab.ariaControls}
+            role="tabpanel"
+            hidden={activeTab !== index}
+          >
+            {activeTab === index && tab.component}
+          </div>
+        ))}
+      </Box>
+    </Box>
+  );
+};
+
+export const AssetShow = () => {
   return (
     <Show actions={<AssetShowBar />}>
       <SimpleShowLayout>
@@ -61,117 +259,7 @@ export const AssetShow = () => {
           )}
         />
 
-        <Box>
-          <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-            <Tabs
-              value={activeTab}
-              onChange={handleTabChange}
-              aria-label="asset information tabs"
-              variant="scrollable"
-              scrollButtons="auto"
-              allowScrollButtonsMobile
-            >
-              <Tab
-                icon={<InfoIcon />}
-                label={translate(
-                  "resources.assets.tabs.basicInformation.title"
-                )}
-                aria-controls="asset-basic-info"
-              />
-              <Tab
-                icon={<DescriptionIcon />}
-                label={translate("resources.assets.tabs.detailedDescription")}
-                aria-controls="asset-description"
-              />
-              <Tab
-                icon={<AccountTreeIcon />}
-                label={translate("resources.assets.tabs.provenance")}
-                aria-controls="asset-provenance"
-              />
-              <Tab
-                icon={<SecurityIcon />}
-                label={translate("resources.assets.tabs.dataPrivacy")}
-                aria-controls="asset-privacy"
-              />
-              <Tab
-                icon={<AssessmentIcon />}
-                label={translate("resources.assets.tabs.dataQuality")}
-                aria-controls="asset-quality"
-              />
-              <Tab
-                icon={<CloudIcon />}
-                label={translate("resources.assets.tabs.dataAddress")}
-                aria-controls="asset-address"
-              />
-              <Tab
-                icon={<DevicesIcon />}
-                label={translate("resources.assets.tabs.thingDescription")}
-                aria-controls="asset-thing-description"
-              />
-            </Tabs>
-          </Box>
-
-          <Box sx={{ mt: 3 }}>
-            {activeTab === 0 && (
-              <div id="asset-basic-info">
-                <BasicInformation />
-              </div>
-            )}
-
-            {activeTab === 1 && (
-              <div id="asset-description">
-                <FunctionField
-                  render={(record: any) => {
-                    const description = record?.description;
-                    if (!description) {
-                      return (
-                        <Typography variant="body2" color="text.secondary">
-                          {translate("resources.assets.messages.noDescription")}
-                        </Typography>
-                      );
-                    }
-                    return (
-                      <MarkdownField
-                        source="description"
-                        record={{ description }}
-                      />
-                    );
-                  }}
-                />
-              </div>
-            )}
-
-            {activeTab === 2 && (
-              <div id="asset-provenance">
-                <Provenance />
-              </div>
-            )}
-
-            {activeTab === 3 && (
-              <div id="asset-privacy">
-                <DataPrivacy />
-              </div>
-            )}
-
-            {activeTab === 4 && (
-              <div id="asset-quality">
-                <DataQuality />
-              </div>
-            )}
-
-            {activeTab === 5 && (
-              <div id="asset-address">
-                <DataAddress />
-              </div>
-            )}
-
-            {activeTab === 6 && (
-              <div id="asset-thing-description">
-                <ThingDescription />
-              </div>
-            )}
-          </Box>
-        </Box>
+        <AssetTabs />
       </SimpleShowLayout>
     </Show>
   );

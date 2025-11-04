@@ -57,14 +57,74 @@ interface ContractNegotiationDialogProps {
 type DialogStep = "view" | "policySelection";
 
 interface DatasetTabDefinition {
+  id: string;
   icon: React.ReactElement;
   labelTranslationKey: string;
   ariaControls: string;
   render: (_dataset: Dataset) => React.ReactNode;
 }
 
-const DATASET_TABS: DatasetTabDefinition[] = [
+const hasBasicInformation = (dataset: any) => {
+  return !!(
+    dataset?.theme?.title ||
+    dataset?.mediaType ||
+    (dataset?.keywords && dataset.keywords.length > 0) ||
+    dataset?.version ||
+    dataset?.creator?.name ||
+    dataset?.created ||
+    dataset?.modified ||
+    dataset?.abstract
+  );
+};
+
+const hasVersioning = (dataset: any) => {
+  return !!(
+    dataset?.version ||
+    dataset?.creator?.name ||
+    dataset?.modified ||
+    dataset?.created
+  );
+};
+
+const hasProvenance = (dataset: any) => {
+  return !!(
+    dataset?.provenance?.derivedFromId ||
+    dataset?.provenance?.generatedByDescription ||
+    dataset?.provenance?.attributedToId
+  );
+};
+
+const hasDataPrivacy = (dataset: any) => {
+  return !!(
+    dataset?.privacySettings?.personalDataHandling &&
+    Array.isArray(dataset.privacySettings.personalDataHandling) &&
+    dataset.privacySettings.personalDataHandling.length > 0
+  );
+};
+
+const hasDataQuality = (dataset: any) => {
+  return !!(
+    dataset?.qualityMeasurements &&
+    Array.isArray(dataset.qualityMeasurements) &&
+    dataset.qualityMeasurements.length > 0
+  );
+};
+
+const hasThingDescription = (dataset: any) => {
+  return !!dataset?.thingDescription;
+};
+
+const hasServiceInformation = (dataset: any) => {
+  return !!(
+    dataset?.distributions &&
+    Array.isArray(dataset.distributions) &&
+    dataset.distributions.length > 0
+  );
+};
+
+const ALL_DATASET_TABS: DatasetTabDefinition[] = [
   {
+    id: "overview",
     icon: <InfoIcon />,
     labelTranslationKey: "resources.catalog.dataset.tabs.overview",
     ariaControls: "dataset-overview-tab",
@@ -75,6 +135,7 @@ const DATASET_TABS: DatasetTabDefinition[] = [
     ),
   },
   {
+    id: "versioning",
     icon: <HistoryIcon />,
     labelTranslationKey: "resources.catalog.dataset.tabs.versioning",
     ariaControls: "dataset-versioning-tab",
@@ -85,6 +146,7 @@ const DATASET_TABS: DatasetTabDefinition[] = [
     ),
   },
   {
+    id: "provenance",
     icon: <AccountTreeIcon />,
     labelTranslationKey: "resources.catalog.dataset.tabs.provenance",
     ariaControls: "dataset-provenance-tab",
@@ -95,6 +157,7 @@ const DATASET_TABS: DatasetTabDefinition[] = [
     ),
   },
   {
+    id: "privacy",
     icon: <SecurityIcon />,
     labelTranslationKey: "resources.catalog.dataset.tabs.dataPrivacy",
     ariaControls: "dataset-privacy-tab",
@@ -105,6 +168,7 @@ const DATASET_TABS: DatasetTabDefinition[] = [
     ),
   },
   {
+    id: "quality",
     icon: <AssessmentIcon />,
     labelTranslationKey: "resources.catalog.dataset.tabs.dataQuality",
     ariaControls: "dataset-quality-tab",
@@ -115,6 +179,7 @@ const DATASET_TABS: DatasetTabDefinition[] = [
     ),
   },
   {
+    id: "thing-description",
     icon: <DevicesIcon />,
     labelTranslationKey: "resources.assets.tabs.thingDescription",
     ariaControls: "dataset-thing-description-tab",
@@ -125,6 +190,7 @@ const DATASET_TABS: DatasetTabDefinition[] = [
     ),
   },
   {
+    id: "service-info",
     icon: <CloudIcon />,
     labelTranslationKey: "resources.catalog.dataset.tabs.serviceInfo",
     ariaControls: "dataset-service-tab",
@@ -151,6 +217,46 @@ export const ContractNegotiationDialog: React.FC<
   const policies = useMemo(() => dataset?.policies ?? [], [dataset?.policies]);
   const datasetId = dataset?.id;
   const participantId = dataset?.participantId;
+
+  const visibleTabs = useMemo(() => {
+    const tabs: DatasetTabDefinition[] = [];
+
+    ALL_DATASET_TABS.forEach((tab) => {
+      let shouldShow = false;
+
+      switch (tab.id) {
+        case "overview":
+          shouldShow = hasBasicInformation(dataset);
+          break;
+        case "versioning":
+          shouldShow = hasVersioning(dataset);
+          break;
+        case "provenance":
+          shouldShow = hasProvenance(dataset);
+          break;
+        case "privacy":
+          shouldShow = hasDataPrivacy(dataset);
+          break;
+        case "quality":
+          shouldShow = hasDataQuality(dataset);
+          break;
+        case "thing-description":
+          shouldShow = hasThingDescription(dataset);
+          break;
+        case "service-info":
+          shouldShow = hasServiceInformation(dataset);
+          break;
+        default:
+          shouldShow = true;
+      }
+
+      if (shouldShow) {
+        tabs.push(tab);
+      }
+    });
+
+    return tabs;
+  }, [dataset]);
 
   const closeConfirmMenu = useCallback(() => {
     setConfirmMenuAnchor(null);
@@ -303,7 +409,7 @@ export const ContractNegotiationDialog: React.FC<
     ]
   );
 
-  const selectedTab = DATASET_TABS[activeTab];
+  const selectedTab = visibleTabs[activeTab];
 
   return (
     <Dialog
@@ -335,7 +441,7 @@ export const ContractNegotiationDialog: React.FC<
         </Box>
       </DialogTitle>
 
-      {step === "view" && (
+      {step === "view" && visibleTabs.length > 0 && (
         <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
           <Tabs
             value={activeTab}
@@ -344,9 +450,9 @@ export const ContractNegotiationDialog: React.FC<
             variant={isMobile ? "scrollable" : "standard"}
             scrollButtons="auto"
           >
-            {DATASET_TABS.map((tab, index) => (
+            {visibleTabs.map((tab, index) => (
               <Tab
-                key={tab.ariaControls}
+                key={tab.id}
                 icon={tab.icon}
                 label={translate(tab.labelTranslationKey)}
                 aria-controls={tab.ariaControls}
@@ -360,7 +466,13 @@ export const ContractNegotiationDialog: React.FC<
       <DialogContent sx={{ p: 0 }} id="dataset-dialog-description">
         <Box sx={{ p: 3 }}>
           {step === "view" ? (
-            selectedTab?.render(dataset)
+            visibleTabs.length > 0 ? (
+              selectedTab?.render(dataset)
+            ) : (
+              <Typography variant="body2" color="text.secondary">
+                No additional information available
+              </Typography>
+            )
           ) : (
             <PolicySelectionView
               policies={policies}
