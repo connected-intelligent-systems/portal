@@ -57,7 +57,7 @@ const filterMapping = (key: string, value: any) => {
 export async function getManyReference(params: GetManyReferenceParams) {
   try {
     const catalogUrl = params.id;
-
+    const { page = 1, perPage = 10 } = params.pagination || {};
     const response = await fetch(`/api/management/v3/catalog/request`, {
       headers: {
         "Content-Type": "application/json",
@@ -96,7 +96,10 @@ export async function getManyReference(params: GetManyReferenceParams) {
 
     return {
       data: datasets,
-      total: datasets.length,
+      pageInfo: {
+        hasNextPage: datasets.length === perPage,
+        hasPreviousPage: page > 1,
+      },
     };
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
@@ -173,6 +176,7 @@ export async function getOne(params: any) {
  */
 export async function getMany(params: any) {
   try {
+    const { page = 1, perPage = 10 } = params.pagination || {};
     const datasets = await Promise.all(
       params.ids.map(async (compositeId: string) => {
         const [catalogId, datasetId] = compositeId.split("--");
@@ -223,8 +227,17 @@ export async function getMany(params: any) {
       })
     );
 
+    console.log({
+      hasNextPage: datasets.length === perPage,
+      hasPreviousPage: page > 1,
+    });
+
     return {
       data: datasets,
+      pageInfo: {
+        hasNextPage: datasets.length === perPage,
+        hasPreviousPage: page > 1,
+      },
     };
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);

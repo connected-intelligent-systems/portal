@@ -55,7 +55,7 @@ const DatasetsWithFilters = () => {
   return (
     <Box>
       <FilterForm filters={filters} />
-      <Grid container spacing={2} sx={{ mt: 1 }}>
+      <Grid container spacing={2} sx={{ mt: 1 }} >
         {data?.map((dataset: Dataset, index: number) => (
           <DatasetCard
             key={dataset.id || index}
