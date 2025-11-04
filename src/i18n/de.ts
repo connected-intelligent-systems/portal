@@ -79,6 +79,7 @@ const germanMessages: Partial<TranslationMessages> = {
             "Keine Distributionsinformationen verfügbar",
         },
         basicInformation: {
+          title: "Grundinformationen",
           shortDescription: "Kurzbeschreibung",
           noShortDescription: "Keine Kurzbeschreibung verfügbar",
           keywords: "Schlüsselwörter",

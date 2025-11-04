@@ -67,6 +67,7 @@ const englishMessages: Partial<TranslationMessages> = {
           noDistributionInformation: "No distribution information available",
         },
         basicInformation: {
+          title: "Basic Information",
           shortDescription: "Short Description",
           noShortDescription: "No short description available",
           keywords: "Keywords",

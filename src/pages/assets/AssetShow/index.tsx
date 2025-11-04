@@ -9,7 +9,8 @@ import {
   useTranslate,
   EditButton,
 } from "react-admin";
-import { Typography, Box, Tabs, Tab, Chip } from "@mui/material";
+import { Typography, Box, Tabs, Tab } from "@mui/material";
+import InfoIcon from "@mui/icons-material/Info";
 import DescriptionIcon from "@mui/icons-material/Description";
 import AccountTreeIcon from "@mui/icons-material/AccountTree";
 import SecurityIcon from "@mui/icons-material/Security";
@@ -18,6 +19,7 @@ import CloudIcon from "@mui/icons-material/Cloud";
 import DevicesIcon from "@mui/icons-material/Devices";
 import { MarkdownField } from "../../../components/markdown";
 import {
+  BasicInformation,
   Provenance,
   DataPrivacy,
   DataQuality,
@@ -55,159 +57,11 @@ export const AssetShow = () => {
               <Typography variant="caption" color="text.secondary">
                 ID: {record.id}
               </Typography>
-
-              {/* Basic Information Section */}
-              <Box sx={{ mt: 3 }}>
-                <Box
-                  sx={{
-                    display: "grid",
-                    gridTemplateColumns: "140px 1fr",
-                    gap: 1.5,
-                    mb: 2,
-                  }}
-                >
-                  {/* Category */}
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    sx={{ fontWeight: 500 }}
-                  >
-                    {translate(
-                      "resources.assets.tabs.basicInformation.category"
-                    )}
-                  </Typography>
-                  <Typography variant="body2">
-                    {record?.theme?.title || "-"}
-                  </Typography>
-
-                  {/* Media Type */}
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    sx={{ fontWeight: 500 }}
-                  >
-                    {translate(
-                      "resources.assets.tabs.basicInformation.mediaType"
-                    )}
-                  </Typography>
-                  <Typography variant="body2">
-                    {record?.mediaType || "-"}
-                  </Typography>
-
-                  {/* Keywords */}
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    sx={{ fontWeight: 500 }}
-                  >
-                    {translate(
-                      "resources.assets.tabs.basicInformation.keywords"
-                    )}
-                  </Typography>
-                  <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
-                    {record?.keywords ? (
-                      (Array.isArray(record.keywords)
-                        ? record.keywords
-                        : [record.keywords]
-                      ).map((keyword: string, index: number) => (
-                        <Chip
-                          key={index}
-                          label={keyword}
-                          color="secondary"
-                          variant="outlined"
-                          size="small"
-                        />
-                      ))
-                    ) : (
-                      <Typography
-                        variant="body2"
-                        color="text.secondary"
-                        sx={{ fontStyle: "italic" }}
-                      >
-                        {translate(
-                          "resources.assets.tabs.basicInformation.noKeywords"
-                        )}
-                      </Typography>
-                    )}
-                  </Box>
-
-                  {/* Version */}
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    sx={{ fontWeight: 500 }}
-                  >
-                    {translate("resources.assets.tabs.versioningTab.version")}
-                  </Typography>
-                  <Typography variant="body2">
-                    {record?.version || "-"}
-                  </Typography>
-
-                  {/* Creator */}
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    sx={{ fontWeight: 500 }}
-                  >
-                    {translate("resources.assets.tabs.versioningTab.creator")}
-                  </Typography>
-                  <Typography variant="body2">
-                    {record?.creator?.name || "-"}
-                  </Typography>
-
-                  {/* Created */}
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    sx={{ fontWeight: 500 }}
-                  >
-                    {translate("resources.assets.tabs.versioningTab.created")}
-                  </Typography>
-                  <Typography variant="body2">
-                    {record?.created
-                      ? new Date(record.created).toLocaleDateString()
-                      : "-"}
-                  </Typography>
-
-                  {/* Modified */}
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    sx={{ fontWeight: 500 }}
-                  >
-                    {translate("resources.assets.tabs.versioningTab.modified")}
-                  </Typography>
-                  <Typography variant="body2">
-                    {record?.modified
-                      ? new Date(record.modified).toLocaleDateString()
-                      : "-"}
-                  </Typography>
-                </Box>
-
-                {/* Short Description */}
-                <Box>
-                  <Typography
-                    variant="subtitle2"
-                    color="text.secondary"
-                    gutterBottom
-                  >
-                    {translate(
-                      "resources.assets.tabs.basicInformation.shortDescription"
-                    )}
-                  </Typography>
-                  <Typography variant="body2">
-                    {record?.abstract ||
-                      translate(
-                        "resources.assets.tabs.basicInformation.noShortDescription"
-                      )}
-                  </Typography>
-                </Box>
-              </Box>
             </Box>
           )}
         />
 
-        <Box sx={{ mt: 3 }}>
+        <Box>
           <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
             <Tabs
               value={activeTab}
@@ -217,6 +71,13 @@ export const AssetShow = () => {
               scrollButtons="auto"
               allowScrollButtonsMobile
             >
+              <Tab
+                icon={<InfoIcon />}
+                label={translate(
+                  "resources.assets.tabs.basicInformation.title"
+                )}
+                aria-controls="asset-basic-info"
+              />
               <Tab
                 icon={<DescriptionIcon />}
                 label={translate("resources.assets.tabs.detailedDescription")}
@@ -252,6 +113,12 @@ export const AssetShow = () => {
 
           <Box sx={{ mt: 3 }}>
             {activeTab === 0 && (
+              <div id="asset-basic-info">
+                <BasicInformation />
+              </div>
+            )}
+
+            {activeTab === 1 && (
               <div id="asset-description">
                 <FunctionField
                   render={(record: any) => {
@@ -274,31 +141,31 @@ export const AssetShow = () => {
               </div>
             )}
 
-            {activeTab === 1 && (
+            {activeTab === 2 && (
               <div id="asset-provenance">
                 <Provenance />
               </div>
             )}
 
-            {activeTab === 2 && (
+            {activeTab === 3 && (
               <div id="asset-privacy">
                 <DataPrivacy />
               </div>
             )}
 
-            {activeTab === 3 && (
+            {activeTab === 4 && (
               <div id="asset-quality">
                 <DataQuality />
               </div>
             )}
 
-            {activeTab === 4 && (
+            {activeTab === 5 && (
               <div id="asset-address">
                 <DataAddress />
               </div>
             )}
 
-            {activeTab === 5 && (
+            {activeTab === 6 && (
               <div id="asset-thing-description">
                 <ThingDescription />
               </div>

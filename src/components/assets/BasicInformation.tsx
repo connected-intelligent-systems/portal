@@ -1,5 +1,5 @@
-import { Labeled, useRecordContext, useTranslate } from "react-admin";
-import { Box, Typography } from "@mui/material";
+import { useRecordContext, useTranslate } from "react-admin";
+import { Box, Typography, Chip } from "@mui/material";
 
 export const BasicInformation = () => {
   const translate = useTranslate();
@@ -7,76 +7,122 @@ export const BasicInformation = () => {
 
   if (!record) return null;
 
-  const renderKeywords = () => {
-    const keywords = record.keywords;
-    if (!keywords) {
-      return (
-        <Typography
-          variant="body2"
-          color="text.secondary"
-          sx={{ fontStyle: "italic" }}
-        >
-          {translate("resources.assets.tabs.basicInformation.noKeywords")}
-        </Typography>
-      );
-    }
-
-    const keywordsArray = Array.isArray(keywords) ? keywords : [keywords];
-
-    if (keywordsArray.length === 0) {
-      return (
-        <Typography
-          variant="body2"
-          color="text.secondary"
-          sx={{ fontStyle: "italic" }}
-        >
-          {translate("resources.assets.tabs.basicInformation.noKeywords")}
-        </Typography>
-      );
-    }
-
-    return <Typography variant="body2">{keywordsArray.join(", ")}</Typography>;
-  };
-
   return (
     <Box>
-      <Labeled
-        fullWidth
-        label={translate(
-          "resources.assets.tabs.basicInformation.shortDescription"
-        )}
+      <Box
+        sx={{
+          display: "grid",
+          gridTemplateColumns: "140px 1fr",
+          gap: 1.5,
+          mb: 2,
+        }}
       >
         <Typography
           variant="body2"
-          color={!record.abstract ? "text.secondary" : undefined}
+          color="text.secondary"
+          sx={{ fontWeight: 500 }}
         >
-          {record.abstract ||
+          {translate("resources.assets.tabs.basicInformation.category")}
+        </Typography>
+        <Typography variant="body2">{record?.theme?.title || "-"}</Typography>
+
+        <Typography
+          variant="body2"
+          color="text.secondary"
+          sx={{ fontWeight: 500 }}
+        >
+          {translate("resources.assets.tabs.basicInformation.mediaType")}
+        </Typography>
+        <Typography variant="body2">{record?.mediaType || "-"}</Typography>
+
+        <Typography
+          variant="body2"
+          color="text.secondary"
+          sx={{ fontWeight: 500 }}
+        >
+          {translate("resources.assets.tabs.basicInformation.keywords")}
+        </Typography>
+        <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
+          {record?.keywords ? (
+            (Array.isArray(record.keywords)
+              ? record.keywords
+              : [record.keywords]
+            ).map((keyword: string, index: number) => (
+              <Chip
+                key={index}
+                label={keyword}
+                color="secondary"
+                variant="outlined"
+                size="small"
+              />
+            ))
+          ) : (
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              sx={{ fontStyle: "italic" }}
+            >
+              {translate("resources.assets.tabs.basicInformation.noKeywords")}
+            </Typography>
+          )}
+        </Box>
+
+        <Typography
+          variant="body2"
+          color="text.secondary"
+          sx={{ fontWeight: 500 }}
+        >
+          {translate("resources.assets.tabs.versioningTab.version")}
+        </Typography>
+        <Typography variant="body2">{record?.version || "-"}</Typography>
+
+        <Typography
+          variant="body2"
+          color="text.secondary"
+          sx={{ fontWeight: 500 }}
+        >
+          {translate("resources.assets.tabs.versioningTab.creator")}
+        </Typography>
+        <Typography variant="body2">{record?.creator?.name || "-"}</Typography>
+
+        <Typography
+          variant="body2"
+          color="text.secondary"
+          sx={{ fontWeight: 500 }}
+        >
+          {translate("resources.assets.tabs.versioningTab.created")}
+        </Typography>
+        <Typography variant="body2">
+          {record?.created
+            ? new Date(record.created).toLocaleDateString()
+            : "-"}
+        </Typography>
+
+        <Typography
+          variant="body2"
+          color="text.secondary"
+          sx={{ fontWeight: 500 }}
+        >
+          {translate("resources.assets.tabs.versioningTab.modified")}
+        </Typography>
+        <Typography variant="body2">
+          {record?.modified
+            ? new Date(record.modified).toLocaleDateString()
+            : "-"}
+        </Typography>
+      </Box>
+
+      <Box>
+        <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+          {translate("resources.assets.tabs.basicInformation.shortDescription")}
+        </Typography>
+        <Typography variant="body2">
+          {record?.abstract ||
             translate(
               "resources.assets.tabs.basicInformation.noShortDescription"
             )}
         </Typography>
-      </Labeled>
-
-      <Labeled
-        fullWidth
-        label={translate("resources.assets.tabs.basicInformation.keywords")}
-      >
-        {renderKeywords()}
-      </Labeled>
-
-      <Labeled
-        fullWidth
-        label={translate("resources.assets.tabs.basicInformation.category")}
-      >
-        <Typography variant="body2">{record.theme?.title || "-"}</Typography>
-      </Labeled>
-
-      <Labeled
-        fullWidth
-        label={translate("resources.assets.tabs.basicInformation.mediaType")}
-      >
-        <Typography variant="body2">{record.mediaType || "-"}</Typography>
-      </Labeled>
+      </Box>
     </Box>
   );
 };
