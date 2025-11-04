@@ -45,7 +45,10 @@ export async function getOne(params: GetOneParams) {
   const cleanPolicy = await parsePolicyFromJsonLd(policy);
 
   return {
-    data: cleanPolicy,
+    data: {
+      ...cleanPolicy,
+      raw: policy,
+    },
   };
 }
 

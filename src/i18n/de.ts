@@ -630,6 +630,8 @@ const germanMessages: Partial<TranslationMessages> = {
         noPermissions: "Keine Berechtigungen definiert",
         noObligations: "Keine Verpflichtungen definiert",
         noProhibitions: "Keine Verbote definiert",
+        noRules: "Keine Regeln definiert",
+        raw: "Raw",
       },
     },
     contractnegotiations: {

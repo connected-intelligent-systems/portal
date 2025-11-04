@@ -43,6 +43,9 @@ export interface Policy {
   privateProperties?: {
     [key: string]: any;
   };
+
+  // Raw JSON-LD representation
+  raw?: any;
 }
 
 // Form data interface for create/edit operations

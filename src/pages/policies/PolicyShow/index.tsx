@@ -53,12 +53,14 @@ export const PolicyShow = () => {
             const permissions = record?.rules?.permissions || [];
             const obligations = record?.rules?.obligations || [];
             const prohibitions = record?.rules?.prohibitions || [];
+            const raw = record?.raw;
 
             return (
               <PolicyRulesTabs
                 permissions={permissions}
                 obligations={obligations}
                 prohibitions={prohibitions}
+                raw={raw}
               />
             );
           }}

@@ -619,6 +619,8 @@ const englishMessages: Partial<TranslationMessages> = {
       noPermissions: "No permissions defined",
       noObligations: "No obligations defined",
       noProhibitions: "No prohibitions defined",
+      noRules: "No rules defined",
+      raw: "Raw",
     },
   },
   contractagreements: {
