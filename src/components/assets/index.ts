@@ -1,6 +1,7 @@
 // Asset-specific components
 export { DataAddress } from "./DataAddress";
 export { ThingDescription } from "./ThingDescription";
+export { Raw } from "./Raw";
 
 // Shared components (used by both assets and datasets)
 export { BasicInformation } from "./BasicInformation";

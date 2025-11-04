@@ -14,8 +14,10 @@ import SecurityIcon from "@mui/icons-material/Security";
 import AssessmentIcon from "@mui/icons-material/Assessment";
 import CloudIcon from "@mui/icons-material/Cloud";
 import DevicesIcon from "@mui/icons-material/Devices";
+import CodeIcon from "@mui/icons-material/Code";
 import { Dataset } from "../../../types/catalog";
 import {
+  Raw,
   BasicInformation,
   Provenance,
   DataPrivacy,
@@ -71,6 +73,10 @@ const hasServiceInformation = (dataset: any) => {
 
 const hasThingDescription = (dataset: any) => {
   return !!dataset?.thingDescription;
+};
+
+const hasRaw = (dataset: any) => {
+  return !!dataset?.raw;
 };
 
 interface TabConfig {
@@ -166,6 +172,16 @@ export const DatasetShow = () => {
         label: translate("resources.assets.tabs.thingDescription"),
         ariaControls: "dataset-thing-description",
         component: <ThingDescription />,
+      });
+    }
+
+    if (hasRaw(dataset)) {
+      allTabs.push({
+        id: "raw",
+        icon: <CodeIcon />,
+        label: translate("resources.catalog.dataset.tabs.raw"),
+        ariaControls: "dataset-raw",
+        component: <Raw />,
       });
     }
 

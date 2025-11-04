@@ -459,6 +459,7 @@ const englishMessages: Partial<TranslationMessages> = {
         dataPrivacy: "Data Privacy",
         dataQuality: "Data Quality",
         serviceInfo: "Service Info",
+        raw: "Raw",
       },
     },
     permissions: {

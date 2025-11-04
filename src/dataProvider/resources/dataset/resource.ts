@@ -20,6 +20,7 @@ const frame = {
     schema: "http://schema.org/",
     owl: "http://www.w3.org/2002/07/owl#",
     dspace: "https://w3id.org/dspace/v0.8/",
+    aas: "https://admin-shell.io/aas/3/0/",
   },
 };
 
@@ -160,6 +161,7 @@ export async function getOne(params: any) {
     cleanDataset.catalogUrl = catalogUrl;
     cleanDataset.originalId = cleanDataset.id;
     cleanDataset.id = params.id; // Keep composite ID
+    cleanDataset.raw = framedDataset;
 
     return {
       data: cleanDataset,
@@ -222,6 +224,7 @@ export async function getMany(params: any) {
         cleanDataset.catalogUrl = catalogUrl;
         cleanDataset.originalId = cleanDataset.id;
         cleanDataset.id = compositeId; // Keep composite ID
+        cleanDataset.raw = framedDataset;
 
         return cleanDataset;
       })

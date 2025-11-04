@@ -12,6 +12,7 @@ export const AssetFrame = {
     dpv: "https://w3id.org/dpv#",
     schema: "http://schema.org/",
     owl: "http://www.w3.org/2002/07/owl#",
+    aas: "https://admin-shell.io/aas/3/0/",
   },
 };
 

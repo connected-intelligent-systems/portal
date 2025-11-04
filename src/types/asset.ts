@@ -59,6 +59,9 @@ export interface Asset {
 
   // W3C Thing Description
   thingDescription?: string;
+
+  // Raw JSON-LD representation
+  raw?: any;
 }
 
 // Form data interface for create/edit operations

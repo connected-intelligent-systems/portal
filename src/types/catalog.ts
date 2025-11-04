@@ -44,6 +44,9 @@ export interface Dataset {
   // Policies attached to this dataset
   policies?: DatasetPolicy[];
 
+  // Raw JSON-LD representation
+  raw?: any;
+
   // Additional properties that might be present in JSON-LD
   [key: string]: any;
 }

@@ -468,6 +468,7 @@ const germanMessages: Partial<TranslationMessages> = {
           dataPrivacy: "Datenschutz",
           dataQuality: "Datenqualität",
           serviceInfo: "Service-Info",
+          raw: "Raw",
         },
       },
       permissions: {

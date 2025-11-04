@@ -32,10 +32,12 @@ import SecurityIcon from "@mui/icons-material/Security";
 import AssessmentIcon from "@mui/icons-material/Assessment";
 import CloudIcon from "@mui/icons-material/Cloud";
 import DevicesIcon from "@mui/icons-material/Devices";
+import CodeIcon from "@mui/icons-material/Code";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import { Dataset } from "../../../types/catalog";
 import {
+  Raw,
   BasicInformation,
   Provenance,
   DataPrivacy,
@@ -122,6 +124,10 @@ const hasServiceInformation = (dataset: any) => {
   );
 };
 
+const hasRaw = (dataset: any) => {
+  return !!dataset?.raw;
+};
+
 const ALL_DATASET_TABS: DatasetTabDefinition[] = [
   {
     id: "overview",
@@ -196,6 +202,17 @@ const ALL_DATASET_TABS: DatasetTabDefinition[] = [
     ariaControls: "dataset-service-tab",
     render: (dataset) => <ServiceInformation dataset={dataset} />,
   },
+  {
+    id: "raw",
+    icon: <CodeIcon />,
+    labelTranslationKey: "resources.catalog.dataset.tabs.raw",
+    ariaControls: "dataset-raw-tab",
+    render: (dataset) => (
+      <RecordContextProvider value={dataset}>
+        <Raw />
+      </RecordContextProvider>
+    ),
+  },
 ];
 
 export const ContractNegotiationDialog: React.FC<
@@ -245,6 +262,9 @@ export const ContractNegotiationDialog: React.FC<
           break;
         case "service-info":
           shouldShow = hasServiceInformation(dataset);
+          break;
+        case "raw":
+          shouldShow = hasRaw(dataset);
           break;
         default:
           shouldShow = true;

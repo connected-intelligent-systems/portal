@@ -45,7 +45,10 @@ export async function getOne(params: GetOneParams) {
   const cleanAsset = await parseAssetFromJsonLd(framedAsset);
 
   return {
-    data: cleanAsset,
+    data: {
+      ...cleanAsset,
+      raw: framedAsset,
+    },
   };
 }
 

@@ -11,6 +11,7 @@ import {
   useRecordContext,
 } from "react-admin";
 import { Typography, Box, Tabs, Tab } from "@mui/material";
+import CodeIcon from "@mui/icons-material/Code";
 import InfoIcon from "@mui/icons-material/Info";
 import DescriptionIcon from "@mui/icons-material/Description";
 import AccountTreeIcon from "@mui/icons-material/AccountTree";
@@ -20,6 +21,7 @@ import CloudIcon from "@mui/icons-material/Cloud";
 import DevicesIcon from "@mui/icons-material/Devices";
 import { MarkdownField } from "../../../components/markdown";
 import {
+  Raw,
   BasicInformation,
   Provenance,
   DataPrivacy,
@@ -35,6 +37,10 @@ const AssetShowBar = () => {
       <EditButton />
     </TopToolbar>
   );
+};
+
+const hasRaw = (record: any) => {
+  return !!record?.raw;
 };
 
 const hasBasicInformation = (record: any) => {
@@ -185,6 +191,16 @@ const AssetTabs = () => {
         label: translate("resources.assets.tabs.thingDescription"),
         ariaControls: "asset-thing-description",
         component: <ThingDescription />,
+      });
+    }
+
+    if (hasRaw(record)) {
+      allTabs.push({
+        id: "raw",
+        icon: <CodeIcon />,
+        label: "Raw",
+        ariaControls: "asset-raw",
+        component: <Raw />,
       });
     }
 

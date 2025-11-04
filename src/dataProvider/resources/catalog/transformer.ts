@@ -31,6 +31,7 @@ export async function parseDatasetFromJsonLd(
       provenance: extractProvenance(_datasetResource),
       qualityMeasurements: extractQualityMeasurements(_datasetResource),
       privacySettings: extractPrivacySettings(_datasetResource),
+      raw: jsonLdDataset,
     };
 
     return stripUndefinedValues(dataset);
@@ -56,23 +57,26 @@ export async function parseCatalogFromJsonLd(
     const parsed = CatalogSchema.parse(jsonLdCatalog);
 
     const datasetsWithThingDescriptions = await Promise.all(
-      (parsed["dcat:dataset"] || []).map(async (dataset: any) => {
-        const { _rawThingDescription, _datasetResource, ...rest } = dataset;
-        const thingDescription = await extractThingDescription(
-          _rawThingDescription
-        );
-        return {
-          ...rest,
-          thingDescription,
-          creator: extractCreator(_datasetResource),
-          created: extractDate(_datasetResource, "dct:created"),
-          modified: extractDate(_datasetResource, "dct:modified"),
-          version: extractString(_datasetResource, "dcat:version"),
-          provenance: extractProvenance(_datasetResource),
-          qualityMeasurements: extractQualityMeasurements(_datasetResource),
-          privacySettings: extractPrivacySettings(_datasetResource),
-        };
-      })
+      (parsed["dcat:dataset"] || []).map(
+        async (dataset: any, index: number) => {
+          const { _rawThingDescription, _datasetResource, ...rest } = dataset;
+          const thingDescription = await extractThingDescription(
+            _rawThingDescription
+          );
+          return {
+            ...rest,
+            thingDescription,
+            creator: extractCreator(_datasetResource),
+            created: extractDate(_datasetResource, "dct:created"),
+            modified: extractDate(_datasetResource, "dct:modified"),
+            version: extractString(_datasetResource, "dcat:version"),
+            provenance: extractProvenance(_datasetResource),
+            qualityMeasurements: extractQualityMeasurements(_datasetResource),
+            privacySettings: extractPrivacySettings(_datasetResource),
+            raw: (parsed["dcat:dataset"] || [])[index],
+          };
+        }
+      )
     );
 
     const catalog: Catalog = {
