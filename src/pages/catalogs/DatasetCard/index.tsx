@@ -2,7 +2,6 @@ import { useState } from "react";
 import {
   Typography,
   Box,
-  Grid,
   Card,
   CardContent,
   CardActions,
@@ -38,12 +37,14 @@ export const DatasetCard = ({
   const datasetIdLabel = <>{datasetIdDisplay}</>;
 
   return (
-    <Grid item xs={12} md={6} lg={4} key={datasetId || `dataset-${index}`}>
+    <>
       <Card
         sx={{
           height: "100%",
           display: "flex",
           flexDirection: "column",
+          flex: 1,
+          minWidth: 300,
         }}
         role="article"
         aria-labelledby={`dataset-title-${index}`}
@@ -198,6 +199,6 @@ export const DatasetCard = ({
         open={dialogOpen}
         onClose={() => setDialogOpen(false)}
       />
-    </Grid>
+    </>
   );
 };

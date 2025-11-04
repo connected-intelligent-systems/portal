@@ -15,10 +15,31 @@ import {
   useTranslate,
   useLocale,
 } from "react-admin";
-import { Box, Grid } from "@mui/material";
+import { Box, Grid, useMediaQuery, useTheme } from "@mui/material";
+import { useMemo } from "react";
 import { DatasetCard } from "./DatasetCard";
 import { Dataset } from "../../types/catalog";
 import { getCategoryChoices } from "../../utils/categories";
+
+const useDynamicItemsPerPage = () => {
+  const theme = useTheme();
+  const isLargeScreen = useMediaQuery(theme.breakpoints.up("lg"));
+  const isMediumScreen = useMediaQuery(theme.breakpoints.up("md"));
+
+  return useMemo(() => {
+    if (isLargeScreen) {
+      return 12; // 3 columns × 4 rows = 12 items
+    }
+    if (isMediumScreen) {
+      return 10; // 2 columns × 5 rows = 10 items
+    }
+    return 8; // 1 column × 8 rows = 8 items
+  }, [isLargeScreen, isMediumScreen]);
+};
+
+const DynamicPagination = () => {
+  return <Pagination rowsPerPageOptions={[]} />;
+};
 
 const CatalogShowActions = () => (
   <TopToolbar>
@@ -55,7 +76,14 @@ const DatasetsWithFilters = () => {
   return (
     <Box>
       <FilterForm filters={filters} />
-      <Grid container spacing={2} sx={{ mt: 1 }}>
+      <Box
+        sx={{
+          mt: 1,
+          display: "flex",
+          flexWrap: "wrap",
+          gap: 2,
+        }}
+      >
         {data?.map((dataset: Dataset, index: number) => (
           <DatasetCard
             key={dataset.id || index}
@@ -64,21 +92,23 @@ const DatasetsWithFilters = () => {
             counterPartyAddress={catalogUrl}
           />
         ))}
-      </Grid>
+      </Box>
     </Box>
   );
 };
 
 const DatasetsSection = () => {
   const translate = useTranslate();
+  const dynamicPerPage = useDynamicItemsPerPage();
+
   return (
     <ReferenceManyField
       reference="datasets"
       target="url"
       source="url"
       label={translate("resources.catalog.fields.datasets")}
-      perPage={10}
-      pagination={<Pagination />}
+      perPage={dynamicPerPage}
+      pagination={<DynamicPagination />}
     >
       <DatasetsWithFilters />
     </ReferenceManyField>
