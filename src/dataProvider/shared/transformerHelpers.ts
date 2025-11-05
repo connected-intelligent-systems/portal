@@ -67,24 +67,26 @@ export interface QualityMeasurementInfo {
 }
 
 export function extractCreator(data: CoreResource): CreatorInfo | undefined {
-  const creator = data.properties?.["dct:creator"] as any;
+  const creator = data.properties?.["dct:creator"];
   if (!creator) return undefined;
 
+  // Handle string format
+  const stringResult = z.string().safeParse(creator);
+  if (stringResult.success) {
+    return { name: stringResult.data };
+  }
+
+  // Handle old object format from backend
   const nameFromStructured = z
     .string()
-    .safeParse(creator["schema:name"] ?? creator["name"]);
-  const idResult = z.string().safeParse(creator["@id"]);
+    .safeParse((creator as any)?.["schema:name"] ?? (creator as any)?.["name"]);
+  const idResult = z.string().safeParse((creator as any)?.["@id"]);
 
   if (nameFromStructured.success) {
     return {
       name: nameFromStructured.data,
       id: idResult.success ? idResult.data : undefined,
     };
-  }
-
-  const stringResult = z.string().safeParse(creator);
-  if (stringResult.success) {
-    return { name: stringResult.data };
   }
 
   return undefined;

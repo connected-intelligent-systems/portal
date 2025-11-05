@@ -29,7 +29,12 @@ export async function parseAssetFromJsonLd(jsonLdAsset: any): Promise<Asset> {
       mediaType: extractString(coreAsset, "dcat:mediaType"),
       keywords: normalizeStringArray(coreAsset, "dcat:keyword"),
       theme: coreAsset.properties?.["dcat:theme"]
-        ? { title: coreAsset.properties["dcat:theme"] as string }
+        ? {
+            title:
+              typeof coreAsset.properties["dcat:theme"] === "string"
+                ? coreAsset.properties["dcat:theme"]
+                : (coreAsset.properties["dcat:theme"] as any)?.["dct:title"],
+          }
         : undefined,
       dataAddress: coreAsset.dataAddress as AssetDataAddress | undefined,
       creator: extractCreator(coreAsset),
@@ -81,12 +86,8 @@ export async function serializeAssetToJsonLd(
     properties["dcat:theme"] = asset.theme.title;
   }
 
-  if (asset.creator) {
-    properties["dct:creator"] = {
-      "@type": "schema:Organization",
-      "schema:name": asset.creator.name,
-      "@id": asset.creator.id,
-    };
+  if (asset.creator?.name) {
+    properties["dct:creator"] = asset.creator.name;
   }
 
   if (asset.provenance?.derivedFromId) {
