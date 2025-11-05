@@ -13,10 +13,7 @@ describe("catalogTransformers", () => {
     type: "Dataset",
     contenttype: "application/json",
     "dcat:mediaType": "application/json",
-    "dcat:theme": {
-      "dct:title": "Technology",
-      "@id": "theme-tech",
-    },
+    "dcat:theme": "Technology",
     "dcat:keyword": ["test", "dataset", "example"],
     "dspace:participantId": "participant-456",
     "odrl:hasPolicy": [
@@ -71,7 +68,6 @@ describe("catalogTransformers", () => {
     expect(result.keywords).toEqual(["test", "dataset", "example"]);
     expect(result.theme).toEqual({
       title: "Technology",
-      id: "theme-tech",
     });
 
     // Check policies transformation

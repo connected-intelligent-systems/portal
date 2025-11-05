@@ -28,8 +28,8 @@ export async function parseAssetFromJsonLd(jsonLdAsset: any): Promise<Asset> {
       description: extractString(coreAsset, "dct:description"),
       mediaType: extractString(coreAsset, "dcat:mediaType"),
       keywords: normalizeStringArray(coreAsset, "dcat:keyword"),
-      theme: (coreAsset.properties?.["dcat:theme"] as any)?.["dct:title"]
-        ? { title: (coreAsset.properties?.["dcat:theme"] as any)["dct:title"] }
+      theme: coreAsset.properties?.["dcat:theme"]
+        ? { title: coreAsset.properties["dcat:theme"] as string }
         : undefined,
       dataAddress: coreAsset.dataAddress as AssetDataAddress | undefined,
       creator: extractCreator(coreAsset),
@@ -78,10 +78,7 @@ export async function serializeAssetToJsonLd(
   }
 
   if (asset.theme?.title) {
-    properties["dcat:theme"] = {
-      "@type": "skos:Concept",
-      "dct:title": asset.theme.title,
-    };
+    properties["dcat:theme"] = asset.theme.title;
   }
 
   if (asset.creator) {

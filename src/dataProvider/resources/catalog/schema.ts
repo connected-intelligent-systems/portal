@@ -103,12 +103,7 @@ export const DatasetSchema = z
     type: z.string().optional(),
     contenttype: z.string().optional(),
     "dcat:mediaType": z.string().optional(),
-    "dcat:theme": z
-      .object({
-        "dct:title": z.string().optional(),
-        "@id": z.string().optional(),
-      })
-      .optional(),
+    "dcat:theme": z.string().optional(),
     "dcat:keyword": z.union([z.string(), z.array(z.string())]).optional(),
     "odrl:hasPolicy": z
       .union([PolicySchema, z.array(PolicySchema)])
@@ -134,9 +129,7 @@ export const DatasetSchema = z
       type: d.type,
       contenttype: d.contenttype,
       mediaType: d["dcat:mediaType"],
-      theme: d["dcat:theme"]
-        ? { title: d["dcat:theme"]["dct:title"], id: d["dcat:theme"]["@id"] }
-        : undefined,
+      theme: d["dcat:theme"] ? { title: d["dcat:theme"] } : undefined,
       keywords: d["dcat:keyword"]
         ? Array.isArray(d["dcat:keyword"])
           ? d["dcat:keyword"]

@@ -41,10 +41,9 @@ const filterMapping = (key: string, value: any) => {
       };
     case "category":
       return {
-        field:
-          "'http://www.w3.org/ns/dcat#theme'.'http://purl.org/dc/terms/title'",
+        field: "http://www.w3.org/ns/dcat#theme",
         operator: "=",
-        value: `[{"@value":"${value}"}]`,
+        value,
       };
     default:
       return { field: key, operator: "=", value };
