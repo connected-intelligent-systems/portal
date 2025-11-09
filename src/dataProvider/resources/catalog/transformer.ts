@@ -32,10 +32,21 @@ export async function parseDatasetFromJsonLd(
       extractString(_datasetResource, "aas:Identifiable/id") ||
       "";
 
+    const abstractsMultiLang =
+      extractMultiLanguageString(_datasetResource, "dct:abstract") ??
+      extractMultiLanguageString(_datasetResource, "aas:Referable/description");
+
+    const abstractString =
+      abstractsMultiLang?.find((t) => t.language === "en")?.value ||
+      abstractsMultiLang?.[0]?.value ||
+      "";
+
     const dataset: Dataset = {
       ...rest,
       title: titleString,
       titles: titlesMultiLang,
+      abstract: abstractString,
+      abstracts: abstractsMultiLang,
       thingDescription,
       creator: extractCreator(_datasetResource),
       created: extractDate(_datasetResource, "dct:created"),
@@ -89,10 +100,24 @@ export async function parseCatalogFromJsonLd(
             extractString(_datasetResource, "aas:Identifiable/id") ||
             "";
 
+          const abstractsMultiLang =
+            extractMultiLanguageString(_datasetResource, "dct:abstract") ??
+            extractMultiLanguageString(
+              _datasetResource,
+              "aas:Referable/description"
+            );
+
+          const abstractString =
+            abstractsMultiLang?.find((t) => t.language === "en")?.value ||
+            abstractsMultiLang?.[0]?.value ||
+            "";
+
           return {
             ...rest,
             title: titleString,
             titles: titlesMultiLang,
+            abstract: abstractString,
+            abstracts: abstractsMultiLang,
             thingDescription,
             creator: extractCreator(_datasetResource),
             created: extractDate(_datasetResource, "dct:created"),

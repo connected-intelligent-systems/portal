@@ -40,3 +40,14 @@ export function getTitleValue(
   }
   return title || "";
 }
+
+export function getAbstractValue(
+  abstracts: MultiLanguageValue[] | undefined,
+  abstract: string | undefined,
+  locale?: string
+): string {
+  if (abstracts && abstracts.length > 0) {
+    return getMultiLanguageValue(abstracts, locale);
+  }
+  return abstract || "";
+}

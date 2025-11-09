@@ -13,7 +13,7 @@ import HandshakeIcon from "@mui/icons-material/Handshake";
 import PolicyIcon from "@mui/icons-material/Policy";
 import { ContractNegotiationDialog } from "../ContractNegotiationDialog";
 import { Dataset } from "../../../types/catalog";
-import { getTitleValue } from "../../../utils/multiLanguageUtils";
+import { getTitleValue, getAbstractValue } from "../../../utils/multiLanguageUtils";
 
 interface DatasetCardProps {
   dataset: Dataset;
@@ -128,7 +128,7 @@ export const DatasetCard = ({
               }}
               id={`dataset-description-${index}`}
             >
-              {dataset?.abstract ||
+              {getAbstractValue(dataset?.abstracts, dataset?.abstract, locale) ||
                 translate("resources.catalog.dataset.noDescriptionAvailable")}
             </Typography>
           </Box>

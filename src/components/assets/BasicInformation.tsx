@@ -1,8 +1,10 @@
-import { useRecordContext, useTranslate } from "react-admin";
+import { useRecordContext, useTranslate, useLocale } from "react-admin";
 import { Box, Typography, Chip } from "@mui/material";
+import { getAbstractValue } from "../../utils/multiLanguageUtils";
 
 export const BasicInformation = () => {
   const translate = useTranslate();
+  const locale = useLocale();
   const record = useRecordContext();
 
   if (!record) return null;
@@ -117,7 +119,7 @@ export const BasicInformation = () => {
           {translate("resources.assets.tabs.basicInformation.shortDescription")}
         </Typography>
         <Typography variant="body2">
-          {record?.abstract ||
+          {getAbstractValue(record?.abstracts, record?.abstract, locale) ||
             translate(
               "resources.assets.tabs.basicInformation.noShortDescription"
             )}

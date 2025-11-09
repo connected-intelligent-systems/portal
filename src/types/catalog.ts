@@ -32,6 +32,7 @@ export interface Dataset {
   title?: string;
   titles?: MultiLanguageValue[];
   abstract?: string;
+  abstracts?: MultiLanguageValue[];
   description?: string;
 
   // Classification

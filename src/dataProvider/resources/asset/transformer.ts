@@ -57,11 +57,21 @@ export async function parseAssetFromJsonLd(jsonLdAsset: any): Promise<Asset> {
       extractString(coreAsset, "aas:Identifiable/id") ||
       "";
 
+    const abstractsMultiLang =
+      extractMultiLanguageString(coreAsset, "dct:abstract") ??
+      extractMultiLanguageString(coreAsset, "aas:Referable/description");
+
+    const abstractString =
+      abstractsMultiLang?.find((t) => t.language === "en")?.value ||
+      abstractsMultiLang?.[0]?.value ||
+      "";
+
     const asset: Asset = {
       id: coreAsset["@id"],
       title: titleString,
       titles: titlesMultiLang,
-      abstract: extractString(coreAsset, "dct:abstract") ?? "",
+      abstract: abstractString,
+      abstracts: abstractsMultiLang,
       description: extractString(coreAsset, "dct:description"),
       mediaType: extractString(coreAsset, "dcat:mediaType"),
       keywords: normalizeStringArray(coreAsset, "dcat:keyword"),
@@ -101,7 +111,10 @@ export async function serializeAssetToJsonLd(
       asset.titles && asset.titles.length > 0
         ? serializeMultiLanguageString(asset.titles)
         : asset.title,
-    "dct:abstract": asset.abstract,
+    "dct:abstract":
+      asset.abstracts && asset.abstracts.length > 0
+        ? serializeMultiLanguageString(asset.abstracts)
+        : asset.abstract,
     "dct:description": asset.description,
     "dcat:mediaType": asset.mediaType,
     "dcat:keyword": asset.keywords,

@@ -35,6 +35,7 @@ export interface Asset {
   title: string;
   titles?: MultiLanguageValue[];
   abstract: string;
+  abstracts?: MultiLanguageValue[];
   description?: string;
   keywords?: string[];
   theme?: AssetTheme;
