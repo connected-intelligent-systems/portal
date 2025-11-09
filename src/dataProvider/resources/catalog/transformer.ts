@@ -8,6 +8,7 @@ import {
   extractQualityMeasurements,
   extractString,
   extractThingDescription,
+  extractMultiLanguageString,
 } from "../../shared/transformerHelpers";
 import { CatalogSchema, DatasetSchema } from "./schema";
 
@@ -21,8 +22,20 @@ export async function parseDatasetFromJsonLd(
       _rawThingDescription
     );
 
+    const titlesMultiLang =
+      extractMultiLanguageString(_datasetResource, "dct:title") ??
+      extractMultiLanguageString(_datasetResource, "aas:Referable/displayName");
+
+    const titleString =
+      titlesMultiLang?.find((t) => t.language === "en")?.value ||
+      titlesMultiLang?.[0]?.value ||
+      extractString(_datasetResource, "aas:Identifiable/id") ||
+      "";
+
     const dataset: Dataset = {
       ...rest,
+      title: titleString,
+      titles: titlesMultiLang,
       thingDescription,
       creator: extractCreator(_datasetResource),
       created: extractDate(_datasetResource, "dct:created"),
@@ -63,8 +76,23 @@ export async function parseCatalogFromJsonLd(
           const thingDescription = await extractThingDescription(
             _rawThingDescription
           );
+          const titlesMultiLang =
+            extractMultiLanguageString(_datasetResource, "dct:title") ??
+            extractMultiLanguageString(
+              _datasetResource,
+              "aas:Referable/displayName"
+            );
+
+          const titleString =
+            titlesMultiLang?.find((t) => t.language === "en")?.value ||
+            titlesMultiLang?.[0]?.value ||
+            extractString(_datasetResource, "aas:Identifiable/id") ||
+            "";
+
           return {
             ...rest,
+            title: titleString,
+            titles: titlesMultiLang,
             thingDescription,
             creator: extractCreator(_datasetResource),
             created: extractDate(_datasetResource, "dct:created"),

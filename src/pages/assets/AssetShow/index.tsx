@@ -9,6 +9,7 @@ import {
   useTranslate,
   EditButton,
   useRecordContext,
+  useLocale,
 } from "react-admin";
 import { Typography, Box, Tabs, Tab } from "@mui/material";
 import CodeIcon from "@mui/icons-material/Code";
@@ -29,6 +30,7 @@ import {
   DataAddress,
   ThingDescription,
 } from "../../../components/assets";
+import { getTitleValue } from "../../../utils/multiLanguageUtils";
 
 const AssetShowBar = () => {
   return (
@@ -258,6 +260,8 @@ const AssetTabs = () => {
 };
 
 export const AssetShow = () => {
+  const locale = useLocale();
+
   return (
     <Show actions={<AssetShowBar />}>
       <SimpleShowLayout>
@@ -266,7 +270,8 @@ export const AssetShow = () => {
           render={(record: any) => (
             <Box>
               <Typography variant="h4" gutterBottom>
-                {record?.title || "Untitled Asset"}
+                {getTitleValue(record?.titles, record?.title, locale) ||
+                  "Untitled Asset"}
               </Typography>
               <Typography variant="caption" color="text.secondary">
                 ID: {record.id}

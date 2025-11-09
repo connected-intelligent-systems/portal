@@ -19,6 +19,67 @@ export function extractString(
   return result.success ? result.data : undefined;
 }
 
+export type MultiLanguageValue = {
+  value: string;
+  language?: string;
+};
+
+export function extractMultiLanguageString(
+  data: CoreResource,
+  key: string
+): MultiLanguageValue[] | undefined {
+  const value = data.properties?.[key];
+  if (!value) return undefined;
+
+  if (typeof value === "string") {
+    return [{ value }];
+  }
+
+  if (Array.isArray(value)) {
+    const results: MultiLanguageValue[] = [];
+
+    for (const item of value) {
+      if (typeof item === "string") {
+        results.push({ value: item });
+      } else if (item["@value"]) {
+        results.push({
+          value: item["@value"],
+          language: item["@language"],
+        });
+      } else if (item["aas:AbstractLangString/text"]) {
+        results.push({
+          value: item["aas:AbstractLangString/text"],
+          language: item["aas:AbstractLangString/language"],
+        });
+      }
+    }
+
+    return results.length > 0 ? results : undefined;
+  }
+
+  if (typeof value === "object" && value !== null) {
+    if ((value as any)["@value"]) {
+      return [
+        {
+          value: (value as any)["@value"],
+          language: (value as any)["@language"],
+        },
+      ];
+    }
+
+    if ((value as any)["aas:AbstractLangString/text"]) {
+      return [
+        {
+          value: (value as any)["aas:AbstractLangString/text"],
+          language: (value as any)["aas:AbstractLangString/language"],
+        },
+      ];
+    }
+  }
+
+  return undefined;
+}
+
 /**
  * Safely extracts a value that could be a single string or an array of strings,
  * and normalizes it into an array of strings.

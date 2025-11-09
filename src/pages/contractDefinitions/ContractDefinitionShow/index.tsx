@@ -10,7 +10,9 @@ import {
   SingleFieldList,
   useTranslate,
   EditButton,
+  useLocale,
 } from "react-admin";
+import { getTitleValue } from "../../../utils/multiLanguageUtils";
 
 const ContractDefinitionShowBar = () => (
   <TopToolbar>
@@ -21,6 +23,7 @@ const ContractDefinitionShowBar = () => (
 
 export const ContractDefinitionShow = () => {
   const translate = useTranslate();
+  const locale = useLocale();
 
   return (
     <Show actions={<ContractDefinitionShowBar />}>
@@ -69,7 +72,11 @@ export const ContractDefinitionShow = () => {
           )}
         >
           <SingleFieldList linkType="show">
-            <FunctionField render={(asset: any) => asset?.title || asset.id} />
+            <FunctionField
+              render={(asset: any) =>
+                getTitleValue(asset?.titles, asset?.title, locale) || asset.id
+              }
+            />
           </SingleFieldList>
         </ReferenceArrayField>
       </SimpleShowLayout>

@@ -8,11 +8,12 @@ import {
   Chip,
   Button,
 } from "@mui/material";
-import { useTranslate } from "react-admin";
+import { useTranslate, useLocale } from "react-admin";
 import HandshakeIcon from "@mui/icons-material/Handshake";
 import PolicyIcon from "@mui/icons-material/Policy";
 import { ContractNegotiationDialog } from "../ContractNegotiationDialog";
 import { Dataset } from "../../../types/catalog";
+import { getTitleValue } from "../../../utils/multiLanguageUtils";
 
 interface DatasetCardProps {
   dataset: Dataset;
@@ -27,9 +28,10 @@ export const DatasetCard = ({
 }: DatasetCardProps) => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const translate = useTranslate();
+  const locale = useLocale();
 
   const datasetTitle =
-    dataset?.title ||
+    getTitleValue(dataset?.titles, dataset?.title, locale) ||
     dataset?.name ||
     translate("resources.catalog.dataset.unnamedDataset");
   const datasetId = dataset?.id;

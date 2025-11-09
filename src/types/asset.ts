@@ -1,3 +1,5 @@
+import { MultiLanguageValue } from "../dataProvider/shared/transformerHelpers";
+
 export interface AssetDataAddress {
   type: string;
   [key: string]: any;
@@ -31,6 +33,7 @@ export interface Asset {
 
   // Basic Information
   title: string;
+  titles?: MultiLanguageValue[];
   abstract: string;
   description?: string;
   keywords?: string[];

@@ -4,12 +4,15 @@ import {
   TextField,
   FunctionField,
   useTranslate,
+  useLocale,
 } from "react-admin";
 import { Box, Typography, Chip } from "@mui/material";
 import { Asset } from "../../types/asset";
+import { getTitleValue } from "../../utils/multiLanguageUtils";
 
 export const AssetsList = () => {
   const translate = useTranslate();
+  const locale = useLocale();
   return (
     <List empty={false} exporter={false}>
       <Datagrid
@@ -24,7 +27,8 @@ export const AssetsList = () => {
           render={(record: Asset) => (
             <Box>
               <Typography variant="body2" fontWeight="medium">
-                {record?.title || "Untitled"}
+                {getTitleValue(record?.titles, record?.title, locale) ||
+                  "Untitled"}
               </Typography>
               <Typography variant="caption" color="text.secondary">
                 ID: {record?.id}

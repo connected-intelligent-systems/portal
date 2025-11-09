@@ -13,17 +13,54 @@ import {
   normalizeStringArray,
   serializePrivacySettings,
   extractThingDescription,
+  extractMultiLanguageString,
+  type MultiLanguageValue,
 } from "../../shared/transformerHelpers";
 import { expandThingDescription } from "../../../utils/thingDescriptionUtils";
 import { CoreAssetSchema, type CoreAsset } from "./schema";
+
+function serializeMultiLanguageString(
+  value: string | MultiLanguageValue[] | undefined
+): string | any[] | undefined {
+  if (!value) return undefined;
+
+  if (typeof value === "string") {
+    return value;
+  }
+
+  if (Array.isArray(value)) {
+    return value.map((item) => {
+      if (item.language) {
+        return {
+          "@value": item.value,
+          "@language": item.language,
+        };
+      }
+      return item.value;
+    });
+  }
+
+  return undefined;
+}
 
 export async function parseAssetFromJsonLd(jsonLdAsset: any): Promise<Asset> {
   try {
     const coreAsset: CoreAsset = CoreAssetSchema.parse(jsonLdAsset);
 
+    const titlesMultiLang =
+      extractMultiLanguageString(coreAsset, "dct:title") ??
+      extractMultiLanguageString(coreAsset, "aas:Referable/displayName");
+
+    const titleString =
+      titlesMultiLang?.find((t) => t.language === "en")?.value ||
+      titlesMultiLang?.[0]?.value ||
+      extractString(coreAsset, "aas:Identifiable/id") ||
+      "";
+
     const asset: Asset = {
       id: coreAsset["@id"],
-      title: extractString(coreAsset, "dct:title") ?? "",
+      title: titleString,
+      titles: titlesMultiLang,
       abstract: extractString(coreAsset, "dct:abstract") ?? "",
       description: extractString(coreAsset, "dct:description"),
       mediaType: extractString(coreAsset, "dcat:mediaType"),
@@ -60,7 +97,10 @@ export async function serializeAssetToJsonLd(
   asset: AssetFormData
 ): Promise<any> {
   const properties: Record<string, any> = {
-    "dct:title": asset.title,
+    "dct:title":
+      asset.titles && asset.titles.length > 0
+        ? serializeMultiLanguageString(asset.titles)
+        : asset.title,
     "dct:abstract": asset.abstract,
     "dct:description": asset.description,
     "dcat:mediaType": asset.mediaType,

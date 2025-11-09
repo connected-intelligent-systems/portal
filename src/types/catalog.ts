@@ -1,3 +1,5 @@
+import { MultiLanguageValue } from "../dataProvider/shared/transformerHelpers";
+
 export interface PolicyConstraint {
   leftOperand: string;
   operator: string;
@@ -28,6 +30,7 @@ export interface Dataset {
 
   // Basic metadata
   title?: string;
+  titles?: MultiLanguageValue[];
   abstract?: string;
   description?: string;
 

@@ -5,6 +5,7 @@ import {
   RecordContextProvider,
   Loading,
   useGetOne,
+  useLocale,
 } from "react-admin";
 import { useParams } from "react-router-dom";
 import { Typography, Box, Tabs, Tab, Container, Paper } from "@mui/material";
@@ -25,6 +26,7 @@ import {
   ThingDescription,
 } from "../../../components/assets";
 import { ServiceInformation } from "../../../components/datasets";
+import { getTitleValue } from "../../../utils/multiLanguageUtils";
 
 const hasBasicInformation = (dataset: any) => {
   return !!(
@@ -90,6 +92,7 @@ interface TabConfig {
 export const DatasetShow = () => {
   const [activeTab, setActiveTab] = useState(0);
   const translate = useTranslate();
+  const locale = useLocale();
   const { catalogId, datasetId } = useParams<{
     catalogId: string;
     datasetId: string;
@@ -211,7 +214,7 @@ export const DatasetShow = () => {
       <Paper sx={{ p: 3 }}>
         <Box>
           <Typography variant="h4" gutterBottom>
-            {dataset?.title ||
+            {getTitleValue(dataset?.titles, dataset?.title, locale) ||
               dataset?.name ||
               translate("resources.datasets.unnamedDataset")}
           </Typography>
