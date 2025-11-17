@@ -13,7 +13,10 @@ import HandshakeIcon from "@mui/icons-material/Handshake";
 import PolicyIcon from "@mui/icons-material/Policy";
 import { ContractNegotiationDialog } from "../ContractNegotiationDialog";
 import { Dataset } from "../../../types/catalog";
-import { getTitleValue, getAbstractValue } from "../../../utils/multiLanguageUtils";
+import {
+  getTitleValue,
+  getAbstractValue,
+} from "../../../utils/multiLanguageUtils";
 
 interface DatasetCardProps {
   dataset: Dataset;
@@ -74,23 +77,7 @@ export const DatasetCard = ({
           </Typography>
 
           <Box sx={{ display: "flex", gap: 1, mb: 2, flexWrap: "wrap" }}>
-            {dataset.type && (
-              <Chip
-                size="small"
-                label={dataset.type}
-                color="primary"
-                variant="outlined"
-              />
-            )}
-            {dataset.contenttype && (
-              <Chip
-                size="small"
-                label={dataset.contenttype}
-                color="secondary"
-                variant="outlined"
-              />
-            )}
-            {dataset?.theme && (
+            {dataset?.theme ? (
               <Chip
                 size="small"
                 label={
@@ -103,13 +90,25 @@ export const DatasetCard = ({
                 color="primary"
                 variant="outlined"
               />
+            ) : (
+              <Chip
+                size="small"
+                label="placeholder"
+                sx={{ visibility: "hidden" }}
+              />
             )}
-            {dataset?.mediaType && (
+            {dataset?.mediaType ? (
               <Chip
                 size="small"
                 label={dataset.mediaType}
                 color="info"
                 variant="outlined"
+              />
+            ) : (
+              <Chip
+                size="small"
+                label="placeholder"
+                sx={{ visibility: "hidden" }}
               />
             )}
           </Box>
@@ -125,10 +124,20 @@ export const DatasetCard = ({
                 mb: 2,
                 lineHeight: 1.4,
                 fontStyle: dataset?.abstract ? "normal" : "italic",
+                display: "-webkit-box",
+                WebkitLineClamp: 3,
+                WebkitBoxOrient: "vertical",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                minHeight: "4.3em",
               }}
               id={`dataset-description-${index}`}
             >
-              {getAbstractValue(dataset?.abstracts, dataset?.abstract, locale) ||
+              {getAbstractValue(
+                dataset?.abstracts,
+                dataset?.abstract,
+                locale
+              ) ||
                 translate("resources.catalog.dataset.noDescriptionAvailable")}
             </Typography>
           </Box>
